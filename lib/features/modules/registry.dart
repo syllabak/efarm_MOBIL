@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'cattle_extra.dart';
+import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'registry_elevage.dart';
 import 'registry_gestion.dart';
@@ -24,6 +25,7 @@ class ExtraEntry {
 }
 
 final List<ExtraEntry> farmExtraEntries = [
+  ExtraEntry('Gestion', 'Écritures comptables', Icons.menu_book_outlined, () => DataPage(title: 'Écritures du mois', path: '/accounting/entries'), roles: {'admin', 'siege'}, plan: 'comptabilite'),
   ExtraEntry('Élevage', 'Bovins — tableau de bord', Icons.insights_outlined, () => const CattleSummaryPage(), plan: 'bovins'),
   ExtraEntry('Élevage', 'Poules pondeuses', Icons.egg_alt_outlined, () => const LayingPage(), plan: 'ponte'),
   ExtraEntry('Élevage', 'Ambiance (capteurs)', Icons.thermostat, () => const IotPage(), plan: 'iot'),

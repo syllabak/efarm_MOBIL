@@ -8,6 +8,7 @@ import 'farm/farm_pages.dart';
 import 'farm/ops_pages.dart';
 import 'modules/module_pages.dart';
 import 'modules/registry.dart';
+import 'modules/registry_elevage.dart';
 import 'modules/spec.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_docs_pages.dart';
@@ -35,7 +36,7 @@ class _FarmShellState extends State<_FarmShell> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), const LotsPage(), const RapportsPage(), const StockPage(), const FarmMore()];
+    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), ModuleListPage(lotsModule, embedded: true), const RapportsPage(), const StockPage(), const FarmMore()];
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_i])),
       body: IndexedStack(index: _i, children: pages),

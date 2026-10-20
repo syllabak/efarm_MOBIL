@@ -44,8 +44,11 @@ String formatValue(Object? v, ColumnSpec c) {
 
 /// Liste d'un module : filtres, recherche, pagination, création.
 class ModuleListPage extends ConsumerStatefulWidget {
-  const ModuleListPage(this.spec, {super.key});
+  const ModuleListPage(this.spec, {super.key, this.embedded = false});
   final ModuleSpec spec;
+
+  /// Sans barre de titre (affichée dans un onglet).
+  final bool embedded;
   @override
   ConsumerState<ModuleListPage> createState() => _ModuleListPageState();
 }
@@ -71,7 +74,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
           if (spec.searchParam != null && _q.isNotEmpty) spec.searchParam!: _q,
         };
     return Scaffold(
-      appBar: AppBar(title: Text(spec.title)),
+      appBar: widget.embedded ? null : AppBar(title: Text(spec.title)),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
@@ -187,7 +190,8 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
         load: () => api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
-          final actions = [for (final a in spec.actions) if (a.visible == null || a.visible!(row)) a];
+          final profile = ref.watch(sessionProvider).value;
+          final actions = [for (final a in spec.actions) if ((a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
             for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),

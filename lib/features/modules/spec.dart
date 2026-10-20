@@ -47,7 +47,7 @@ typedef RowText = String Function(Json);
 
 /// Une action sur un élément (POST) : avec ou sans formulaire, avec confirmation facultative.
 class ActionSpec {
-  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page});
+  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page, this.plan});
   final String label;
 
   /// Chemin avec `{id}` remplacé par l'identifiant de l'élément.
@@ -64,6 +64,9 @@ class ActionSpec {
 
   /// Écran sur mesure ouvert à la place d'un formulaire générique ; renvoie `true` pour recharger le détail.
   final Widget Function(Object? id)? page;
+
+  /// Fonctionnalité de l'offre exigée pour proposer l'action.
+  final String? plan;
 }
 
 /// Une liste liée affichée dans le détail (`data[key]` est une liste d'objets).

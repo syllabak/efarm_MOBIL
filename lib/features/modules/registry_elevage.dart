@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../ui/common.dart';
+import '../farm/rapport_form.dart';
+import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'spec.dart';
 
@@ -240,4 +242,72 @@ final sensorsModule = ModuleSpec(
     FieldSpec('type', 'Type', type: FieldType.select, initial: 'multi', options: {'multi': 'Multi-mesures', 'temperature_hygrometrie': 'Température et humidité', 'co2_nh3': 'CO₂ et NH₃'}),
   ], roles: {'admin'}, successMessage: 'Capteur créé : sa clé API est visible dans le site web.'),
   emptyText: 'Aucun capteur.',
+);
+
+// ── Lots avicoles ────────────────────────────────────────────────────
+const _lotEdit = [
+  FieldSpec('race', 'Race / souche'),
+  FieldSpec('fournisseur', 'Fournisseur'),
+  FieldSpec('poids_objectif', 'Poids objectif', type: FieldType.number, suffix: 'kg', min: 0),
+  FieldSpec('date_sortie_prevue', 'Sortie prévue', type: FieldType.date),
+  FieldSpec('notes', 'Notes', type: FieldType.multiline),
+];
+
+final lotsModule = ModuleSpec(
+  id: 'lots',
+  title: 'Lots',
+  icon: Icons.egg_alt_outlined,
+  listPath: '/farm/lots',
+  filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
+  itemTitle: (r) => _join([r['code'], r['race']]),
+  itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',
+  itemTrailing: (r) => _s(r['statut']),
+  detailPath: '/lots/{id}/performance',
+  detailTitle: (r) => _join([r['lot']?['code'], r['lot']?['race']]),
+  detail: const [
+    ColumnSpec('lot.site_nom', 'Site'),
+    ColumnSpec('lot.statut', 'Statut', fmt: Fmt.label, labels: {'actif': 'Actif', 'termine': 'Terminé'}),
+    ColumnSpec('lot.type_production', 'Production', fmt: Fmt.label, labels: {'chair': 'Chair', 'pondeuse': 'Pondeuses'}),
+    ColumnSpec('performance.age_jours', 'Âge (jours)', fmt: Fmt.number),
+    ColumnSpec('lot.date_entree', 'Entrée', fmt: Fmt.date),
+    ColumnSpec('lot.date_sortie_prevue', 'Sortie prévue', fmt: Fmt.date),
+    ColumnSpec('lot.date_sortie_reelle', 'Sortie réelle', fmt: Fmt.date),
+    ColumnSpec('mortalite.nb_initial', 'Effectif initial', fmt: Fmt.number),
+    ColumnSpec('mortalite.nb_actuel', 'Effectif actuel', fmt: Fmt.number),
+    ColumnSpec('mortalite.total_pertes', 'Pertes', fmt: Fmt.number),
+    ColumnSpec('mortalite.taux_pct', 'Mortalité', fmt: Fmt.percent),
+    ColumnSpec('mortalite.statut', 'Niveau de mortalité', fmt: Fmt.label, labels: {'normale': 'Normale', 'elevee': 'Élevée', 'critique': 'Critique'}),
+    ColumnSpec('performance.chiffre_affaires', 'Chiffre d\'affaires', fmt: Fmt.money),
+    ColumnSpec('performance.total_depenses', 'Dépenses', fmt: Fmt.money),
+    ColumnSpec('lot.poids_objectif', 'Poids objectif (kg)', fmt: Fmt.number),
+    ColumnSpec('lot.notes', 'Notes'),
+  ],
+  sections: [
+    SectionSpec('causes', 'Causes de mortalité', (r) => _s(r['cause']), itemTrailing: (r) => fmtNum(r['total'])),
+    SectionSpec('rapports', 'Derniers rapports', (r) => fmtDate(r['date_rapport']),
+        itemSubtitle: (r) => 'Vivants ${fmtNum(r['nb_tetes_vivantes'])} · morts ${fmtNum(r['mortalite_jour'])} · ${fmtNum(r['sacs_consommes'], digits: 1)} sacs', itemTrailing: (r) => _s(r['statut'])),
+  ],
+  actions: [
+    ActionSpec('Saisir le rapport du jour', '', icon: Icons.edit_note, visible: (r) => r['lot']?['statut'] == 'actif', page: (id) => RapportForm(lotId: id is int ? id : int.tryParse('$id'))),
+    ActionSpec('Tableau de bande', '', icon: Icons.insights, plan: 'bande_intelligence', page: (id) => DataPage(title: 'Tableau de bande', path: '/lots/$id/band')),
+    ActionSpec('Prévision d\'aliment', '', icon: Icons.grass, plan: 'previsions', page: (id) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/$id/feed', pick: 'prevision', query: const {'ia': 1})),
+    ActionSpec('Prévision de mortalité', '', icon: Icons.trending_down, plan: 'previsions', page: (id) => DataPage(title: 'Prévision de mortalité', path: '/forecast/$id/mortality', pick: 'prevision', query: const {'ia': 1})),
+    ActionSpec('Modifier le lot', '/lots/{id}', icon: Icons.edit_outlined, prefill: true, successMessage: 'Lot modifié.', fields: _lotEdit),
+    ActionSpec('Clôturer le lot', '/lots/{id}/close', icon: Icons.flag_outlined, confirm: 'Clôturer ce lot ? Le bilan final est calculé et les alertes sont analysées.', visible: (r) => r['lot']?['statut'] == 'actif', successMessage: 'Lot clôturé.'),
+    ActionSpec('Supprimer', '/lots/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer ce lot créé par erreur ? Impossible s\'il a des rapports, dépenses ou ventes.', successMessage: 'Lot supprimé.'),
+  ],
+  create: const CreateSpec('Lot', '/lots', [
+    FieldSpec('site_id', 'Site', type: FieldType.select, optionsPath: '/farm/sites', hint: 'Laissez vide si votre compte est rattaché à un site'),
+    FieldSpec('type_production', 'Production', type: FieldType.select, initial: 'chair', options: {'chair': 'Poulets de chair', 'pondeuse': 'Poules pondeuses'}),
+    FieldSpec('race', 'Race / souche'),
+    FieldSpec('fournisseur', 'Fournisseur'),
+    FieldSpec('nb_initial', 'Effectif', type: FieldType.integer, required: true, min: 1),
+    FieldSpec('date_entree', 'Date d\'entrée', type: FieldType.date, initial: 'today', required: true),
+    FieldSpec('age_entree_semaines', 'Âge à l\'arrivée (pondeuses)', type: FieldType.number, suffix: 'semaines', min: 0),
+    FieldSpec('date_sortie_prevue', 'Sortie prévue', type: FieldType.date),
+    FieldSpec('poids_objectif', 'Poids objectif', type: FieldType.number, suffix: 'kg', min: 0),
+    FieldSpec('prix_poussin', 'Prix d\'un poussin', type: FieldType.number, suffix: 'F', min: 0, hint: 'Crée la dépense d\'achat automatiquement'),
+    FieldSpec('notes', 'Notes', type: FieldType.multiline),
+  ], roles: _ecriture, successMessage: 'Lot créé.'),
+  emptyText: 'Aucun lot.',
 );

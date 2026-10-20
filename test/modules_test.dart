@@ -13,7 +13,7 @@ import 'helpers.dart';
 
 class _Admin extends SessionNotifier {
   @override
-  Future<Profile?> build() async => Profile({'type': 'ferme', 'id': 1, 'role': 'admin', 'tous_les_sites': true});
+  Future<Profile?> build() async => Profile({'type': 'ferme', 'id': 1, 'role': 'admin', 'tous_les_sites': true, 'fonctions': {'bande_intelligence': true, 'previsions': false}});
 }
 
 Future<void> _pump(WidgetTester t, Widget w, Map<String, Handler> routes) async {
@@ -187,5 +187,22 @@ void main() {
     await t.tap(find.text('Enregistrer les pesées'));
     await t.pumpAndSettle();
     expect(sent!['poids'], {'1': 262.5});
+  });
+
+  testWidgets('lot : détail imbriqué, actions selon l\'offre', (t) async {
+    await _pump(t, ModuleDetailPage(lotsModule, 9), {
+      'GET /lots/9/performance': (_) => ok({
+            'lot': {'id': 9, 'code': 'FARM-2026-0009', 'race': 'Cobb', 'statut': 'actif', 'site_nom': 'Nord'},
+            'performance': {'age_jours': 31, 'chiffre_affaires': 0, 'total_depenses': 450000},
+            'mortalite': {'nb_initial': 1000, 'nb_actuel': 960, 'total_pertes': 40, 'taux_pct': 4, 'statut': 'normale'},
+            'causes': [{'cause': 'maladie', 'total': 25}], 'rapports': [],
+          }),
+    });
+    expect(find.text('FARM-2026-0009 · Cobb'), findsOneWidget);
+    expect(find.text('Normale'), findsOneWidget);
+    expect(find.text('Saisir le rapport du jour'), findsOneWidget);
+    expect(find.text('Clôturer le lot'), findsOneWidget);
+    expect(find.text('Tableau de bande'), findsOneWidget);
+    expect(find.text('Prévision d\'aliment'), findsNothing);
   });
 }

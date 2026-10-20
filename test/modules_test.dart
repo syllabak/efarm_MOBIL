@@ -1,5 +1,7 @@
 import 'package:efarm360/core/session.dart';
 import 'package:efarm360/features/modules/module_pages.dart';
+import 'package:efarm360/features/modules/cattle_extra.dart';
+import 'package:efarm360/features/modules/registry_elevage.dart';
 import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,5 +84,62 @@ void main() {
     await t.tap(find.text('Confirmer'));
     await t.pumpAndSettle();
     expect(paid, isTrue);
+  });
+
+  testWidgets('bovin : fiche, historique, action « sortie » avec formulaire et corps typé', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, ModuleDetailPage(cattleModule, 12), {
+      'GET /cattle/12': (_) => ok({
+            'id': 12, 'numero': 'SN-0012', 'nom': 'Bella', 'sexe': 'F', 'categorie': 'Vache', 'race_nom': 'Zébu Gobra', 'statut': 'present', 'poids': 310, 'etat': 'Gestante confirmée',
+            'evenements': [{'id': 1, 'type': 'pesee', 'type_nom': 'Pesée', 'date_event': '2026-10-01', 'valeur': 310, 'detail': null}],
+            'descendants': [],
+          }),
+      'POST /cattle/12/exit': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'message': 'Sortie enregistrée'});
+      },
+    });
+    expect(find.text('Gestante confirmée'), findsOneWidget);
+    expect(find.text('Pesée'), findsOneWidget);
+    expect(find.text('310 kg'), findsWidgets);
+    expect(find.text('Réintégrer'), findsNothing);
+    await t.ensureVisible(find.text('Sortie du troupeau'));
+    await t.tap(find.text('Sortie du troupeau'));
+    await t.pumpAndSettle();
+    await t.ensureVisible(find.byType(DropdownButtonFormField<String>).first);
+    await t.tap(find.byType(DropdownButtonFormField<String>).first);
+    await t.pumpAndSettle();
+    await t.tap(find.text('Vente').last);
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextFormField, 'Prix de vente'), '450000');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent!['type'], 'vente');
+    expect(sent!['prix_vente'], 450000);
+    expect(sent!['date_sortie'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+  });
+
+  testWidgets('traite : seules les quantités saisies sont envoyées', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const CattleMilkPage(), {
+      'GET /cattle/milk': (_) => ok({'jour': '2026-10-20', 'prix_litre': 400, 'serie': [], 'vaches': [
+            {'id': 1, 'numero': 'V1', 'nom': 'Bella', 'matin': null, 'soir': null, 'jours_lactation': 40},
+            {'id': 2, 'numero': 'V2', 'nom': null, 'matin': 5, 'soir': null, 'jours_lactation': 80},
+          ]}),
+      'POST /cattle/milk': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'message': 'ok'});
+      },
+    });
+    await t.enterText(find.widgetWithText(TextField, 'Matin').first, '6,5');
+    await t.pump();
+    expect(find.textContaining('Total : '), findsOneWidget);
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    final l = sent!['lignes'] as Map;
+    expect(l.keys, containsAll(['1', '2']));
+    expect(l['1']['matin'], 6.5);
+    expect(l['2']['matin'], 5);
   });
 }

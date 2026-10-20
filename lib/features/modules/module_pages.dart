@@ -170,7 +170,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
           final actions = [for (final a in spec.actions) if (a.visible == null || a.visible!(row)) a];
-          return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
+          return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
             for (final col in spec.detail) KeyValue(col.label, formatValue(row[col.key], col)),
             for (final s in spec.sections) ...[
@@ -197,7 +197,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
                   ),
               ]),
             ],
-          ]);
+          ]));
         },
       ),
     );

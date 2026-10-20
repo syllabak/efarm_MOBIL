@@ -8,6 +8,7 @@ import 'farm/farm_pages.dart';
 import 'farm/ops_pages.dart';
 import 'modules/module_pages.dart';
 import 'modules/registry.dart';
+import 'modules/spec.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_docs_pages.dart';
 import 'vet/vet_pages.dart';
@@ -62,10 +63,12 @@ class FarmMore extends ConsumerWidget {
       tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
       if (const {'admin', 'siege', 'responsable'}.contains(p.role)) tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage()),
       tile(Icons.location_city_outlined, 'Sites', () => const SitesPage()),
-      for (final g in farmModuleGroups.entries) ...[
-        if (g.value.any((m) => m.roles == null || m.roles!.contains(p.role))) Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(g.key, style: Theme.of(context).textTheme.labelLarge)),
-        for (final m in g.value)
+      for (final g in {...farmModuleGroups.keys, ...farmExtraEntries.map((e) => e.group)}) ...[
+        Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(g, style: Theme.of(context).textTheme.labelLarge)),
+        for (final m in farmModuleGroups[g] ?? const <ModuleSpec>[])
           if (m.roles == null || m.roles!.contains(p.role)) tile(m.icon, m.title, () => ModuleListPage(m)),
+        for (final e in farmExtraEntries)
+          if (e.group == g && (e.roles == null || e.roles!.contains(p.role))) tile(e.icon, e.title, e.builder),
       ],
       const Divider(),
       tile(Icons.person_outline, 'Mon compte', () => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage())),

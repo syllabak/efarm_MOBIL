@@ -72,3 +72,17 @@ test/          client HTTP, copie locale et file, droits, formulaires, modules, 
 
 Ajouter un module : créer les routes `/api/mobile/v1/...` côté `efarm360` (contrôleur dérivé de `ApiMobileModuleController`, qui gère rôle, offre et droit),
 puis décrire l'écran par un `ModuleSpec` dans `lib/features/modules/registry*.dart`.
+
+## Build Android (release)
+
+Créer `android/key.properties` (ignoré par git) :
+
+```
+storeFile=../upload.jks
+storePassword=...
+keyAlias=upload
+keyPassword=...
+```
+
+puis `flutter build apk --release` (ou `appbundle`). Sans ce fichier, le build est signé avec la clé de debug.
+Le job CI `apk` publie aussi un APK en artefact.

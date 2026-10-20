@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
 
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api_client.dart';
@@ -63,8 +63,9 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
   ApiClient get _api => ref.read(apiProvider);
   TokenStore get _tokens => ref.read(tokenStoreProvider);
 
-  String get _platform => Platform.isIOS ? 'ios' : (Platform.isAndroid ? 'android' : 'autre');
-  String get _device => Platform.operatingSystem;
+  // `dart:io` Platform n'existe pas sur le web : on passe par defaultTargetPlatform.
+  String get _platform => kIsWeb ? 'web' : switch (defaultTargetPlatform) { TargetPlatform.iOS => 'ios', TargetPlatform.android => 'android', _ => 'autre' };
+  String get _device => kIsWeb ? 'web' : defaultTargetPlatform.name;
 
   @override
   Future<Profile?> build() async {

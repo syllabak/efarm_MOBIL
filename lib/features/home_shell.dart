@@ -10,7 +10,6 @@ import 'farm/ops_pages.dart';
 import 'modules/module_pages.dart';
 import 'modules/registry.dart';
 import 'modules/registry_elevage.dart';
-import 'modules/spec.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_docs_pages.dart';
 import 'comm/account_pages.dart';
@@ -62,23 +61,33 @@ class FarmMore extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(sessionProvider).value!;
     Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
+    // (titre, entrée) : triées dans l'ordre du menu latéral du site web
+    final items = <(String, Widget)>[
+      if (serverGets('/alerts')) ('Alertes', tile(Icons.notifications_outlined, 'Alertes', () => const AlertsPage())),
+      if (p.has('vente') && serverGets('/sales')) ('Ventes', tile(Icons.point_of_sale, 'Ventes', () => const VentesPage())),
+      if (p.has('vente') && serverGets('/sales')) ('Clients', tile(Icons.people_outline, 'Clients', () => const ClientsVentePage())),
+      if (serverGets('/finance/summary') && const {'admin', 'siege', 'responsable'}.contains(p.role)) ('Finance', tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage())),
+      ('Sites', tile(Icons.location_city_outlined, 'Sites', () => const SitesPage())),
+      for (final m in farmModuleGroups.values.expand((l) => l))
+        if (serverGets(m.listPath) && (m.roles == null || m.roles!.contains(p.role)) && (m.plan == null || p.has(m.plan!))) (m.title, tile(m.icon, m.title, () => ModuleListPage(m))),
+      for (final e in farmExtraEntries)
+        if (serverGets(e.route) && (e.roles == null || e.roles!.contains(p.role)) && (e.plan == null || p.has(e.plan!))) (e.title, tile(e.icon, e.title, e.builder)),
+    ]..sort((x, y) => _webRank(x.$1).compareTo(_webRank(y.$1)));
     return ListView(children: [
-      if (serverGets('/alerts')) tile(Icons.notifications_outlined, 'Alertes', () => const AlertsPage()),
-      if (p.has('vente') && serverGets('/sales')) tile(Icons.point_of_sale, 'Ventes', () => const VentesPage()),
-      if (p.has('vente') && serverGets('/sales')) tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
-      if (serverGets('/finance/summary') && const {'admin', 'siege', 'responsable'}.contains(p.role)) tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage()),
-      tile(Icons.location_city_outlined, 'Sites', () => const SitesPage()),
-      for (final g in {...farmModuleGroups.keys.where((k) => farmModuleGroups[k]!.any((m) => serverGets(m.listPath))), ...farmExtraEntries.where((e) => serverGets(e.route)).map((e) => e.group)}) ...[
-        Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(g, style: Theme.of(context).textTheme.labelLarge)),
-        for (final m in farmModuleGroups[g] ?? const <ModuleSpec>[])
-          if (serverGets(m.listPath) && (m.roles == null || m.roles!.contains(p.role)) && (m.plan == null || p.has(m.plan!))) tile(m.icon, m.title, () => ModuleListPage(m)),
-        for (final e in farmExtraEntries)
-          if (serverGets(e.route) && e.group == g && (e.roles == null || e.roles!.contains(p.role)) && (e.plan == null || p.has(e.plan!))) tile(e.icon, e.title, e.builder),
-      ],
+      ...items.map((e) => e.$2),
       const Divider(),
       tile(Icons.person_outline, 'Mon compte', () => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage())),
     ]);
   }
+}
+
+/// Ordre du menu latéral du site web (mots-clés des titres) ; « Sites » reste en dernier.
+const _webOrder = ['messag', 'rapport', 'élevage', 'ponte', 'poule', 'bovin', 'embouche', 'couvoir', 'capteur', 'iot', 'alerte', 'vente', 'client', 'stock', 'finance', 'fournisseur', 'employ', 'paie', 'vétérinaire', 'formation', 'support', 'parrain', 'compta', 'écriture', 'import', 'investiss'];
+
+int _webRank(String title) {
+  if (title == 'Sites') return 1000;
+  final i = _webOrder.indexWhere(title.toLowerCase().contains);
+  return i < 0 ? 999 : i;
 }
 
 class _VetShell extends ConsumerStatefulWidget {

@@ -1,69 +1,74 @@
 # EFarm360 — application mobile (Flutter)
 
 Application Android / iOS d'[EFarm360](https://github.com/syllabak/efarm360). Elle parle uniquement à l'**API mobile** du site web
-(`/api/mobile/v1`, voir `docs/api/mobile-v1.md` et `openapi.json` dans le dépôt `efarm360`) : aucune base de données ni logique métier dupliquée,
-les droits, la licence et les règles sont ceux du serveur.
+(`/api/mobile/v1`, 198 routes : voir `docs/api/mobile-v1.md` et `openapi.json` dans le dépôt `efarm360`) : aucune base de données ni règle métier dupliquée,
+les droits, l'offre de la société et la licence sont ceux du serveur. Le menu masque les modules que l'offre n'inclut pas (`profile.fonctions`).
 
 Serveur par défaut : `https://efarm360.danov.sn` (modifiable dans « Options avancées » de l'écran de connexion).
+Branche principale : `main`.
 
 ## Lancer
 
 ```bash
 flutter pub get
 flutter run
-flutter analyze && flutter test
+flutter analyze && flutter test      # 37 tests
 ```
 
-L'application sert deux profils depuis le même écran de connexion : **fermier / exploitation** (onglets Accueil, Lots, Rapports, Stock, Plus) et **vétérinaire** (Accueil, Clients, Patients, RDV, Compte), avec le cabinet utilisable hors ligne.
+## Deux profils, un seul écran de connexion
+
+- **Exploitation (fermier)** — onglets Accueil, Lots, Rapports, Stock, Plus.
+- **Vétérinaire** (titulaire ou collaborateur, droits par rubrique) — onglets Accueil, Clients, Patients, RDV, Compte. La clinique fonctionne **hors ligne**.
+
+Connexion : e-mail ou téléphone + mot de passe, code à usage unique (e-mail / SMS), double authentification, choix de société si plusieurs.
+Jetons dans le stockage sécurisé, rafraîchissement automatique avec rotation.
 
 ## Ce qui est couvert
 
-| Domaine | État |
+| Domaine | Contenu |
 |---|---|
-| Connexion exploitation (e-mail ou téléphone + mot de passe, code société facultatif, choix de société si plusieurs) | ✅ |
-| Connexion par code à usage unique (e-mail ou SMS) | ✅ |
-| Double authentification (code ou code de récupération) | ✅ |
-| Connexion vétérinaire (titulaire ou collaborateur) | ✅ |
-| Jetons : stockage sécurisé, rafraîchissement automatique avec rotation (un seul à la fois), déconnexion cet appareil / tous | ✅ |
-| Profil, licence, appareils connectés | ✅ |
-| Ferme : tableau de bord, sites, lots (liste, détail), rapports, stock avec alertes de seuil | ✅ lecture |
-| Ferme : **saisie du rapport journalier** (mortalité par cause, aliment, eau, températures, poids, œufs pour les pondeuses) | ✅ (nécessite `POST /farm/rapports`, ajouté au site web) |
-| Ventes : résumé (CA jour/mois/année, créances), liste filtrable par paiement, détail avec lignes et encaissements, **encaissement** d'un paiement | ✅ (routes `/sales` ajoutées au site) |
-| Ventes : **création d'une vente** (lignes, client, lot, remise, mode de paiement dont crédit ; total recalculé par le serveur) | ✅ (admin, responsable) |
-| Alertes de l'exploitation (non lues, « tout lire »), produits sous le seuil | ✅ |
-| Stock : **entrées et sorties** (une entrée payante crée la dépense), historique des mouvements | ✅ |
-| Clients de vente (recherche, total des achats) | ✅ lecture |
-| Finance : résumé mensuel (ventes, dépenses, bénéfice, trésorerie, créances), dépenses par catégorie, **ajout d'une dépense** | ✅ (admin, siège, responsable) |
-| Cabinet vétérinaire : clients, patients, historique, consultations, soins/vaccins avec rappels, rendez-vous, pharmacie | ✅ |
-| Cabinet vétérinaire : **devis et factures** (liste, détail, encaissement d'un paiement) et **ordonnances** (consultation) — en ligne, selon les droits du profil | ✅ |
-| Cabinet vétérinaire **hors ligne** : copie locale (SQLite), file de saisies avec identifiant unique, envoi sans doublon, saisies refusées visibles et corrigeables | ✅ |
+| **Ferme — saisie quotidienne** | rapport journalier (mortalité par cause, aliment, eau, températures, poids, œufs), alertes, stock avec entrées / sorties / seuils |
+| **Ferme — lots** | liste, performance, création, modification, clôture, suppression, tableau de bande, prévisions d'aliment et de mortalité |
+| **Ferme — commerce** | ventes (création, encaissement, annulation), clients, finance, dépenses, investissements, écritures comptables |
+| **Ferme — gestion** | employés, paie (génération, ajustement, validation, paiement), fournisseurs |
+| **Ferme — élevages** | bovins (troupeau, fiche, événements, sorties, traite, pesées, tableau de bord), embouche, couvoir et incubation, poules pondeuses, capteurs d'ambiance |
+| **Ferme — communication** | messagerie d'équipe, aide et support (assistant + agent), formation (cours vidéo), parrainage, profil et mot de passe |
+| **Ferme ↔ vétérinaire** | mes vétérinaires, documents reçus (ordonnances, rapports, instructions) à marquer appliqués, messagerie |
+| **Vétérinaire — clinique (hors ligne)** | clients, patients, consultations, soins et vaccins avec rappels, rendez-vous, copie locale SQLite et file de saisies sans doublon |
+| **Vétérinaire — cabinet (en ligne)** | devis, factures (création, émission, annulation, encaissement), ordonnances, vente au comptoir, catalogue, pharmacie (stock, lots, péremptions), fournisseurs, commandes avec réception, comptabilité, profil du cabinet |
+| **Vétérinaire — fermes suivies** | invitations, synthèse sanitaire, dossier de lot, émission de documents à la ferme, actes sur les bovins, messagerie |
 
-## Ce qui n'existe pas encore (et pourquoi)
+## Ce qui n'existe pas dans l'application
 
-Le site web compte plusieurs centaines de pages (comptabilité, paie, bovins, embouche, couvoir, ponte détaillée, IoT, messagerie,
-formation, support, administration, facturation et ordonnances vétérinaires…). **L'API mobile n'expose aujourd'hui que la ferme (lecture + rapport journalier) et la clinique vétérinaire.**
-Une fonctionnalité du web apparaît dans l'application dès que son point d'accès `/api/mobile/v1/...` existe : l'application ne contourne jamais l'API.
+- **Partie administration**, volontairement exclue : portail d'administration, licences et paiements, utilisateurs / rôles / permissions, équipe du cabinet.
+- **Fichiers** : imports et exports (Excel, CSV, PDF), envoi de photos et de vocaux dans les messages, guides PDF de formation (lecteur protégé du site).
+- Création / modification des sites ; réglage des seuils d'alerte ; clés API et webhooks.
+- Vétérinaire : documentation et formation du cabinet, parrainage, inventaire physique, étiquettes et scanner.
+- Notifications push ; connexion Google ; builds Android / iOS (signature, icônes, `google-services`).
+- Hors ligne : seulement la clinique du cabinet (le reste exige le réseau).
 
-Marche à suivre pour ajouter un module (ex. ventes) :
-1. côté `efarm360` : contrôleur `ApiMobile…Controller` qui réutilise les services du module (droits, licence et isolation par société déjà gérés par `ApiMobileController`), route dans `index.php`, entrée dans `docs/api/*` ;
-2. côté application : une page dans `lib/features/<module>/` qui appelle `ApiClient` ; les écritures hors ligne passent par une file avec `ref` unique, comme `lib/features/vet/vet_repo.dart`.
+## Limites connues
 
-Limites connues :
-- la saisie du rapport journalier exige le réseau (pas de file hors ligne côté ferme) ;
-- notifications push et connexion Google ne sont pas branchées ;
-- les builds Android/iOS (signature, icônes, `google-services`) ne sont pas configurés.
+- Le code côté serveur (`efarm360`, branche `claude/loving-faraday-c9jj8j`) n'a pas pu être exécuté contre une base MySQL pendant le développement : tester sur un serveur de recette avant publication.
+- Pas de protection contre le double envoi d'une création (vente, document) si la réponse du serveur se perd.
+- Les analyses et bilans sont affichés de façon générique (`DataTree`) : la mise en page évoluera avec les retours.
 
 ## Architecture
 
 ```
 lib/
-  core/        ApiClient (Dio, rafraîchissement des jetons), TokenStore (stockage sécurisé), session (connexion, profil)
-  ui/          widgets communs (liste paginée, chargement/erreur)
+  core/        ApiClient (Dio, rafraîchissement unique des jetons), TokenStore, session (connexion, profil, offre)
+  ui/          widgets communs (liste paginée, chargement / erreur)
   features/
-    auth/      écran de connexion (mot de passe, code, 2FA, société)
-    farm/      accueil, lots, rapports (+ formulaire), stock (+ mouvements), alertes, sites
-    commerce/  ventes (+ création), encaissements, clients, finance, dépenses
-    vet/       VetRepo (copie locale + file + synchronisation), pages et formulaires
+    auth/      connexion
+    farm/      accueil, rapports (+ formulaire), stock, alertes, sites
+    commerce/  ventes, encaissements, clients, finance, dépenses, création de vente
+    modules/   cadre générique : ModuleSpec (liste, détail, actions, formulaires typés, lignes, choix distants) + registres par domaine
+    comm/      messagerie, support, formation, parrainage, profil
+    vet/       VetRepo (copie locale + file + synchro), clinique, documents, ordonnances, cabinet, fermes suivies
     profile/   compte, appareils, déconnexion (efface la copie locale du cabinet)
-test/          client HTTP (rotation des jetons), copie locale et file hors ligne, droits, écran de connexion
+test/          client HTTP, copie locale et file, droits, formulaires, modules, messagerie, cabinet
 ```
+
+Ajouter un module : créer les routes `/api/mobile/v1/...` côté `efarm360` (contrôleur dérivé de `ApiMobileModuleController`, qui gère rôle, offre et droit),
+puis décrire l'écran par un `ModuleSpec` dans `lib/features/modules/registry*.dart`.

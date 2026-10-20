@@ -2,6 +2,7 @@ import 'package:efarm360/core/session.dart';
 import 'package:efarm360/features/modules/module_pages.dart';
 import 'package:efarm360/features/modules/cattle_extra.dart';
 import 'package:efarm360/features/modules/registry_elevage.dart';
+import 'package:efarm360/features/modules/elevage_extra.dart';
 import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -141,5 +142,50 @@ void main() {
     expect(l.keys, containsAll(['1', '2']));
     expect(l['1']['matin'], 6.5);
     expect(l['2']['matin'], 5);
+  });
+
+  testWidgets('couvoir : valeurs imbriquées affichées, actions selon le statut, éclosion typée', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, ModuleDetailPage(hatcheryModule, 4), {
+      'GET /hatchery/4': (_) => ok({
+            'id': 4, 'code': 'INC-2026-001', 'race': 'Cobb', 'statut': 'en_incubation', 'nb_oeufs_mis': 1000, 'site_nom': 'Nord',
+            'indicateurs': {'jours_restants': 6, 'taux_fertilite': 91.5, 'taux_eclosion': null}, 'mirages': [],
+          }),
+      'POST /hatchery/4/hatch': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'statut': 'eclos'});
+      },
+    });
+    expect(find.text('91,5 %'), findsOneWidget);
+    expect(find.text('Convertir en lot d\'élevage'), findsNothing);
+    await t.ensureVisible(find.text('Enregistrer l\'éclosion'));
+    await t.tap(find.text('Enregistrer l\'éclosion'));
+    await t.pumpAndSettle();
+    await t.enterText(find.widgetWithText(TextFormField, 'Poussins éclos *'), '870');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent!['nb_poussins_eclos'], 870);
+    expect(sent!['date_eclosion_reelle'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+  });
+
+  testWidgets('pesée du lot d\'embouche : envoie seulement les poids saisis', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const FatteningWeighingPage(lotId: 7), {
+      'GET /fattening/7': (_) => ok({'animaux': [
+            {'id': 1, 'numero': 'B1', 'nom': null, 'statut': 'present', 'poids': 250},
+            {'id': 2, 'numero': 'B2', 'nom': 'Rex', 'statut': 'present', 'poids': null},
+            {'id': 3, 'numero': 'B3', 'nom': null, 'statut': 'vendu', 'poids': 400},
+          ]}),
+      'POST /fattening/7/weighing': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'message': 'ok'});
+      },
+    });
+    expect(find.text('B3'), findsNothing);
+    await t.enterText(find.byType(TextField).first, '262,5');
+    await t.tap(find.text('Enregistrer les pesées'));
+    await t.pumpAndSettle();
+    expect(sent!['poids'], {'1': 262.5});
   });
 }

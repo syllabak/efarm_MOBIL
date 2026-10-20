@@ -5,6 +5,19 @@ import '../../core/session.dart';
 import '../../ui/common.dart';
 import 'spec.dart';
 
+/// Valeur d'une clé, y compris imbriquée (`bilan.nb_presents`).
+Object? lookup(Map<String, dynamic> row, String key) {
+  Object? cur = row;
+  for (final part in key.split('.')) {
+    if (cur is Map) {
+      cur = cur[part];
+    } else {
+      return null;
+    }
+  }
+  return cur;
+}
+
 String formatValue(Object? v, ColumnSpec c) {
   if (v == null || '$v'.isEmpty) return '—';
   switch (c.fmt) {
@@ -134,8 +147,13 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
   Future<void> _run(ActionSpec a, Json row) async {
     final api = ref.read(apiProvider);
     final path = a.path.replaceAll('{id}', '${widget.id}');
+    if (a.page != null) {
+      final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => a.page!(widget.id)));
+      if (ok == true && mounted) setState(() => _k = UniqueKey());
+      return;
+    }
     if (a.fields.isNotEmpty) {
-      final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: body))));
+      final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, pathVars: {'id': widget.id}, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: body))));
       if (ok == true && mounted) setState(() => _k = UniqueKey());
       return;
     }
@@ -172,7 +190,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
           final actions = [for (final a in spec.actions) if (a.visible == null || a.visible!(row)) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
-            for (final col in spec.detail) KeyValue(col.label, formatValue(row[col.key], col)),
+            for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),
             for (final s in spec.sections) ...[
               const Divider(height: 28),
               Text(s.title, style: Theme.of(c).textTheme.titleMedium),
@@ -206,8 +224,9 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
 
 /// Formulaire piloté par des `FieldSpec` ; `submit` reçoit le corps JSON déjà typé.
 class DynamicFormPage extends ConsumerStatefulWidget {
-  const DynamicFormPage({super.key, required this.title, required this.fields, required this.submit, this.successMessage = 'Enregistré.', this.initialValues = const {}});
+  const DynamicFormPage({super.key, required this.title, required this.fields, required this.submit, this.successMessage = 'Enregistré.', this.initialValues = const {}, this.pathVars = const {}});
   final Map<String, dynamic> initialValues;
+  final Map<String, Object?> pathVars;
   final String title, successMessage;
   final List<FieldSpec> fields;
   final Future<Object?> Function(Map<String, dynamic> body) submit;
@@ -257,8 +276,11 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
       final api = ref.read(apiProvider);
       for (final f in widget.fields) {
         if (f.optionsPath != null) {
-          final d = await api.get<List>(f.optionsPath!, query: f.optionsQuery);
-          _remote[f.key] = [for (final e in d) Map<String, dynamic>.from(e as Map)];
+          var path = f.optionsPath!;
+          widget.pathVars.forEach((k, v) => path = path.replaceAll('{$k}', '$v'));
+          final d = await api.get<Object>(path, query: f.optionsQuery);
+          final list = d is Map ? (d[f.optionsFrom] as List? ?? const []) : d as List;
+          _remote[f.key] = [for (final e in list) Map<String, dynamic>.from(e as Map)];
         }
       }
     } catch (e) {

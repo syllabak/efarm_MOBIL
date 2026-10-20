@@ -21,6 +21,9 @@ class Profile {
   String? get companyName => (raw['societe'] as Map?)?['nom'] as String?;
   Map<String, dynamic>? get licence => (raw['licence'] as Map?)?.cast<String, dynamic>();
   bool get twoFactor => raw['deux_facteurs'] == true;
+
+  /// Fonctionnalité incluse dans l'offre (true par défaut tant que le serveur ne l'a pas indiquée).
+  bool has(String feature) => (raw['fonctions'] as Map?)?[feature] != false;
   bool get isOwnerVet => raw['titulaire'] == true;
   String? get cabinetOwner => raw['cabinet_titulaire'] as String?;
 

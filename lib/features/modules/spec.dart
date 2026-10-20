@@ -15,7 +15,8 @@ class FieldSpec {
       this.suffix,
       this.hint,
       this.initial,
-      this.min});
+      this.min,
+      this.optionsFrom});
   final String key, label;
   final FieldType type;
   final bool required;
@@ -26,6 +27,9 @@ class FieldSpec {
   final String? suffix, hint;
   final Object? initial;
   final num? min;
+
+  /// Si la réponse de `optionsPath` est un objet, clé qui contient la liste des choix.
+  final String? optionsFrom;
 }
 
 /// Mise en forme d'une valeur affichée.
@@ -43,7 +47,7 @@ typedef RowText = String Function(Json);
 
 /// Une action sur un élément (POST) : avec ou sans formulaire, avec confirmation facultative.
 class ActionSpec {
-  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false});
+  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page});
   final String label;
 
   /// Chemin avec `{id}` remplacé par l'identifiant de l'élément.
@@ -57,6 +61,9 @@ class ActionSpec {
 
   /// Pré-remplit le formulaire avec les valeurs de l'élément (clés identiques).
   final bool prefill;
+
+  /// Écran sur mesure ouvert à la place d'un formulaire générique ; renvoie `true` pour recharger le détail.
+  final Widget Function(Object? id)? page;
 }
 
 /// Une liste liée affichée dans le détail (`data[key]` est une liste d'objets).
@@ -103,6 +110,7 @@ class ModuleSpec {
     this.query = const {},
     this.searchParam,
     this.listIsPlain = false,
+    this.plan,
   });
   final String id, title, listPath;
   final IconData icon;
@@ -123,4 +131,7 @@ class ModuleSpec {
 
   /// La liste n'est pas paginée (`data` est directement un tableau).
   final bool listIsPlain;
+
+  /// Fonctionnalité de l'offre exigée (clé de `profile.fonctions`).
+  final String? plan;
 }

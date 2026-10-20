@@ -59,16 +59,16 @@ class FarmMore extends ConsumerWidget {
     Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
     return ListView(children: [
       tile(Icons.notifications_outlined, 'Alertes', () => const AlertsPage()),
-      tile(Icons.point_of_sale, 'Ventes', () => const VentesPage()),
-      tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
+      if (p.has('vente')) tile(Icons.point_of_sale, 'Ventes', () => const VentesPage()),
+      if (p.has('vente')) tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
       if (const {'admin', 'siege', 'responsable'}.contains(p.role)) tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage()),
       tile(Icons.location_city_outlined, 'Sites', () => const SitesPage()),
       for (final g in {...farmModuleGroups.keys, ...farmExtraEntries.map((e) => e.group)}) ...[
         Padding(padding: const EdgeInsets.fromLTRB(16, 16, 16, 4), child: Text(g, style: Theme.of(context).textTheme.labelLarge)),
         for (final m in farmModuleGroups[g] ?? const <ModuleSpec>[])
-          if (m.roles == null || m.roles!.contains(p.role)) tile(m.icon, m.title, () => ModuleListPage(m)),
+          if ((m.roles == null || m.roles!.contains(p.role)) && (m.plan == null || p.has(m.plan!))) tile(m.icon, m.title, () => ModuleListPage(m)),
         for (final e in farmExtraEntries)
-          if (e.group == g && (e.roles == null || e.roles!.contains(p.role))) tile(e.icon, e.title, e.builder),
+          if (e.group == g && (e.roles == null || e.roles!.contains(p.role)) && (e.plan == null || p.has(e.plan!))) tile(e.icon, e.title, e.builder),
       ],
       const Divider(),
       tile(Icons.person_outline, 'Mon compte', () => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage())),

@@ -22,6 +22,7 @@ const _employeFields = [
 
 final employeesModule = ModuleSpec(
   id: 'employees',
+  plan: 'paie',
   title: 'Employés',
   icon: Icons.badge_outlined,
   listPath: '/employees',
@@ -56,6 +57,7 @@ const _statutsPaie = {'brouillon': 'Brouillon', 'valide': 'Validé', 'paye': 'Pa
 
 final payslipsModule = ModuleSpec(
   id: 'payslips',
+  plan: 'paie',
   title: 'Paie',
   icon: Icons.payments_outlined,
   listPath: '/payslips',
@@ -106,6 +108,7 @@ const _fournisseurFields = [
 
 final suppliersModule = ModuleSpec(
   id: 'suppliers',
+  plan: 'fournisseurs',
   title: 'Fournisseurs',
   icon: Icons.local_shipping_outlined,
   listPath: '/suppliers',

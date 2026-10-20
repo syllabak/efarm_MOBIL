@@ -31,7 +31,30 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Devis et factures')),
+      appBar: AppBar(title: const Text('Devis et factures'), actions: [
+        IconButton(
+          tooltip: 'Vente au comptoir',
+          icon: const Icon(Icons.point_of_sale),
+          onPressed: () async {
+            try {
+              final r = await api.get<Map>('/vet/counter-client');
+              if (!mounted) return;
+              final ok = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => DynamicFormPage(
+                          title: 'Vente au comptoir',
+                          successMessage: 'Facture enregistrée en brouillon : émettez-la puis encaissez.',
+                          fields: documentFields('facture'),
+                          initialValues: {'client_id': r['client_id'], 'client_id_label': 'Passage (vente comptoir)'},
+                          submit: (b) => api.post('/vet/documents', body: {...b, 'type': 'facture'}))));
+              if (ok == true && mounted) setState(() => _k = UniqueKey());
+            } catch (e) {
+              if (mounted) showError(context, e);
+            }
+          },
+        ),
+      ]),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: Text(_type == 'facture' ? 'Facture' : 'Devis'),

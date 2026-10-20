@@ -12,6 +12,7 @@ import 'modules/registry_elevage.dart';
 import 'modules/spec.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_docs_pages.dart';
+import 'comm/account_pages.dart';
 import 'vet/relation_pages.dart';
 import 'vet/vet_manage.dart';
 import 'vet/vet_pages.dart';
@@ -105,6 +106,7 @@ class _VetShellState extends ConsumerState<_VetShell> {
           ProfilePage(extra: [
             if (p.can('documents')) ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Devis et factures'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentsPage()))),
             if (p.can('ordonnances')) ListTile(leading: const Icon(Icons.description_outlined), title: const Text('Ordonnances'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OrdonnancesPage()))),
+            if (p.can('profil')) ListTile(leading: const Icon(Icons.business_outlined), title: const Text('Mon cabinet'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CabinetProfilePage()))),
             if (p.can('fermes')) ListTile(leading: const Icon(Icons.agriculture), title: const Text('Mes fermes'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VetFarmsPage()))),
             if (p.can('fermes')) ListTile(leading: const Icon(Icons.forum_outlined), title: const Text('Messages des fermes'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RelationConversationsPage(listPath: '/vet/messages', threadBase: '/vet/messages', mySens: 'veto', title: 'Messages des fermes', name: (r) => '${r['nom']}')))),
             if (p.can('stock')) ListTile(leading: const Icon(Icons.medication_outlined), title: const Text('Pharmacie (stock, lots, péremptions)'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PharmacyPage()))),

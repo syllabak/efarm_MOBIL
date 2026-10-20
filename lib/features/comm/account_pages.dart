@@ -245,3 +245,41 @@ class PasswordPage extends ConsumerWidget {
     );
   }
 }
+
+/// Profil du cabinet vétérinaire (identité légale utilisée sur les devis, factures et ordonnances).
+class CabinetProfilePage extends ConsumerWidget {
+  const CabinetProfilePage({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Mon cabinet')),
+      body: AsyncView<Map>(
+        load: () => api.get<Map>('/vet/profile'),
+        builder: (c, d) => DynamicFormPage(
+          title: 'Mon cabinet',
+          showAppBar: false,
+          successMessage: 'Cabinet enregistré.',
+          initialValues: Map<String, dynamic>.from((d['cabinet'] as Map?) ?? {}),
+          submit: (b) => api.post('/vet/profile', body: b),
+          fields: const [
+            FieldSpec('nom_cabinet', 'Nom du cabinet', required: true),
+            FieldSpec('type_etablissement', 'Type', type: FieldType.select, options: {'cabinet': 'Cabinet vétérinaire', 'clinique': 'Clinique vétérinaire', 'pharmacie': 'Pharmacie vétérinaire', 'independant': 'Vétérinaire indépendant'}),
+            FieldSpec('telephone', 'Téléphone', type: FieldType.phone),
+            FieldSpec('email', 'E-mail', type: FieldType.email),
+            FieldSpec('adresse', 'Adresse'),
+            FieldSpec('zones_intervention', 'Zones d\'intervention', type: FieldType.multiline),
+            FieldSpec('specialites', 'Spécialités', type: FieldType.multiline),
+            FieldSpec('horaires', 'Horaires', type: FieldType.multiline),
+            FieldSpec('numero_ordre', 'N° d\'ordre'),
+            FieldSpec('ninea', 'NINEA'),
+            FieldSpec('rccm', 'RCCM'),
+            FieldSpec('tva_defaut', 'TVA par défaut', type: FieldType.number, suffix: '%', min: 0),
+            FieldSpec('conditions_paiement', 'Conditions de paiement'),
+            FieldSpec('mentions_facture', 'Mentions légales des factures', type: FieldType.multiline),
+          ],
+        ),
+      ),
+    );
+  }
+}

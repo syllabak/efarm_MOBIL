@@ -86,3 +86,9 @@ keyPassword=...
 
 puis `flutter build apk --release` (ou `appbundle`). Sans ce fichier, le build est signé avec la clé de debug.
 Le job CI `apk` publie aussi un APK en artefact.
+
+## Windows et Web
+
+Les plateformes `windows/` et `web/` sont générées. Lancer avec `flutter run -d windows` ou `flutter run -d chrome`.
+- Windows : la base locale vétérinaire utilise `sqflite_common_ffi` (initialisé dans `main.dart`).
+- Web : pas de base locale, donc le mode hors ligne vétérinaire est indisponible. Le serveur doit autoriser le CORS pour l'origine de l'app.

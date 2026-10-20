@@ -1,7 +1,11 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'core/session.dart';
 import 'core/theme.dart';
@@ -11,6 +15,11 @@ import 'ui/common.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Bureau : sqflite passe par FFI. Web : pas de base locale (mode hors ligne vétérinaire indisponible).
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   await initializeDateFormatting('fr_FR');
   runApp(const ProviderScope(child: EFarmApp()));
 }

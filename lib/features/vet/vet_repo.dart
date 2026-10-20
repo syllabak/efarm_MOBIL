@@ -147,6 +147,13 @@ class VetRepo extends ChangeNotifier {
     return out;
   }
 
+  /// Toutes les consultations (copie + saisies en attente), la plus récente d'abord.
+  List<Map<String, dynamic>> get consultations => [
+        ..._consultations,
+        for (final o in _ops('consultation.creer'))
+          {...o.data, 'id': 'ref:${o.ref}', 'patient_id': _target(o.data, 'patient'), 'date_consultation': o.data['date_consultation'] ?? o.createdAt, 'pending': true},
+      ]..sort((a, b) => '${b['date_consultation']}'.compareTo('${a['date_consultation']}'));
+
   List<Map<String, dynamic>> consultationsOf(Object? patientId) => [
         for (final c in _consultations) if (c['patient_id'] == patientId) c,
         for (final o in _ops('consultation.creer'))

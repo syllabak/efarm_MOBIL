@@ -32,6 +32,9 @@ class SyncBanner extends StatelessWidget {
 }
 
 // ── Accueil ──────────────────────────────────────────────────────────
+/// Couleur des indicateurs du cabinet sur le site web (cyan-800).
+const _cyan = Color(0xFF155E75);
+
 class VetHome extends ConsumerWidget {
   const VetHome({super.key, required this.repo, required this.onGoto});
   final VetRepo repo;
@@ -45,6 +48,7 @@ class VetHome extends ConsumerWidget {
       final rdv = [for (final r in repo.rdv) if ('${r['debut']}'.startsWith(today) && r['statut'] != 'annule') r];
       final rappels = repo.rappels;
       final retard = rappels.where((r) => '${r['rappel_le']}'.compareTo(today) < 0).length;
+      final consultMois = repo.consultations.where((r) => '${r['date_consultation']}'.compareTo('${today.substring(0, 8)}01') >= 0).length;
       return Column(children: [
         SyncBanner(repo),
         Expanded(
@@ -57,18 +61,28 @@ class VetHome extends ConsumerWidget {
                 child: Text(repo.lastSync == null ? 'Copie locale non chargée — connectez-vous au réseau.' : 'Données du ${fmtDateTime(repo.lastSync!.toIso8601String())}', style: Theme.of(c).textTheme.bodySmall),
               ),
               GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.6, padding: const EdgeInsets.all(4), children: [
-                Stat('Rendez-vous du jour', '${rdv.length}', icon: Icons.event_available),
-                Stat('Rappels en retard', '$retard', icon: Icons.notification_important_outlined, color: retard > 0 ? Colors.red : null),
-                Stat('Patients', '${repo.patients.length}', icon: Icons.pets),
-                Stat('Clients', '${repo.clients.length}', icon: Icons.people_outline),
+                Stat('Rendez-vous aujourd\'hui', '${rdv.length}', icon: Icons.event_available, color: _cyan),
+                Stat(retard > 0 ? 'Rappels à faire (30 jours) · $retard en retard' : 'Rappels à faire (30 jours)', '${rappels.length}', icon: Icons.notification_important_outlined, color: retard > 0 ? Colors.red : _cyan),
+                Stat('Consultations ce mois-ci', '$consultMois', icon: Icons.medical_services_outlined, color: _cyan),
+                Stat('Patients suivis', '${repo.patients.length}', icon: Icons.pets, color: _cyan),
               ]),
               if (rdv.isNotEmpty) ...[
-                const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Text('Aujourd\'hui', style: TextStyle(fontWeight: FontWeight.bold))),
+                const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Text('📅 Aujourd\'hui', style: TextStyle(fontWeight: FontWeight.bold))),
                 for (final r in rdv) RdvTile(r, repo: repo),
               ],
               if (rappels.isNotEmpty) ...[
-                const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Text('Rappels à faire', style: TextStyle(fontWeight: FontWeight.bold))),
+                const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Text('💉 Rappels de vaccins et soins', style: TextStyle(fontWeight: FontWeight.bold))),
                 for (final r in rappels.take(15)) RappelTile(r, repo: repo),
+              ],
+              if (repo.consultations.isNotEmpty) ...[
+                const Padding(padding: EdgeInsets.fromLTRB(12, 12, 12, 0), child: Text('🩺 Dernières consultations', style: TextStyle(fontWeight: FontWeight.bold))),
+                for (final r in repo.consultations.take(8))
+                  ListTile(
+                    leading: const Icon(Icons.medical_services_outlined, color: _cyan),
+                    title: Text('${repo.patient(r['patient_id'])?['nom'] ?? 'Patient'}'),
+                    subtitle: Text('${r['motif'] ?? ''}'),
+                    trailing: Text(fmtDate(r['date_consultation'])),
+                  ),
               ],
               if (rdv.isEmpty && rappels.isEmpty) const Padding(padding: EdgeInsets.all(32), child: EmptyView('Rien de prévu aujourd\'hui.', icon: Icons.check_circle_outline)),
             ]),

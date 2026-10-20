@@ -228,7 +228,8 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
 
 /// Formulaire piloté par des `FieldSpec` ; `submit` reçoit le corps JSON déjà typé.
 class DynamicFormPage extends ConsumerStatefulWidget {
-  const DynamicFormPage({super.key, required this.title, required this.fields, required this.submit, this.successMessage = 'Enregistré.', this.initialValues = const {}, this.pathVars = const {}});
+  const DynamicFormPage({super.key, required this.title, required this.fields, required this.submit, this.successMessage = 'Enregistré.', this.initialValues = const {}, this.pathVars = const {}, this.showAppBar = true});
+  final bool showAppBar;
   final Map<String, dynamic> initialValues;
   final Map<String, Object?> pathVars;
   final String title, successMessage;
@@ -434,7 +435,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: widget.showAppBar ? AppBar(title: Text(widget.title)) : null,
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null

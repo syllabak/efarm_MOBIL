@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../comm/account_pages.dart';
+import '../comm/chat_pages.dart';
+import '../comm/support_pages.dart';
 import 'cattle_extra.dart';
 import 'data_view.dart';
 import 'elevage_extra.dart';
@@ -25,6 +28,10 @@ class ExtraEntry {
 }
 
 final List<ExtraEntry> farmExtraEntries = [
+  ExtraEntry('Communication', 'Messagerie', Icons.forum_outlined, () => const ChatRoomsPage(), plan: 'messagerie'),
+  ExtraEntry('Communication', 'Aide et support', Icons.support_agent, () => const SupportPage()),
+  ExtraEntry('Communication', 'Formation', Icons.school_outlined, () => const TrainingPage()),
+  ExtraEntry('Communication', 'Parrainage', Icons.card_giftcard, () => const ReferralPage(), roles: {'admin', 'siege'}),
   ExtraEntry('Gestion', 'Écritures comptables', Icons.menu_book_outlined, () => DataPage(title: 'Écritures du mois', path: '/accounting/entries'), roles: {'admin', 'siege'}, plan: 'comptabilite'),
   ExtraEntry('Élevage', 'Bovins — tableau de bord', Icons.insights_outlined, () => const CattleSummaryPage(), plan: 'bovins'),
   ExtraEntry('Élevage', 'Poules pondeuses', Icons.egg_alt_outlined, () => const LayingPage(), plan: 'ponte'),

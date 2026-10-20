@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatf
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api_client.dart';
+import 'server_support.dart';
 import 'response_cache.dart';
 
 /// Profil renvoyé par `/auth/login` et `/me`.
@@ -70,6 +71,7 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
   @override
   Future<Profile?> build() async {
     if (await _tokens.access == null) return null;
+    useContract(await _api.contract());
     final cached = await _tokens.profile;
     try {
       final me = await _api.get<Map>('/me');
@@ -119,6 +121,7 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
       final d = await f();
       if (d['two_factor_required'] == true) return LoginNeeds2fa(d['token'] as String);
       await _tokens.saveTokens(d['access_token'] as String, d['refresh_token'] as String);
+      useContract(await _api.contract());
       final p = Profile(Map<String, dynamic>.from(d['profile'] as Map));
       await _tokens.saveProfile(jsonEncode(p.raw));
       state = AsyncData(p);

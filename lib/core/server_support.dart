@@ -16,13 +16,33 @@ const _write = <String>{
   'POST /auth/logout', 'POST /auth/logout-all', 'POST /vet/sync/push',
 };
 
-String _norm(String path) => path.split('?').first.replaceAllMapped(RegExp(r'/(\d+|\{[a-z_]+\}|\$\w+|\$\{[^}]*\})(?=/|$)'), (_) => '/{id}');
+String _norm(String path) => path.split('?').first.replaceAllMapped(RegExp(r'/(\d+|\{[A-Za-z_]+\}|\$\w+|\$\{[^}]*\})(?=/|$)'), (_) => '/{id}');
+
+Set<String>? _live;
+
+/// Contrat réellement publié par le serveur (`/openapi.json`) : remplace la liste ci-dessus.
+/// Ainsi, dès que le serveur est mis à jour, les modules réapparaissent sans nouvelle version de l'application.
+void useContract(Map<String, dynamic>? openapi) {
+  final paths = openapi?['paths'];
+  if (paths is! Map || paths.isEmpty) return;
+  _live = {
+    for (final e in paths.entries)
+      if (e.value is Map)
+        for (final m in (e.value as Map).keys)
+          if (const {'get', 'post', 'put', 'patch', 'delete'}.contains('$m'.toLowerCase())) '${'$m'.toUpperCase()} ${_norm('${e.key}')}',
+  };
+}
 
 /// Le serveur sait-il répondre à ce chemin ? (`method` : GET, POST, PUT, DELETE…)
 bool serverCan(String method, String path) {
   if (!hideUnsupported) return true;
-  final p = _norm(path);
-  return method.toUpperCase() == 'GET' ? _get.contains(p) : _write.contains('${method.toUpperCase()} $p');
+  final key = '${method.toUpperCase()} ${_norm(path)}';
+  final live = _live;
+  if (live != null) return live.contains(key);
+  return method.toUpperCase() == 'GET' ? _get.contains(_norm(path)) : _write.contains(key);
 }
 
 bool serverGets(String path) => serverCan('GET', path);
+
+/// Pour les tests : retour à la liste statique.
+void resetContract() => _live = null;

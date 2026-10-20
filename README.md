@@ -116,3 +116,9 @@ Par défaut, seuls les modules supportés par le `main` du serveur sont visibles
 ```
 flutter run -d windows --dart-define=FULL_API=true
 ```
+
+## Détection automatique des fonctions du serveur
+
+À la connexion, l'application lit le contrat public `/api/mobile/v1/openapi.json`. Un module n'est affiché que si le serveur déclare
+sa route : dès que le site web est mis à jour avec l'API complète, les modules apparaissent sans nouvelle version de l'application.
+Si le contrat est illisible (réseau coupé au tout premier démarrage), la liste statique de `lib/core/server_support.dart` est utilisée.

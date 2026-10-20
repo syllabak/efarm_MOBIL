@@ -69,7 +69,7 @@ class EmptyView extends StatelessWidget {
 
 typedef PageFetcher = Future<({List<Map<String, dynamic>> items, Map<String, dynamic> meta})> Function(int page);
 
-/// Liste à défilement infini sur une API paginée (`meta.pages`).
+/// Liste à défilement infini sur une API paginée (`meta.pages`). Pour recharger avec d'autres filtres, changer la `key`.
 class PagedList extends StatefulWidget {
   const PagedList({super.key, required this.fetch, required this.itemBuilder, this.emptyText = 'Aucun élément.', this.header});
   final PageFetcher fetch;
@@ -95,12 +95,6 @@ class _PagedListState extends State<PagedList> {
       if (_scroll.position.pixels > _scroll.position.maxScrollExtent - 300) _more();
     });
     _more();
-  }
-
-  @override
-  void didUpdateWidget(PagedList old) {
-    super.didUpdateWidget(old);
-    if (old.fetch != widget.fetch) _reset();
   }
 
   @override

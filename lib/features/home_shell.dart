@@ -5,6 +5,7 @@ import '../core/session.dart';
 import '../ui/common.dart';
 import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
+import 'farm/ops_pages.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_pages.dart';
 import 'vet/vet_repo.dart';
@@ -53,6 +54,7 @@ class FarmMore extends ConsumerWidget {
     final p = ref.watch(sessionProvider).value!;
     Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
     return ListView(children: [
+      tile(Icons.notifications_outlined, 'Alertes', () => const AlertsPage()),
       tile(Icons.point_of_sale, 'Ventes', () => const VentesPage()),
       tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
       if (const {'admin', 'siege', 'responsable'}.contains(p.role)) tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage()),

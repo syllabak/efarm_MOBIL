@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import 'ops_pages.dart';
 import 'rapport_form.dart';
 
 // ── Accueil ──────────────────────────────────────────────────────────
@@ -86,6 +87,7 @@ class _LotsPageState extends ConsumerState<LotsPage> {
         ),
         Expanded(
           child: PagedList(
+            key: ValueKey(_statut),
             fetch: _fetch,
             emptyText: 'Aucun lot.',
             itemBuilder: (c, l) => Card(
@@ -192,33 +194,93 @@ class _RapportsPageState extends ConsumerState<RapportsPage> {
 }
 
 // ── Stock ────────────────────────────────────────────────────────────
-class StockPage extends ConsumerWidget {
+class StockPage extends ConsumerStatefulWidget {
   const StockPage({super.key});
+  @override
+  ConsumerState<StockPage> createState() => _StockPageState();
+}
+
+class _StockPageState extends ConsumerState<StockPage> {
+  Key _k = UniqueKey();
+
+  Future<void> _move(bool entry, {int? product, int? site}) async {
+    final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => StockMovementForm(entry: entry, productId: product, siteId: site)));
+    if (ok == true && mounted) setState(() => _k = UniqueKey());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final api = ref.watch(apiProvider);
+    final role = ref.watch(sessionProvider).value?.role ?? '';
+    final canEntry = const {'admin', 'siege', 'responsable'}.contains(role);
+    return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.swap_vert),
+        label: const Text('Mouvement'),
+        onPressed: () async {
+          final entry = await showModalBottomSheet<bool>(
+              context: context,
+              builder: (c) => SafeArea(
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    if (canEntry) ListTile(leading: const Icon(Icons.add_circle_outline), title: const Text('Entrée de stock'), onTap: () => Navigator.pop(c, true)),
+                    ListTile(leading: const Icon(Icons.remove_circle_outline), title: const Text('Sortie de stock'), onTap: () => Navigator.pop(c, false)),
+                  ])));
+          if (entry != null) _move(entry);
+        },
+      ),
+      body: AsyncView<List>(
+        key: _k,
+        load: () => api.get<List>('/farm/stock'),
+        builder: (c, rows) => ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
+          ListTile(leading: const Icon(Icons.warning_amber), title: const Text('Produits sous le seuil'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const LowStockPage()))),
+          if (canEntry) ListTile(leading: const Icon(Icons.history), title: const Text('Historique des mouvements'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const MovementsPage()))),
+          const Divider(height: 1),
+          if (rows.isEmpty) const SizedBox(height: 300, child: EmptyView('Aucun produit en stock.')),
+          for (final r in rows)
+            Builder(builder: (c) {
+              final s = Map<String, dynamic>.from(r as Map);
+              final q = num.tryParse('${s['quantite']}') ?? 0, seuil = num.tryParse('${s['seuil_alerte']}') ?? 0;
+              final bas = seuil > 0 && q <= seuil;
+              return Card(
+                child: ListTile(
+                  leading: Icon(bas ? Icons.warning_amber : Icons.inventory_2_outlined, color: bas ? Colors.red : null),
+                  title: Text('${s['produit']}'),
+                  subtitle: Text('Site ${s['site_id']}${seuil > 0 ? ' · seuil ${fmtNum(seuil, digits: 1)}' : ''}'),
+                  trailing: Text('${fmtNum(q, digits: 1)} ${s['unite'] ?? ''}', style: TextStyle(fontWeight: FontWeight.bold, color: bas ? Colors.red : null)),
+                  onTap: () => _move(false, product: s['produit_id'] as int?, site: s['site_id'] as int?),
+                ),
+              );
+            }),
+          const SizedBox(height: 80),
+        ]),
+      ),
+    );
+  }
+}
+
+class LowStockPage extends ConsumerWidget {
+  const LowStockPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
-    return AsyncView<List>(
-      load: () => api.get<List>('/farm/stock'),
-      builder: (c, rows) {
-        if (rows.isEmpty) return const EmptyView('Aucun produit en stock.');
-        return ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: rows.length,
-          itemBuilder: (c, i) {
-            final s = Map<String, dynamic>.from(rows[i] as Map);
-            final q = num.tryParse('${s['quantite']}') ?? 0, seuil = num.tryParse('${s['seuil_alerte']}') ?? 0;
-            final bas = seuil > 0 && q <= seuil;
-            return Card(
-              child: ListTile(
-                leading: Icon(bas ? Icons.warning_amber : Icons.inventory_2_outlined, color: bas ? Colors.red : null),
-                title: Text('${s['produit']}'),
-                subtitle: Text('Site ${s['site_id']}${seuil > 0 ? ' · seuil ${fmtNum(seuil, digits: 1)}' : ''}'),
-                trailing: Text('${fmtNum(q, digits: 1)} ${s['unite'] ?? ''}', style: TextStyle(fontWeight: FontWeight.bold, color: bas ? Colors.red : null)),
-              ),
-            );
-          },
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(title: const Text('Produits sous le seuil')),
+      body: AsyncView<List>(
+        load: () => api.get<List>('/stock/alerts'),
+        builder: (c, rows) => rows.isEmpty
+            ? ListView(children: const [SizedBox(height: 300, child: EmptyView('Aucun produit sous le seuil.', icon: Icons.check_circle_outline))])
+            : ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
+                for (final r in rows.cast<Map>())
+                  Card(
+                    child: ListTile(
+                      leading: Icon(Icons.warning_amber, color: '${r['statut_stock']}'.contains('rupt') ? Colors.red : Colors.orange),
+                      title: Text('${r['produit_nom']}'),
+                      subtitle: Text('${r['site_nom'] ?? ''} · ${r['statut_stock'] ?? ''}'),
+                      trailing: Text('${fmtNum(r['quantite'], digits: 1)} / ${fmtNum(r['seuil_alerte'], digits: 1)}'),
+                    ),
+                  ),
+              ]),
+      ),
     );
   }
 }

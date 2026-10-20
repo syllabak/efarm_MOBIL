@@ -14,6 +14,8 @@ flutter run
 flutter analyze && flutter test
 ```
 
+L'application sert deux profils depuis le même écran de connexion : **fermier / exploitation** (onglets Accueil, Lots, Rapports, Stock, Plus) et **vétérinaire** (Accueil, Clients, Patients, RDV, Compte), avec le cabinet utilisable hors ligne.
+
 ## Ce qui est couvert
 
 | Domaine | État |
@@ -27,6 +29,9 @@ flutter analyze && flutter test
 | Ferme : tableau de bord, sites, lots (liste, détail), rapports, stock avec alertes de seuil | ✅ lecture |
 | Ferme : **saisie du rapport journalier** (mortalité par cause, aliment, eau, températures, poids, œufs pour les pondeuses) | ✅ (nécessite `POST /farm/rapports`, ajouté au site web) |
 | Ventes : résumé (CA jour/mois/année, créances), liste filtrable par paiement, détail avec lignes et encaissements, **encaissement** d'un paiement | ✅ (routes `/sales` ajoutées au site) |
+| Ventes : **création d'une vente** (lignes, client, lot, remise, mode de paiement dont crédit ; total recalculé par le serveur) | ✅ (admin, responsable) |
+| Alertes de l'exploitation (non lues, « tout lire »), produits sous le seuil | ✅ |
+| Stock : **entrées et sorties** (une entrée payante crée la dépense), historique des mouvements | ✅ |
 | Clients de vente (recherche, total des achats) | ✅ lecture |
 | Finance : résumé mensuel (ventes, dépenses, bénéfice, trésorerie, créances), dépenses par catégorie, **ajout d'une dépense** | ✅ (admin, siège, responsable) |
 | Cabinet vétérinaire : clients, patients, historique, consultations, soins/vaccins avec rappels, rendez-vous, pharmacie | ✅ |
@@ -34,7 +39,7 @@ flutter analyze && flutter test
 
 ## Ce qui n'existe pas encore (et pourquoi)
 
-Le site web compte plusieurs centaines de pages (création de vente, comptabilité, paie, bovins, embouche, couvoir, ponte détaillée, IoT, messagerie,
+Le site web compte plusieurs centaines de pages (comptabilité, paie, bovins, embouche, couvoir, ponte détaillée, IoT, messagerie,
 formation, support, administration, facturation et ordonnances vétérinaires…). **L'API mobile n'expose aujourd'hui que la ferme (lecture + rapport journalier) et la clinique vétérinaire.**
 Une fonctionnalité du web apparaît dans l'application dès que son point d'accès `/api/mobile/v1/...` existe : l'application ne contourne jamais l'API.
 
@@ -55,8 +60,8 @@ lib/
   ui/          widgets communs (liste paginée, chargement/erreur)
   features/
     auth/      écran de connexion (mot de passe, code, 2FA, société)
-    farm/      accueil, lots, rapports (+ formulaire), stock, sites
-    commerce/  ventes, encaissements, clients, finance, dépenses
+    farm/      accueil, lots, rapports (+ formulaire), stock (+ mouvements), alertes, sites
+    commerce/  ventes (+ création), encaissements, clients, finance, dépenses
     vet/       VetRepo (copie locale + file + synchronisation), pages et formulaires
     profile/   compte, appareils, déconnexion (efface la copie locale du cabinet)
 test/          client HTTP (rotation des jetons), copie locale et file hors ligne, droits, écran de connexion

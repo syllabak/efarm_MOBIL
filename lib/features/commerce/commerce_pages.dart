@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import 'sale_form.dart';
 
-const _modes = {'especes': 'Espèces', 'virement': 'Virement', 'cheque': 'Chèque', 'mobile_money': 'Mobile money', 'carte': 'Carte'};
+const _modes = {'especes': 'Espèces', 'virement': 'Virement', 'cheque': 'Chèque', 'mobile_money': 'Mobile money'};
 const _paiementLabels = {'paye': 'Payée', 'partiel': 'Partielle', 'impaye': 'Impayée', 'annulee': 'Annulée'};
 
 String money(Object? v) => '${fmtNum(v)} F';
@@ -27,6 +28,15 @@ class _VentesPageState extends ConsumerState<VentesPage> {
     final api = ref.watch(apiProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Ventes')),
+      floatingActionButton: const {'admin', 'responsable'}.contains(ref.watch(sessionProvider).value?.role)
+          ? FloatingActionButton.extended(
+              icon: const Icon(Icons.add),
+              label: const Text('Vente'),
+              onPressed: () async {
+                final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const SaleForm()));
+                if (ok == true && mounted) setState(() => _k = UniqueKey());
+              })
+          : null,
       body: PagedList(
         key: _k,
         emptyText: 'Aucune vente.',
@@ -383,7 +393,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
 
   @override
   Widget build(BuildContext context) {
-    final p = ref.watch(sessionProvider).value!;
+    final allSites = ref.watch(sessionProvider).value?.allSites ?? false;
     return Scaffold(
       appBar: AppBar(title: const Text('Nouvelle dépense')),
       body: _loading
@@ -407,7 +417,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                       onChanged: (v) => _cat = v,
                       validator: (v) => v == null ? 'Requis' : null,
                     ),
-                    if (p.allSites) ...[
+                    if (allSites) ...[
                       const SizedBox(height: 12),
                       DropdownButtonFormField<int>(
                         initialValue: _site,

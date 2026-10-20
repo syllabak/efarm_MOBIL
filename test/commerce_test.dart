@@ -42,8 +42,9 @@ void main() {
     expect(find.text('Partielle'), findsOneWidget);
     expect(find.text(money(250000)), findsOneWidget);
 
-    await t.tap(find.text('Partielle'));
+    await t.tap(find.text('V-0005 · ${money(80000)}'));
     await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.text('Reste à payer'), 300, scrollable: find.byType(Scrollable).last);
     expect(find.text('Reste à payer'), findsOneWidget);
     await t.dragUntilVisible(find.text('Encaisser un paiement'), find.byType(ListView), const Offset(0, -200));
     await t.tap(find.text('Encaisser un paiement'));

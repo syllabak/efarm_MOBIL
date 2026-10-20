@@ -35,10 +35,10 @@ class FarmHome extends ConsumerWidget {
           childAspectRatio: 1.6,
           padding: const EdgeInsets.all(4),
           children: [
-            Stat('Sites actifs', fmtNum(d['sites_actifs']), icon: Icons.location_on_outlined),
-            Stat('Lots actifs', fmtNum(d['lots_actifs']), icon: Icons.egg_alt_outlined),
-            Stat('Effectif total', fmtNum(d['effectif_total']), icon: Icons.pets),
-            Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined),
+            Stat('Sites actifs', fmtNum(d['sites_actifs']), icon: Icons.location_on_outlined, color: const Color(0xFF9333EA)),
+            Stat('Lots actifs', fmtNum(d['lots_actifs']), icon: Icons.egg_alt_outlined, color: const Color(0xFF1D4ED8)),
+            Stat('Têtes total', fmtNum(d['effectif_total']), icon: Icons.pets, color: const Color(0xFF15803D)),
+            Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined, color: const Color(0xFFCA8A04)),
           ],
         ),
         if (p.canReport && serverCan('POST', '/farm/rapports'))

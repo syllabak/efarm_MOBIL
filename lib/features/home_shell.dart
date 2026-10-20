@@ -35,7 +35,7 @@ class _FarmShell extends StatefulWidget {
 
 class _FarmShellState extends State<_FarmShell> {
   int _i = 0;
-  static const _titles = ['Accueil', 'Lots', 'Rapports', 'Stock', 'Plus'];
+  static const _titles = ['Tableau de bord', 'Lots', 'Rapports', 'Stock', 'Plus'];
 
   @override
   Widget build(BuildContext context) {

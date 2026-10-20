@@ -166,18 +166,29 @@ class Stat extends StatelessWidget {
   final String value;
   final IconData? icon;
   final Color? color;
+  /// Carte à la manière des indicateurs du site web : filet coloré à gauche, icône et valeur sur la même ligne.
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    final c = color ?? Theme.of(context).colorScheme.primary;
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: DecoratedBox(
+        decoration: BoxDecoration(border: Border(left: BorderSide(color: c, width: 4))),
         child: Padding(
           padding: const EdgeInsets.all(14),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            if (icon != null) Icon(icon, color: color ?? Theme.of(context).colorScheme.primary),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              if (icon != null) Icon(icon, color: c) else const SizedBox.shrink(),
+              const SizedBox(width: 8),
+              Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: c)))),
+            ]),
             const SizedBox(height: 6),
-            Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-            Text(label, style: Theme.of(context).textTheme.bodySmall),
+            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ]),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class KeyValue extends StatelessWidget {

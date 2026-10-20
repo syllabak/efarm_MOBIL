@@ -59,7 +59,8 @@ class FarmMore extends ConsumerWidget {
   const FarmMore({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(sessionProvider).value!;
+    final p = ref.watch(sessionProvider).value;
+    if (p == null) return const SizedBox.shrink();
     Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
     // (titre, entrée) : triées dans l'ordre du menu latéral du site web
     final items = <(String, Widget)>[

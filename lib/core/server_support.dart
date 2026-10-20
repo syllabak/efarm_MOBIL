@@ -2,7 +2,8 @@
 ///
 /// Tout ce qui n'y figure pas est masqué dans l'application jusqu'à ce que le serveur l'implémente :
 /// il suffit alors d'ajouter la route ici pour que le module réapparaisse.
-bool hideUnsupported = true;
+/// `flutter run --dart-define=FULL_API=true` affiche tous les modules (serveur de développement avec l'API complète).
+bool hideUnsupported = !const bool.fromEnvironment('FULL_API');
 
 const _get = <String>{
   '/me', '/devices', '/status',

@@ -7,6 +7,7 @@ import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
 import 'farm/ops_pages.dart';
 import 'profile/profile_page.dart';
+import 'vet/vet_docs_pages.dart';
 import 'vet/vet_pages.dart';
 import 'vet/vet_repo.dart';
 
@@ -89,6 +90,8 @@ class _VetShellState extends ConsumerState<_VetShell> {
           PatientsPage(repo: repo),
           RdvPage(repo: repo),
           ProfilePage(extra: [
+            if (p.can('documents')) ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Devis et factures'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentsPage()))),
+            if (p.can('ordonnances')) ListTile(leading: const Icon(Icons.description_outlined), title: const Text('Ordonnances'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OrdonnancesPage()))),
             if (p.can('stock') || p.can('clinique'))
               ListTile(leading: const Icon(Icons.medication_outlined), title: const Text('Pharmacie'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProduitsPage(repo: repo)))),
             ListTile(

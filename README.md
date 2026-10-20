@@ -35,6 +35,7 @@ L'application sert deux profils depuis le même écran de connexion : **fermier 
 | Clients de vente (recherche, total des achats) | ✅ lecture |
 | Finance : résumé mensuel (ventes, dépenses, bénéfice, trésorerie, créances), dépenses par catégorie, **ajout d'une dépense** | ✅ (admin, siège, responsable) |
 | Cabinet vétérinaire : clients, patients, historique, consultations, soins/vaccins avec rappels, rendez-vous, pharmacie | ✅ |
+| Cabinet vétérinaire : **devis et factures** (liste, détail, encaissement d'un paiement) et **ordonnances** (consultation) — en ligne, selon les droits du profil | ✅ |
 | Cabinet vétérinaire **hors ligne** : copie locale (SQLite), file de saisies avec identifiant unique, envoi sans doublon, saisies refusées visibles et corrigeables | ✅ |
 
 ## Ce qui n'existe pas encore (et pourquoi)

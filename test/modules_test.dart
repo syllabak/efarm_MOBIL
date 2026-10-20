@@ -6,6 +6,7 @@ import 'package:efarm360/features/modules/elevage_extra.dart';
 import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:efarm360/core/server_support.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -204,5 +205,18 @@ void main() {
     expect(find.text('Clôturer le lot'), findsOneWidget);
     expect(find.text('Tableau de bande'), findsOneWidget);
     expect(find.text('Prévision d\'aliment'), findsNothing);
+  });
+
+  testWidgets('lot : détail du serveur actuel (ligne brute, sans actions)', (t) async {
+    hideUnsupported = true;
+    addTearDown(() => hideUnsupported = false);
+    expect(lotsSpec, same(lotsModuleBase));
+    await _pump(t, ModuleDetailPage(lotsModuleBase, 9), {
+      'GET /farm/lots/9': (_) => ok({'id': 9, 'code': 'FARM-2026-0009', 'race': 'Cobb', 'statut': 'actif', 'nb_initial': 1000, 'nb_actuel': 960}),
+    });
+    expect(find.text('FARM-2026-0009 · Cobb'), findsOneWidget);
+    expect(find.text('Actif'), findsOneWidget);
+    expect(find.text('Clôturer le lot'), findsNothing);
+    expect(find.text('Saisir le rapport du jour'), findsNothing);
   });
 }

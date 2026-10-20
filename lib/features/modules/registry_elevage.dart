@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import '../farm/rapport_form.dart';
 import 'data_view.dart';
@@ -252,6 +253,35 @@ const _lotEdit = [
   FieldSpec('date_sortie_prevue', 'Sortie prévue', type: FieldType.date),
   FieldSpec('notes', 'Notes', type: FieldType.multiline),
 ];
+
+/// Lot tel que le sert le serveur actuel (`GET /farm/lots/{id}` : ligne brute, sans performance ni actions).
+final lotsModuleBase = ModuleSpec(
+  id: 'lots',
+  title: 'Lots',
+  icon: Icons.egg_alt_outlined,
+  listPath: '/farm/lots',
+  filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
+  itemTitle: (r) => _join([r['code'], r['race']]),
+  itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',
+  itemTrailing: (r) => _s(r['statut']),
+  detailPath: '/farm/lots/{id}',
+  detailTitle: (r) => _join([r['code'], r['race']]),
+  detail: const [
+    ColumnSpec('statut', 'Statut', fmt: Fmt.label, labels: {'actif': 'Actif', 'termine': 'Terminé'}),
+    ColumnSpec('type_production', 'Production', fmt: Fmt.label, labels: {'chair': 'Chair', 'pondeuse': 'Pondeuses'}),
+    ColumnSpec('fournisseur', 'Fournisseur'),
+    ColumnSpec('date_entree', 'Entrée', fmt: Fmt.date),
+    ColumnSpec('date_sortie_prevue', 'Sortie prévue', fmt: Fmt.date),
+    ColumnSpec('nb_initial', 'Effectif initial', fmt: Fmt.number),
+    ColumnSpec('nb_actuel', 'Effectif actuel', fmt: Fmt.number),
+    ColumnSpec('poids_objectif', 'Poids objectif (kg)', fmt: Fmt.number),
+    ColumnSpec('notes', 'Notes'),
+  ],
+  emptyText: 'Aucun lot.',
+);
+
+/// Choisit la description du lot selon ce que le serveur sait faire.
+ModuleSpec get lotsSpec => serverGets('/lots/{id}/performance') ? lotsModule : lotsModuleBase;
 
 final lotsModule = ModuleSpec(
   id: 'lots',

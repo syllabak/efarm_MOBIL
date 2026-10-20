@@ -39,7 +39,7 @@ class _FarmShellState extends State<_FarmShell> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), ModuleListPage(lotsModule, embedded: true), const RapportsPage(), const StockPage(), const FarmMore()];
+    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), ModuleListPage(lotsSpec, embedded: true), const RapportsPage(), const StockPage(), const FarmMore()];
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_i])),
       body: IndexedStack(index: _i, children: pages),

@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'response_cache.dart';
 
 const defaultServer = 'https://efarm360.danov.sn';
 
@@ -46,7 +49,9 @@ class TokenStore {
 /// Client HTTP de l'API mobile `/api/mobile/v1`.
 /// Rafraîchit le jeton d'accès sur `401 jeton_invalide` (un seul rafraîchissement à la fois), puis rejoue la requête.
 class ApiClient {
-  ApiClient(this.tokens, {Dio? dio, this.onSessionExpired}) : _dio = dio ?? Dio() {
+  ApiClient(this.tokens, {Dio? dio, this.onSessionExpired, ResponseCache? cache})
+      : _dio = dio ?? Dio(),
+        _cache = cache ?? MemoryCache() {
     _dio.options
       ..connectTimeout = const Duration(seconds: 20)
       ..receiveTimeout = const Duration(seconds: 40)
@@ -58,6 +63,20 @@ class ApiClient {
   final Dio _dio;
   void Function()? onSessionExpired;
   Completer<bool>? _refreshing;
+  final ResponseCache _cache;
+
+  /// Renseigné quand la dernière lecture a été servie depuis la copie locale (réseau coupé).
+  final ValueNotifier<DateTime?> offlineSince = ValueNotifier(null);
+
+  Future<void> clearCache() async {
+    offlineSince.value = null;
+    await _cache.clear();
+  }
+
+  String _cacheKey(String base, String path, Map<String, dynamic>? query) {
+    final q = (query?.entries.where((e) => e.value != null).map((e) => '${e.key}=${e.value}').toList() ?? [])..sort();
+    return '$base$path?${q.join('&')}';
+  }
 
   Future<String> _base() async {
     final s = (await tokens.server).trim().replaceAll(RegExp(r'/+$'), '');
@@ -96,11 +115,24 @@ class ApiClient {
       res = await _dio.request<dynamic>('${await _base()}$path',
           data: body, queryParameters: query, options: Options(method: method, headers: headers));
     } on DioException catch (e) {
+      if (method == 'GET' && auth) {
+        final hit = await _cache.read(_cacheKey(await _base(), path, query));
+        if (hit != null) {
+          offlineSince.value ??= DateTime.now();
+          return hit;
+        }
+      }
       throw ApiException('reseau', 'Connexion impossible. Vérifiez votre réseau.', details: {'type': e.type.name});
     }
     final json = res.data is Map ? Map<String, dynamic>.from(res.data as Map) : <String, dynamic>{};
     final status = res.statusCode ?? 0;
-    if (json['success'] == true) return json;
+    if (json['success'] == true) {
+      if (method == 'GET' && auth) {
+        offlineSince.value = null;
+        await _cache.write(_cacheKey(await _base(), path, query), json);
+      }
+      return json;
+    }
 
     if (json.isEmpty && (status == 404 || status == 405)) {
       throw ApiException('non_disponible', 'Cette fonction n\'est pas disponible sur ce serveur.', status: status);

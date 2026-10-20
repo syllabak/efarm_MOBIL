@@ -22,6 +22,22 @@ void main() {
     await expectLater(api.get('/sales'), throwsA(isA<ApiException>().having((e) => e.code, 'code', 'non_disponible')));
   });
 
+  test('réseau coupé : relit la dernière réponse GET réussie', () async {
+    var online = true;
+    final (api, a, _) = await makeClient({'GET /farm/lots': (_) => online ? ok([{'id': 1}], meta: {'page': 1}) : throw StateError('x')});
+    final first = await api.list('/farm/lots', query: {'page': 1});
+    expect(first.items.single['id'], 1);
+    expect(api.offlineSince.value, isNull);
+    online = false;
+    a.routes.remove('GET /farm/lots'); // le faux serveur coupe la connexion
+    final cached = await api.list('/farm/lots', query: {'page': 1});
+    expect(cached.items.single['id'], 1);
+    expect(api.offlineSince.value, isNotNull);
+    await expectLater(api.list('/farm/lots', query: {'page': 2}), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));
+    await api.clearCache();
+    await expectLater(api.list('/farm/lots', query: {'page': 1}), throwsA(isA<ApiException>()));
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

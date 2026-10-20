@@ -101,3 +101,9 @@ clients, patients, rendez-vous, produits et synchronisation hors ligne.
 Ventes, finances, bovins, embouche, couvoir, ponte, IoT, chat, support, formation, parrainage, cabinet vétérinaire, etc. restent
 dans le code mais sont masqués. Pour réactiver un module, ajouter sa route dans `server_support.dart` (ou passer `hideUnsupported`
 à `false` pour un serveur complet, avec l'API de la branche `claude/loving-faraday-c9jj8j` d'efarm360).
+
+## Lecture hors ligne (ferme)
+
+Chaque réponse GET réussie est conservée localement (`lib/core/response_cache.dart`, un fichier JSON par requête, effacé à la déconnexion).
+Si le réseau est coupé, l'écran affiche la dernière copie et un bandeau « Hors ligne ». La saisie reste en ligne seulement ;
+la clinique vétérinaire garde sa propre synchronisation complète (saisie hors ligne). Sur le web, la copie n'est conservée qu'en mémoire.

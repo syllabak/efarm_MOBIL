@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api_client.dart';
+import 'response_cache.dart';
 
 /// Profil renvoyé par `/auth/login` et `/me`.
 class Profile {
@@ -51,7 +52,7 @@ class LoginNeedsCompany extends LoginResult {
 final tokenStoreProvider = Provider<TokenStore>((_) => TokenStore());
 
 final apiProvider = Provider<ApiClient>((ref) {
-  final api = ApiClient(ref.watch(tokenStoreProvider));
+  final api = ApiClient(ref.watch(tokenStoreProvider), cache: defaultCache());
   api.onSessionExpired = () => ref.read(sessionProvider.notifier).expire();
   return api;
 });
@@ -135,9 +136,13 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
       await _api.post(everywhere ? '/auth/logout-all' : '/auth/logout');
     } catch (_) {/* hors ligne : les jetons locaux sont tout de même effacés */}
     await _tokens.clear();
+    await _api.clearCache();
     state = const AsyncData(null);
   }
 
   /// Session perdue côté serveur (compte désactivé, jeton de rafraîchissement refusé).
-  void expire() => state = const AsyncData(null);
+  void expire() {
+    _api.clearCache();
+    state = const AsyncData(null);
+  }
 }

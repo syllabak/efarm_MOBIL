@@ -42,7 +42,7 @@ class _FarmShellState extends State<_FarmShell> {
     final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), ModuleListPage(lotsSpec, embedded: true), const RapportsPage(), const StockPage(), const FarmMore()];
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_i])),
-      body: IndexedStack(index: _i, children: pages),
+      body: Column(children: [const OfflineBanner(), Expanded(child: IndexedStack(index: _i, children: pages))]),
       bottomNavigationBar: NavigationBar(selectedIndex: _i, onDestinationSelected: (i) => setState(() => _i = i), destinations: const [
         NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Accueil'),
         NavigationDestination(icon: Icon(Icons.egg_alt_outlined), selectedIcon: Icon(Icons.egg_alt), label: 'Lots'),
@@ -54,12 +54,28 @@ class _FarmShellState extends State<_FarmShell> {
   }
 }
 
+/// Bandeau affiché quand les données viennent de la copie locale (réseau coupé).
+class OfflineBanner extends ConsumerWidget {
+  const OfflineBanner({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => ValueListenableBuilder<DateTime?>(
+        valueListenable: ref.watch(apiProvider).offlineSince,
+        builder: (c, since, _) => since == null
+            ? const SizedBox.shrink()
+            : Material(
+                color: Theme.of(c).colorScheme.tertiaryContainer,
+                child: ListTile(dense: true, leading: const Icon(Icons.cloud_off), title: const Text('Hors ligne — dernières données enregistrées'), subtitle: const Text('La consultation reste possible, la saisie demande le réseau.')),
+              ),
+      );
+}
+
 /// Modules secondaires de la ferme ; la finance suit les rôles du web (admin, siège, responsable).
 class FarmMore extends ConsumerWidget {
   const FarmMore({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = ref.watch(sessionProvider).value!;
+    final p = ref.watch(sessionProvider).value;
+    if (p == null) return const SizedBox.shrink();
     Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
     // (titre, entrée) : triées dans l'ordre du menu latéral du site web
     final items = <(String, Widget)>[

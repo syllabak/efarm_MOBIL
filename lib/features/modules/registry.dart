@@ -14,7 +14,7 @@ import 'spec.dart';
 /// Chaque module correspond à un groupe de routes de l'API mobile (`docs/api/mobile-v1.md`).
 final Map<String, List<ModuleSpec>> farmModuleGroups = {
   'Élevage': [cattleModule, fatteningModule, hatcheryModule, sensorsModule],
-  'Gestion': [employeesModule, payslipsModule, suppliersModule],
+  'Gestion': [employeesModule, payslipsModule, suppliersModule, investmentsModule],
 };
 
 /// Écrans sur mesure du menu « Plus » (au-delà des listes / détails génériques).

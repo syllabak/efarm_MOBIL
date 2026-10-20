@@ -97,6 +97,24 @@ class VenteDetailPage extends ConsumerStatefulWidget {
 class _VenteDetailPageState extends ConsumerState<VenteDetailPage> {
   Key _k = UniqueKey();
 
+  Future<void> _cancel() async {
+    final yes = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(title: const Text('Annuler cette vente ?'), content: const Text('Elle sera exclue du chiffre d\'affaires et sa facture sera annulée.'), actions: [
+              TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Garder')),
+              FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Annuler la vente')),
+            ]));
+    if (yes != true) return;
+    try {
+      await ref.read(apiProvider).post('/sales/${widget.id}/cancel');
+      if (!mounted) return;
+      showInfo(context, 'Vente annulée.');
+      setState(() => _k = UniqueKey());
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   Future<void> _encaisser(Map v) async {
     final reste = (v['situation']['reste'] as num);
     final r = await showDialog<Map<String, dynamic>>(context: context, builder: (_) => _PaymentDialog(reste: reste));
@@ -159,6 +177,8 @@ class _VenteDetailPageState extends ConsumerState<VenteDetailPage> {
                 ),
             ],
             if (canPay) Padding(padding: const EdgeInsets.only(top: 16), child: FilledButton.icon(onPressed: () => _encaisser(v), icon: const Icon(Icons.add_card), label: const Text('Encaisser un paiement'))),
+            if (const {'admin', 'responsable'}.contains(role) && sit['statut'] != 'annulee')
+              Padding(padding: const EdgeInsets.only(top: 8), child: OutlinedButton.icon(onPressed: _cancel, icon: const Icon(Icons.block), label: const Text('Annuler la vente'), style: OutlinedButton.styleFrom(foregroundColor: Theme.of(c).colorScheme.error))),
           ]);
         },
       ),

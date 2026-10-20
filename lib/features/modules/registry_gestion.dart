@@ -136,3 +136,24 @@ final suppliersModule = ModuleSpec(
   create: const CreateSpec('Fournisseur', '/suppliers', _fournisseurFields, roles: _gestionnaires, successMessage: 'Fournisseur ajouté.'),
   emptyText: 'Aucun fournisseur.',
 );
+
+// ── Investissements ──────────────────────────────────────────────────
+final investmentsModule = ModuleSpec(
+  id: 'investments',
+  title: 'Investissements',
+  icon: Icons.account_balance_outlined,
+  listPath: '/finance/investments',
+  roles: _gestionnaires,
+  itemTitle: (r) => _s(r['description']),
+  itemSubtitle: (r) => _join([fmtDate(r['date_investissement']), r['categorie'], r['lot_code'], r['facture_ref']]),
+  itemTrailing: (r) => money(r['montant']),
+  create: const CreateSpec('Investissement', '/finance/investments', [
+    FieldSpec('site_id', 'Site', type: FieldType.select, optionsPath: '/farm/sites', hint: 'Laissez vide si votre compte est rattaché à un site'),
+    FieldSpec('description', 'Description', required: true, hint: 'Équipement, bâtiment, véhicule…'),
+    FieldSpec('montant', 'Montant', type: FieldType.number, required: true, suffix: 'F', min: 1),
+    FieldSpec('date_investissement', 'Date', type: FieldType.date, initial: 'today'),
+    FieldSpec('categorie_id', 'Catégorie', type: FieldType.select, optionsPath: '/finance/categories'),
+    FieldSpec('facture_ref', 'N° de facture'),
+  ], roles: _gestionnaires, successMessage: 'Investissement enregistré.'),
+  emptyText: 'Aucun investissement.',
+);

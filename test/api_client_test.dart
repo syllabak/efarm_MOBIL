@@ -17,6 +17,11 @@ void main() {
     await expectLater(api.post('/auth/login', auth: false), throwsA(isA<ApiException>().having((e) => e.code, 'code', 'identifiants_incorrects').having((e) => e.status, 'status', 401)));
   });
 
+  test('route absente du serveur (404 sans JSON) : message explicite', () async {
+    final (api, _, _) = await makeClient({'GET /sales': (_) => (status: 404, body: <String, dynamic>{})});
+    await expectLater(api.get('/sales'), throwsA(isA<ApiException>().having((e) => e.code, 'code', 'non_disponible')));
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

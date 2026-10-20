@@ -102,6 +102,12 @@ class ApiClient {
     final status = res.statusCode ?? 0;
     if (json['success'] == true) return json;
 
+    if (json.isEmpty && (status == 404 || status == 405)) {
+      throw ApiException('non_disponible', 'Cette fonction n\'est pas disponible sur ce serveur.', status: status);
+    }
+    if (json.isEmpty && status < 500) {
+      throw ApiException('reponse_invalide', 'Réponse inattendue du serveur : vérifiez son adresse.', status: status);
+    }
     final err = json['error'] is Map ? Map<String, dynamic>.from(json['error'] as Map) : <String, dynamic>{};
     final code = (err['code'] as String?) ?? (status >= 500 ? 'erreur_serveur' : 'erreur');
     if (auth && status == 401 && code == 'jeton_invalide' && !retried) {

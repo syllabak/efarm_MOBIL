@@ -12,6 +12,7 @@ import 'modules/registry_elevage.dart';
 import 'modules/spec.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_docs_pages.dart';
+import 'vet/vet_manage.dart';
 import 'vet/vet_pages.dart';
 import 'vet/vet_repo.dart';
 
@@ -103,8 +104,13 @@ class _VetShellState extends ConsumerState<_VetShell> {
           ProfilePage(extra: [
             if (p.can('documents')) ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Devis et factures'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DocumentsPage()))),
             if (p.can('ordonnances')) ListTile(leading: const Icon(Icons.description_outlined), title: const Text('Ordonnances'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OrdonnancesPage()))),
-            if (p.can('stock') || p.can('clinique'))
-              ListTile(leading: const Icon(Icons.medication_outlined), title: const Text('Pharmacie'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProduitsPage(repo: repo)))),
+            if (p.can('stock')) ListTile(leading: const Icon(Icons.medication_outlined), title: const Text('Pharmacie (stock, lots, péremptions)'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PharmacyPage()))),
+            if (p.can('stock')) ListTile(leading: const Icon(Icons.inventory_outlined), title: const Text('Catalogue'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ModuleListPage(vetCatalogueModule)))),
+            if (p.can('achats')) ListTile(leading: const Icon(Icons.shopping_cart_outlined), title: const Text('Commandes fournisseurs'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ModuleListPage(vetOrdersModule)))),
+            if (p.can('achats')) ListTile(leading: const Icon(Icons.local_shipping_outlined), title: const Text('Fournisseurs'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ModuleListPage(vetSuppliersModule)))),
+            if (p.can('compta')) ListTile(leading: const Icon(Icons.account_balance_wallet_outlined), title: const Text('Comptabilité'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VetAccountingPage()))),
+            if (!p.can('stock') && p.can('clinique'))
+              ListTile(leading: const Icon(Icons.medication_outlined), title: const Text('Produits'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProduitsPage(repo: repo)))),
             ListTile(
                 leading: const Icon(Icons.sync),
                 title: const Text('Synchronisation'),

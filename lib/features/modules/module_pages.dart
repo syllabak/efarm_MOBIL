@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/api_client.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
 import 'spec.dart';
@@ -156,7 +157,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       return;
     }
     if (a.fields.isNotEmpty) {
-      final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, pathVars: {'id': widget.id}, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: body))));
+      final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, pathVars: {'id': widget.id}, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: {...?a.body, ...body, if (a.idKey != null) a.idKey!: widget.id}))));
       if (ok == true && mounted) setState(() => _k = UniqueKey());
       return;
     }
@@ -170,7 +171,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       if (yes != true) return;
     }
     try {
-      await api.post(path);
+      await api.post(path, body: a.body);
       if (!mounted) return;
       showInfo(context, a.successMessage);
       setState(() => _k = UniqueKey());
@@ -244,6 +245,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
   final _ctl = <String, TextEditingController>{};
   final _values = <String, Object?>{};
   final _remote = <String, List<Map<String, dynamic>>>{};
+  final _lines = <String, List<Map<String, Object?>>>{};   // lignes : par champ, une liste de {clé: contrôleur | valeur}
   bool _loading = true, _saving = false;
   Object? _error;
 
@@ -252,11 +254,22 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
     super.initState();
     for (final f in widget.fields) {
       final init = widget.initialValues[f.key] ?? f.initial;
-      if (const {FieldType.select, FieldType.multi, FieldType.bool, FieldType.date}.contains(f.type)) {
+      if (const {FieldType.select, FieldType.pick, FieldType.multi, FieldType.bool, FieldType.date}.contains(f.type)) {
         _values[f.key] = init;
         if (f.type == FieldType.date) _values[f.key] = init == 'today' ? DateTime.now() : (init == null ? null : DateTime.tryParse('$init'));
         if (f.type == FieldType.bool) _values[f.key] = init == true || '$init' == '1';
         if (f.type == FieldType.multi) _values[f.key] = <String>{};
+        if (f.type == FieldType.pick) _values[f.key] = init == null ? null : {'id': init, 'label': widget.initialValues['${f.key}_label'] ?? '#$init'};
+      } else if (f.type == FieldType.lines) {
+        _lines[f.key] = [];
+        final given = widget.initialValues[f.key];
+        if (given is List && given.isNotEmpty) {
+          for (final g in given) {
+            _lines[f.key]!.add(_newLine(f, Map<String, dynamic>.from(g as Map)));
+          }
+        } else {
+          _lines[f.key]!.add(_newLine(f, const {}));
+        }
       } else {
         _ctl[f.key] = TextEditingController(text: init == null ? '' : '$init');
       }
@@ -264,10 +277,26 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
     _load();
   }
 
+  Map<String, Object?> _newLine(FieldSpec f, Map<String, dynamic> init) {
+    final m = <String, Object?>{};
+    for (final sf in f.lineFields!) {
+      final v = init[sf.key] ?? sf.initial;
+      m[sf.key] = sf.type == FieldType.select ? (v == null ? null : '$v') : TextEditingController(text: v == null ? '' : '$v');
+    }
+    return m;
+  }
+
   @override
   void dispose() {
     for (final c in _ctl.values) {
       c.dispose();
+    }
+    for (final ls in _lines.values) {
+      for (final l in ls) {
+        for (final v in l.values) {
+          if (v is TextEditingController) v.dispose();
+        }
+      }
     }
     super.dispose();
   }
@@ -279,8 +308,8 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
     });
     try {
       final api = ref.read(apiProvider);
-      for (final f in widget.fields) {
-        if (f.optionsPath != null) {
+      for (final f in [for (final f in widget.fields) ...[f, ...?f.lineFields]]) {
+        if (f.optionsPath != null && f.type != FieldType.pick) {
           var path = f.optionsPath!;
           widget.pathVars.forEach((k, v) => path = path.replaceAll('{$k}', '$v'));
           final d = await api.get<Object>(path, query: f.optionsQuery);
@@ -301,9 +330,29 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
     final body = <String, dynamic>{};
     for (final f in widget.fields) {
       switch (f.type) {
+        case FieldType.pick:
+          final v = _values[f.key];
+          if (v is Map) body[f.key] = v['id'];
         case FieldType.select:
           final v = _values[f.key];
           if (v != null && '$v'.isNotEmpty) body[f.key] = int.tryParse('$v') != null && f.options == null ? int.parse('$v') : v;
+        case FieldType.lines:
+          final out = <Map<String, dynamic>>[];
+          for (final l in _lines[f.key]!) {
+            final row = <String, dynamic>{};
+            for (final sf in f.lineFields!) {
+              final v = l[sf.key];
+              if (v is TextEditingController) {
+                final t = v.text.trim();
+                if (t.isEmpty) continue;
+                row[sf.key] = (sf.type == FieldType.number || sf.type == FieldType.integer) ? (num.tryParse(t.replaceAll(',', '.')) ?? t) : t;
+              } else if (v != null && '$v'.isNotEmpty) {
+                row[sf.key] = int.tryParse('$v') ?? v;
+              }
+            }
+            if (row.isNotEmpty) out.add(row);
+          }
+          body[f.key] = out;
         case FieldType.multi:
           final sel = (_values[f.key] as Set<String>);
           if (sel.isNotEmpty) body[f.key] = [for (final v in sel) int.tryParse(v) ?? v];
@@ -349,6 +398,78 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
           validator: f.required ? (v) => v == null ? 'Requis' : null : null,
           onChanged: (v) => _values[f.key] = v,
         );
+      case FieldType.pick:
+        return FormField<Map>(
+          initialValue: _values[f.key] as Map?,
+          validator: f.required ? (v) => _values[f.key] == null ? 'Requis' : null : null,
+          builder: (st) => InkWell(
+            onTap: () async {
+              final r = await showModalBottomSheet<Map<String, dynamic>>(
+                  context: context, isScrollControlled: true, builder: (_) => _PickSheet(api: ref.read(apiProvider), path: f.optionsPath!, label: f.optionLabel, title: f.label, query: f.optionsQuery));
+              if (r != null) {
+                _values[f.key] = {'id': r[f.optionValue], 'label': r[f.optionLabel]};
+                st.didChange(_values[f.key] as Map);
+              }
+            },
+            child: InputDecorator(
+              decoration: InputDecoration(labelText: '${f.label}${f.required ? ' *' : ''}', errorText: st.errorText, suffixIcon: const Icon(Icons.search)),
+              child: Text(_values[f.key] == null ? 'Choisir…' : '${(_values[f.key] as Map)['label']}'),
+            ),
+          ),
+        );
+      case FieldType.lines:
+        final ls = _lines[f.key]!;
+        return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text('${f.label}${f.required ? ' *' : ''}', style: Theme.of(context).textTheme.titleSmall),
+          for (var i = 0; i < ls.length; i++)
+            Card(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(children: [
+                  for (final sf in f.lineFields!)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: sf.type == FieldType.select
+                          ? DropdownButtonFormField<String>(
+                              key: ValueKey('${f.key}-$i-${sf.key}-${ls[i][sf.key]}'),
+                              initialValue: ls[i][sf.key] as String?,
+                              isExpanded: true,
+                              decoration: InputDecoration(labelText: sf.label, isDense: true),
+                              items: [for (final e in _choices(sf).entries) DropdownMenuItem(value: e.key, child: Text(e.value, overflow: TextOverflow.ellipsis))],
+                              onChanged: (v) => setState(() {
+                                ls[i][sf.key] = v;
+                                final row = (_remote[sf.key] ?? const []).where((r) => '${r[sf.optionValue]}' == v).firstOrNull;
+                                if (row != null && sf.fill != null) {
+                                  sf.fill!.forEach((target, from) {
+                                    final c = ls[i][target];
+                                    if (c is TextEditingController && row[from] != null) c.text = '${row[from]}';
+                                  });
+                                }
+                              }),
+                            )
+                          : TextFormField(
+                              controller: ls[i][sf.key] as TextEditingController,
+                              maxLines: sf.type == FieldType.multiline ? 2 : 1,
+                              keyboardType: (sf.type == FieldType.number || sf.type == FieldType.integer) ? TextInputType.numberWithOptions(decimal: sf.type == FieldType.number) : null,
+                              decoration: InputDecoration(labelText: '${sf.label}${sf.required ? ' *' : ''}', suffixText: sf.suffix, isDense: true),
+                              validator: (v) {
+                                final t = (v ?? '').trim();
+                                if (t.isEmpty) return sf.required ? 'Requis' : null;
+                                if (sf.type == FieldType.number || sf.type == FieldType.integer) {
+                                  final n = double.tryParse(t.replaceAll(',', '.'));
+                                  if (n == null || n < (sf.min ?? 0)) return 'Valeur invalide';
+                                }
+                                return null;
+                              },
+                            ),
+                    ),
+                  if (ls.length > 1) Align(alignment: Alignment.centerRight, child: TextButton.icon(onPressed: () => setState(() => ls.removeAt(i)), icon: const Icon(Icons.delete_outline), label: const Text('Retirer la ligne'))),
+                ]),
+              ),
+            ),
+          Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: () => setState(() => ls.add(_newLine(f, const {}))), icon: const Icon(Icons.add), label: const Text('Ajouter une ligne'))),
+        ]);
       case FieldType.multi:
         final ch = _choices(f);
         return FormField<Set<String>>(
@@ -454,5 +575,40 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
                       ]),
                     ),
                   ),
+      );
+}
+
+
+/// Choix d'un élément distant avec recherche (`?q=`) et pagination.
+class _PickSheet extends StatefulWidget {
+  const _PickSheet({required this.api, required this.path, required this.label, required this.title, this.query});
+  final ApiClient api;
+  final String path, label, title;
+  final Map<String, dynamic>? query;
+  @override
+  State<_PickSheet> createState() => _PickSheetState();
+}
+
+class _PickSheetState extends State<_PickSheet> {
+  String _q = '';
+  @override
+  Widget build(BuildContext context) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: Column(children: [
+              Padding(padding: const EdgeInsets.all(12), child: TextField(autofocus: true, decoration: InputDecoration(labelText: 'Rechercher — ${widget.title}', prefixIcon: const Icon(Icons.search)), onChanged: (v) => setState(() => _q = v.trim()))),
+              Expanded(
+                child: PagedList(
+                  key: ValueKey(_q),
+                  emptyText: 'Aucun résultat.',
+                  fetch: (page) => widget.api.list(widget.path, query: {...?widget.query, 'page': page, if (_q.isNotEmpty) 'q': _q}),
+                  itemBuilder: (c, r) => ListTile(title: Text('${r[widget.label]}'), onTap: () => Navigator.pop(context, r)),
+                ),
+              ),
+            ]),
+          ),
+        ),
       );
 }

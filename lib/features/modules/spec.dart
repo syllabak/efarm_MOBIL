@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum FieldType { text, multiline, number, integer, date, select, multi, bool, phone, email, password }
+enum FieldType { text, multiline, number, integer, date, select, multi, bool, phone, email, password, lines, pick }
 
 /// Un champ de formulaire. `optionsPath` charge les choix depuis l'API (liste d'objets `{id, nom}` par défaut).
 class FieldSpec {
@@ -16,7 +16,9 @@ class FieldSpec {
       this.hint,
       this.initial,
       this.min,
-      this.optionsFrom});
+      this.optionsFrom,
+      this.lineFields,
+      this.fill});
   final String key, label;
   final FieldType type;
   final bool required;
@@ -30,6 +32,12 @@ class FieldSpec {
 
   /// Si la réponse de `optionsPath` est un objet, clé qui contient la liste des choix.
   final String? optionsFrom;
+
+  /// Champs d'une ligne (type `lines`) : la valeur envoyée est une liste d'objets.
+  final List<FieldSpec>? lineFields;
+
+  /// Pour un champ `select` d'une ligne : à la sélection, recopie des valeurs de l'option choisie dans les champs frères (`champ_frère: clé_de_l_option`).
+  final Map<String, String>? fill;
 }
 
 /// Mise en forme d'une valeur affichée.
@@ -47,7 +55,7 @@ typedef RowText = String Function(Json);
 
 /// Une action sur un élément (POST) : avec ou sans formulaire, avec confirmation facultative.
 class ActionSpec {
-  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page, this.plan});
+  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page, this.plan, this.body, this.idKey});
   final String label;
 
   /// Chemin avec `{id}` remplacé par l'identifiant de l'élément.
@@ -67,6 +75,12 @@ class ActionSpec {
 
   /// Fonctionnalité de l'offre exigée pour proposer l'action.
   final String? plan;
+
+  /// Champs fixes ajoutés au corps de la requête (ex. `{'action': 'envoyer'}`).
+  final Map<String, dynamic>? body;
+
+  /// Si renseigné, l'identifiant de l'élément est envoyé sous cette clé dans le corps (ex. `article_id`).
+  final String? idKey;
 }
 
 /// Une liste liée affichée dans le détail (`data[key]` est une liste d'objets).

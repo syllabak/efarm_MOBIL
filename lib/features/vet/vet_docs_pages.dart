@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import '../modules/module_pages.dart';
+import '../modules/spec.dart';
 
 const _modesVet = {
   'especes': 'Espèces', 'wave': 'Wave', 'orange_money': 'Orange Money', 'mobile_money': 'Autre mobile money', 'virement': 'Virement', 'cheque': 'Chèque', 'autre': 'Autre',
@@ -30,6 +32,21 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     final api = ref.watch(apiProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Devis et factures')),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: Text(_type == 'facture' ? 'Facture' : 'Devis'),
+        onPressed: () async {
+          final ok = await Navigator.push<bool>(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => DynamicFormPage(
+                      title: _type == 'facture' ? 'Nouvelle facture' : 'Nouveau devis',
+                      successMessage: 'Enregistré en brouillon.',
+                      fields: documentFields(_type),
+                      submit: (b) => api.post('/vet/documents', body: {...b, 'type': _type}))));
+          if (ok == true && mounted) setState(() => _k = UniqueKey());
+        },
+      ),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.all(8),
@@ -79,6 +96,8 @@ class DocumentDetailPage extends ConsumerStatefulWidget {
 
 class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
   Key _k = UniqueKey();
+
+  void _reload() => setState(() => _k = UniqueKey());
 
   Future<void> _pay(num reste) async {
     final r = await showDialog<Map<String, dynamic>>(context: context, builder: (_) => _VetPaymentDialog(reste: reste));
@@ -138,6 +157,32 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
             ],
             if ((d['notes'] as String?)?.isNotEmpty == true) KeyValue('Notes', d['notes']),
             if (canPay) Padding(padding: const EdgeInsets.only(top: 16), child: FilledButton.icon(onPressed: () => _pay(reste), icon: const Icon(Icons.add_card), label: const Text('Encaisser un paiement'))),
+            const SizedBox(height: 16),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              if (facture && d['statut'] == 'brouillon') VetActionButton(label: 'Émettre', icon: Icons.verified_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'emettre'}, confirm: 'Émettre cette facture ? Le stock des produits sera déduit et la facture ne sera plus modifiable.', onDone: _reload),
+              if (facture && d['statut'] == 'emise' && (d['paye'] as num) <= 0) VetActionButton(label: 'Annuler la facture', icon: Icons.block, path: '/vet/documents/${widget.id}/status', body: const {'action': 'annuler'}, confirm: 'Annuler cette facture ? Le stock sera remis en place.', destructive: true, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Marquer envoyé', icon: Icons.send_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'envoye'}, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Accepté', icon: Icons.thumb_up_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'accepte'}, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Refusé', icon: Icons.thumb_down_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'refuse'}, onDone: _reload),
+              if (!facture && d['statut'] != 'refuse') VetActionButton(label: 'Convertir en facture', icon: Icons.swap_horiz, path: '/vet/documents/${widget.id}/convert', onDone: _reload),
+              if ((facture && d['statut'] == 'brouillon') || (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])))
+                FilledButton.tonalIcon(
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Modifier'),
+                    onPressed: () async {
+                      final ok = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => DynamicFormPage(
+                                  title: 'Modifier ${d['numero']}',
+                                  successMessage: 'Document modifié.',
+                                  fields: documentFields('${d['type']}'),
+                                  initialValues: {...Map<String, dynamic>.from(d), 'client_id_label': d['client_nom']},
+                                  submit: (b) => ref.read(apiProvider).post('/vet/documents', body: {...b, 'id': widget.id, 'type': d['type']}))));
+                      if (ok == true) _reload();
+                    }),
+              if (const {'brouillon', 'refuse'}.contains(d['statut'])) VetActionButton(label: 'Supprimer', icon: Icons.delete_outline, path: '/vet/documents/${widget.id}/delete', confirm: 'Supprimer ce document ?', destructive: true, popAfter: true, onDone: _reload),
+            ]),
           ]);
         },
       ),
@@ -203,6 +248,11 @@ class OrdonnancesPage extends ConsumerWidget {
     const st = {'brouillon': 'Brouillon', 'emise': 'Émise', 'dispensee': 'Dispensée'};
     return Scaffold(
       appBar: AppBar(title: const Text('Ordonnances')),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text('Ordonnance'),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: 'Nouvelle ordonnance', successMessage: 'Ordonnance enregistrée en brouillon.', fields: ordonnanceFields, submit: (b) => api.post('/vet/ordonnances', body: b)))),
+      ),
       body: PagedList(
         emptyText: 'Aucune ordonnance.',
         fetch: (page) => api.list('/vet/ordonnances', query: {'page': page}),
@@ -221,15 +271,25 @@ class OrdonnancesPage extends ConsumerWidget {
   }
 }
 
-class OrdonnanceDetailPage extends ConsumerWidget {
+class OrdonnanceDetailPage extends ConsumerStatefulWidget {
   const OrdonnanceDetailPage({super.key, required this.id});
   final int id;
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OrdonnanceDetailPage> createState() => _OrdonnanceDetailPageState();
+}
+
+class _OrdonnanceDetailPageState extends ConsumerState<OrdonnanceDetailPage> {
+  Key _k = UniqueKey();
+  void _reload() => setState(() => _k = UniqueKey());
+
+  @override
+  Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
+    final id = widget.id;
     return Scaffold(
       appBar: AppBar(title: const Text('Ordonnance')),
       body: AsyncView<Map>(
+        key: _k,
         load: () => api.get<Map>('/vet/ordonnances/$id'),
         builder: (c, o) => ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
           Text('${o['numero']}', style: Theme.of(c).textTheme.titleLarge),
@@ -250,8 +310,110 @@ class OrdonnanceDetailPage extends ConsumerWidget {
               trailing: Text('× ${fmtNum(l['quantite'], digits: 1)}'),
             ),
           if ((o['instructions'] as String?)?.isNotEmpty == true) ...[const Divider(height: 24), KeyValue('Instructions', o['instructions'])],
+          const SizedBox(height: 16),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            if (o['statut'] == 'brouillon') VetActionButton(label: 'Émettre', icon: Icons.verified_outlined, path: '/vet/ordonnances/$id/issue', confirm: 'Émettre cette ordonnance ? Elle ne sera plus modifiable.', onDone: _reload),
+            if (o['statut'] != 'brouillon' && o['facture_id'] == null) VetActionButton(label: 'Créer la facture', icon: Icons.receipt_long_outlined, path: '/vet/ordonnances/$id/bill', onDone: _reload),
+            if (o['statut'] == 'brouillon')
+              FilledButton.tonalIcon(
+                  icon: const Icon(Icons.edit_outlined),
+                  label: const Text('Modifier'),
+                  onPressed: () async {
+                    final ok = await Navigator.push<bool>(
+                        c,
+                        MaterialPageRoute(
+                            builder: (_) => DynamicFormPage(
+                                title: 'Modifier ${o['numero']}',
+                                successMessage: 'Ordonnance modifiée.',
+                                fields: ordonnanceFields,
+                                initialValues: {...Map<String, dynamic>.from(o), 'client_id_label': o['client_nom']},
+                                submit: (b) => api.post('/vet/ordonnances', body: {...b, 'id': id}))));
+                    if (ok == true) _reload();
+                  }),
+            if (o['statut'] == 'brouillon') VetActionButton(label: 'Supprimer', icon: Icons.delete_outline, path: '/vet/ordonnances/$id/delete', confirm: 'Supprimer cette ordonnance ?', destructive: true, popAfter: true, onDone: _reload),
+          ]),
         ]),
       ),
     );
   }
+}
+
+// ── Formulaires et actions de gestion (devis, factures, ordonnances) ──
+const _lignesDoc = FieldSpec('lignes', 'Lignes', type: FieldType.lines, required: true, lineFields: [
+  FieldSpec('article_id', 'Article du catalogue (facultatif)', type: FieldType.select, optionsPath: '/vet/articles', optionsQuery: {'per_page': 100},
+      fill: {'designation': 'nom', 'unite': 'unite', 'prix_unitaire': 'prix_vente', 'tva_pct': 'tva_pct'}),
+  FieldSpec('designation', 'Désignation', required: true),
+  FieldSpec('quantite', 'Quantité', type: FieldType.number, required: true, min: 0.001, initial: 1),
+  FieldSpec('unite', 'Unité'),
+  FieldSpec('prix_unitaire', 'Prix unitaire', type: FieldType.number, required: true, suffix: 'F', min: 0),
+  FieldSpec('remise_pct', 'Remise', type: FieldType.number, suffix: '%', min: 0),
+  FieldSpec('tva_pct', 'TVA', type: FieldType.number, suffix: '%', min: 0),
+]);
+
+List<FieldSpec> documentFields(String type) => [
+      const FieldSpec('client_id', 'Client', type: FieldType.pick, required: true, optionsPath: '/vet/clients', optionLabel: 'nom'),
+      const FieldSpec('date_emission', 'Date', type: FieldType.date, initial: 'today'),
+      const FieldSpec('date_echeance', 'Échéance', type: FieldType.date),
+      _lignesDoc,
+      const FieldSpec('notes', 'Notes', type: FieldType.multiline),
+    ];
+
+const _lignesOrd = FieldSpec('lignes', 'Médicaments', type: FieldType.lines, required: true, lineFields: [
+  FieldSpec('article_id', 'Produit du catalogue (facultatif)', type: FieldType.select, optionsPath: '/vet/articles', optionsQuery: {'per_page': 100, 'type': 'produit'}, fill: {'designation': 'nom'}),
+  FieldSpec('designation', 'Désignation', required: true),
+  FieldSpec('dosage', 'Dosage'),
+  FieldSpec('voie', 'Voie (orale, injectable…)'),
+  FieldSpec('duree', 'Durée du traitement'),
+  FieldSpec('quantite', 'Quantité', type: FieldType.number, min: 0.001, initial: 1),
+]);
+
+const ordonnanceFields = [
+  FieldSpec('client_id', 'Client', type: FieldType.pick, required: true, optionsPath: '/vet/clients', optionLabel: 'nom'),
+  FieldSpec('animal', 'Animal / troupeau / lot'),
+  FieldSpec('date_ordonnance', 'Date', type: FieldType.date, initial: 'today'),
+  FieldSpec('diagnostic', 'Diagnostic'),
+  _lignesOrd,
+  FieldSpec('instructions', 'Instructions', type: FieldType.multiline),
+  FieldSpec('delai_viande_jours', 'Délai d\'attente viande', type: FieldType.integer, suffix: 'jours', min: 0),
+  FieldSpec('delai_oeufs_jours', 'Délai d\'attente œufs', type: FieldType.integer, suffix: 'jours', min: 0),
+];
+
+/// Bouton d'action POST avec confirmation facultative ; recharge l'écran appelant au succès.
+class VetActionButton extends ConsumerWidget {
+  const VetActionButton({super.key, required this.label, required this.icon, required this.path, required this.onDone, this.body, this.confirm, this.destructive = false, this.popAfter = false});
+  final String label, path;
+  final IconData icon;
+  final VoidCallback onDone;
+  final Map<String, dynamic>? body;
+  final String? confirm;
+  final bool destructive, popAfter;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => FilledButton.tonalIcon(
+        style: destructive ? FilledButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error) : null,
+        icon: Icon(icon),
+        label: Text(label),
+        onPressed: () async {
+          if (confirm != null) {
+            final yes = await showDialog<bool>(
+                context: context,
+                builder: (c) => AlertDialog(title: Text(label), content: Text(confirm!), actions: [
+                      TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Annuler')),
+                      FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Confirmer')),
+                    ]));
+            if (yes != true) return;
+          }
+          try {
+            await ref.read(apiProvider).post(path, body: body);
+            if (!context.mounted) return;
+            if (popAfter) {
+              Navigator.pop(context, true);
+            } else {
+              onDone();
+            }
+          } catch (e) {
+            if (context.mounted) showError(context, e);
+          }
+        },
+      );
 }

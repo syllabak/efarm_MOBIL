@@ -158,7 +158,7 @@ class _StockPageState extends ConsumerState<StockPage> {
                   title: Text('${s['produit']}'),
                   subtitle: Text('Site ${s['site_id']}${seuil > 0 ? ' · seuil ${fmtNum(seuil, digits: 1)}' : ''}'),
                   trailing: Text('${fmtNum(q, digits: 1)} ${s['unite'] ?? ''}', style: TextStyle(fontWeight: FontWeight.bold, color: bas ? Colors.red : null)),
-                  onTap: () => _move(false, product: s['produit_id'] as int?, site: s['site_id'] as int?),
+                  onTap: serverCan('POST', '/stock/exits') ? () => _move(false, product: s['produit_id'] as int?, site: s['site_id'] as int?) : null,
                 ),
               );
             }),

@@ -1,7 +1,10 @@
+import 'package:efarm360/core/session.dart';
 import 'package:efarm360/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'helpers.dart';
 
 void main() {
   testWidgets('sans jeton : écran de connexion, bascule exploitation / vétérinaire / code', (t) async {
@@ -25,5 +28,17 @@ void main() {
     await t.tap(find.text('Se connecter'));
     await t.pump();
     expect(find.text('Requis'), findsNWidgets(2));
+  });
+
+  testWidgets('test du serveur : succès affiché à l\'utilisateur', (t) async {
+    final (api, _, _) = await makeClient({'GET /status': (_) => ok({'service': 'EFarm360', 'version': '1.0'})}, access: null, refresh: null);
+    await t.pumpWidget(ProviderScope(overrides: [apiProvider.overrideWithValue(api)], child: const EFarmApp()));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Options avancées'));
+    await t.pumpAndSettle();
+    await t.ensureVisible(find.text('Tester la connexion au serveur'));
+    await t.tap(find.text('Tester la connexion au serveur'));
+    await t.pumpAndSettle();
+    expect(find.text('Serveur joignable : EFarm360, API mobile v1.0.'), findsOneWidget);
   });
 }

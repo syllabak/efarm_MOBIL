@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
+import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import 'ops_pages.dart';
 import 'rapport_form.dart';
@@ -40,7 +41,7 @@ class FarmHome extends ConsumerWidget {
             Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined),
           ],
         ),
-        if (p.canReport)
+        if (p.canReport && serverCan('POST', '/farm/rapports'))
           Padding(
             padding: const EdgeInsets.all(12),
             child: FilledButton.icon(
@@ -90,7 +91,7 @@ class _RapportsPageState extends ConsumerState<RapportsPage> {
     final p = ref.watch(sessionProvider).value!;
     return Scaffold(
       body: PagedList(key: _k, fetch: (page) => api.list('/farm/rapports', query: {'page': page}), emptyText: 'Aucun rapport.', itemBuilder: (c, r) => RapportTile(r)),
-      floatingActionButton: p.canReport
+      floatingActionButton: p.canReport && serverCan('POST', '/farm/rapports')
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
               label: const Text('Rapport'),
@@ -124,7 +125,7 @@ class _StockPageState extends ConsumerState<StockPage> {
     final role = ref.watch(sessionProvider).value?.role ?? '';
     final canEntry = const {'admin', 'siege', 'responsable'}.contains(role);
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: !serverCan('POST', '/stock/exits') ? null : FloatingActionButton.extended(
         icon: const Icon(Icons.swap_vert),
         label: const Text('Mouvement'),
         onPressed: () async {
@@ -142,8 +143,8 @@ class _StockPageState extends ConsumerState<StockPage> {
         key: _k,
         load: () => api.get<List>('/farm/stock'),
         builder: (c, rows) => ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
-          ListTile(leading: const Icon(Icons.warning_amber), title: const Text('Produits sous le seuil'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const LowStockPage()))),
-          if (canEntry) ListTile(leading: const Icon(Icons.history), title: const Text('Historique des mouvements'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const MovementsPage()))),
+          if (serverGets('/stock/alerts')) ListTile(leading: const Icon(Icons.warning_amber), title: const Text('Produits sous le seuil'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const LowStockPage()))),
+          if (canEntry && serverGets('/stock/movements')) ListTile(leading: const Icon(Icons.history), title: const Text('Historique des mouvements'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const MovementsPage()))),
           const Divider(height: 1),
           if (rows.isEmpty) const SizedBox(height: 300, child: EmptyView('Aucun produit en stock.')),
           for (final r in rows)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/server_support.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
 import '../comm/account_pages.dart';
@@ -44,8 +45,8 @@ class ProfilePage extends ConsumerWidget {
             title: Text('Licence ${lic['statut']}'),
             subtitle: Text(lic['date_expiration'] == null ? 'Sans échéance' : 'Expire le ${fmtDate(lic['date_expiration'])} (${lic['jours_restants']} j)')),
       if (p.isFarm) ListTile(leading: const Icon(Icons.security), title: Text('Double authentification : ${p.twoFactor ? 'activée' : 'désactivée'}'), subtitle: const Text('À gérer depuis le site web.')),
-      if (p.isFarm) ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Modifier mon profil'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileEditPage()))),
-      if (p.isFarm) ListTile(leading: const Icon(Icons.password), title: const Text('Changer le mot de passe'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PasswordPage()))),
+      if (p.isFarm && serverCan('PUT', '/profile')) ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Modifier mon profil'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileEditPage()))),
+      if (p.isFarm && serverCan('POST', '/profile/password')) ListTile(leading: const Icon(Icons.password), title: const Text('Changer le mot de passe'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PasswordPage()))),
       ...extra,
       const Divider(),
       ListTile(

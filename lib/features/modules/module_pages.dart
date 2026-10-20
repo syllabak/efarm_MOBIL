@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
 import '../../core/session.dart';
+import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import 'spec.dart';
 
@@ -67,7 +68,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
     final api = ref.watch(apiProvider);
     final role = ref.watch(sessionProvider).value?.role ?? '';
     final create = spec.create;
-    final canCreate = create != null && (create.roles == null || create.roles!.contains(role));
+    final canCreate = create != null && serverCan('POST', create.path) && (create.roles == null || create.roles!.contains(role));
     Map<String, dynamic> query(int page) => {
           ...spec.query,
           'page': page,
@@ -192,7 +193,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
           final profile = ref.watch(sessionProvider).value;
-          final actions = [for (final a in spec.actions) if ((a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
+          final actions = [for (final a in spec.actions) if (serverCan('POST', a.path) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
             for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),

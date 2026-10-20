@@ -21,8 +21,11 @@ final Map<String, List<ModuleSpec>> farmModuleGroups = {
 
 /// Écrans sur mesure du menu « Plus » (au-delà des listes / détails génériques).
 class ExtraEntry {
-  const ExtraEntry(this.group, this.title, this.icon, this.builder, {this.roles, this.plan});
+  const ExtraEntry(this.group, this.title, this.icon, this.builder, {this.roles, this.plan, this.route = ''});
   final String group, title;
+
+  /// Route GET qui doit exister sur le serveur pour afficher l'entrée (voir `core/server_support.dart`).
+  final String route;
   final IconData icon;
   final Widget Function() builder;
   final Set<String>? roles;

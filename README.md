@@ -92,3 +92,12 @@ Le job CI `apk` publie aussi un APK en artefact.
 Les plateformes `windows/` et `web/` sont générées. Lancer avec `flutter run -d windows` ou `flutter run -d chrome`.
 - Windows : la base locale vétérinaire utilise `sqflite_common_ffi` (initialisé dans `main.dart`).
 - Web : pas de base locale, donc le mode hors ligne vétérinaire est indisponible. Le serveur doit autoriser le CORS pour l'origine de l'app.
+
+## Modules masqués (serveur non implémenté)
+
+`efarm360` (web) n'est pas modifié. L'application ne propose que ce que son `main` expose (`lib/core/server_support.dart`) :
+connexion, appareils, résumé de ferme, sites, lots, rapports (lecture), stock (lecture), et côté vétérinaire tableau de bord,
+clients, patients, rendez-vous, produits et synchronisation hors ligne.
+Ventes, finances, bovins, embouche, couvoir, ponte, IoT, chat, support, formation, parrainage, cabinet vétérinaire, etc. restent
+dans le code mais sont masqués. Pour réactiver un module, ajouter sa route dans `server_support.dart` (ou passer `hideUnsupported`
+à `false` pour un serveur complet, avec l'API de la branche `claude/loving-faraday-c9jj8j` d'efarm360).

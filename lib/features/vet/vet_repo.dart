@@ -256,6 +256,7 @@ class VetRepo extends ChangeNotifier {
 
   /// Efface toutes les copies locales du cabinet (déconnexion) : elles contiennent des données de clients.
   static Future<void> wipeAll() async {
+    if (kIsWeb) return;
     final dir = await getDatabasesPath();
     for (final f in await Directory(dir).list().toList()) {
       final n = p.basename(f.path);
@@ -277,6 +278,7 @@ final vetRepoProvider = FutureProvider.autoDispose<VetRepo>((ref) async {
   final api = ref.watch(apiProvider);
   final profile = ref.watch(sessionProvider.select((s) => s.value));
   if (profile == null || !profile.isVet) throw StateError('Compte vétérinaire requis');
+  if (kIsWeb) throw StateError('Le cabinet vétérinaire utilise une base locale : ouvrez l\'application sur Android, iOS ou Windows.');
   // Une base par compte (le collaborateur et le titulaire n'ont pas les mêmes droits)
   final repo = VetRepo(api, '${profile.id}_${_stableHash(profile.email.toLowerCase())}');
   await repo.open();

@@ -195,6 +195,17 @@ class ClientDetail extends StatelessWidget {
 }
 
 // ── Patients ─────────────────────────────────────────────────────────
+/// Âge lisible à partir d'une date de naissance (« 3 ans », « 8 mois »), comme sur la fiche web.
+String? _age(Object? naissance) {
+  final d = DateTime.tryParse('${naissance ?? ''}');
+  if (d == null) return null;
+  final now = DateTime.now();
+  final mois = (now.year - d.year) * 12 + now.month - d.month - (now.day < d.day ? 1 : 0);
+  if (mois < 0) return null;
+  if (mois < 24) return '$mois mois';
+  return '${mois ~/ 12} ans';
+}
+
 class PatientTile extends StatelessWidget {
   const PatientTile(this.p, {super.key, required this.repo, this.showClient = false});
   final Map<String, dynamic> p;
@@ -210,6 +221,8 @@ class PatientTile extends StatelessWidget {
             p['race'],
             if (p['type'] == 'groupe') '${p['effectif']} têtes',
             if (showClient) repo.client(p['client_id'])?['nom'],
+            _age(p['date_naissance']),
+            if (repo.consultationsOf(p['id']).isNotEmpty) 'vu le ${fmtDate(repo.consultationsOf(p['id']).first['date_consultation'])}',
           ].whereType<String>().where((s) => s.isNotEmpty).join(' · ')),
           trailing: p['pending'] == true ? const Icon(Icons.cloud_upload_outlined) : null,
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PatientDetail(repo: repo, patientId: p['id']))),

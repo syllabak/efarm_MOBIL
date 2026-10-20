@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/session.dart';
 import '../ui/common.dart';
+import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
 import 'profile/profile_page.dart';
 import 'vet/vet_pages.dart';
@@ -25,11 +26,11 @@ class _FarmShell extends StatefulWidget {
 
 class _FarmShellState extends State<_FarmShell> {
   int _i = 0;
-  static const _titles = ['Accueil', 'Lots', 'Rapports', 'Stock', 'Compte'];
+  static const _titles = ['Accueil', 'Lots', 'Rapports', 'Stock', 'Plus'];
 
   @override
   Widget build(BuildContext context) {
-    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), const LotsPage(), const RapportsPage(), const StockPage(), const ProfilePage()];
+    final pages = <Widget>[FarmHome(onGoto: (i) => setState(() => _i = i)), const LotsPage(), const RapportsPage(), const StockPage(), const FarmMore()];
     return Scaffold(
       appBar: AppBar(title: Text(_titles[_i])),
       body: IndexedStack(index: _i, children: pages),
@@ -38,9 +39,27 @@ class _FarmShellState extends State<_FarmShell> {
         NavigationDestination(icon: Icon(Icons.egg_alt_outlined), selectedIcon: Icon(Icons.egg_alt), label: 'Lots'),
         NavigationDestination(icon: Icon(Icons.assignment_outlined), selectedIcon: Icon(Icons.assignment), label: 'Rapports'),
         NavigationDestination(icon: Icon(Icons.inventory_2_outlined), selectedIcon: Icon(Icons.inventory_2), label: 'Stock'),
-        NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Compte'),
+        NavigationDestination(icon: Icon(Icons.more_horiz), label: 'Plus'),
       ]),
     );
+  }
+}
+
+/// Modules secondaires de la ferme ; la finance suit les rôles du web (admin, siège, responsable).
+class FarmMore extends ConsumerWidget {
+  const FarmMore({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = ref.watch(sessionProvider).value!;
+    Widget tile(IconData i, String t, Widget Function() page) => ListTile(leading: Icon(i), title: Text(t), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page())));
+    return ListView(children: [
+      tile(Icons.point_of_sale, 'Ventes', () => const VentesPage()),
+      tile(Icons.people_outline, 'Clients', () => const ClientsVentePage()),
+      if (const {'admin', 'siege', 'responsable'}.contains(p.role)) tile(Icons.account_balance_wallet_outlined, 'Finance et dépenses', () => const FinancePage()),
+      tile(Icons.location_city_outlined, 'Sites', () => const SitesPage()),
+      const Divider(),
+      tile(Icons.person_outline, 'Mon compte', () => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage())),
+    ]);
   }
 }
 

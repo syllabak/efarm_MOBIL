@@ -143,7 +143,7 @@ class _PagedListState extends State<PagedList> {
     return RefreshIndicator(
       onRefresh: _reset,
       child: _items.isEmpty
-          ? ListView(children: [SizedBox(height: 300, child: EmptyView(widget.emptyText))])
+          ? ListView(children: [if (widget.header != null) widget.header!, SizedBox(height: 300, child: EmptyView(widget.emptyText))])
           : ListView.builder(
               controller: _scroll,
               physics: const AlwaysScrollableScrollPhysics(),

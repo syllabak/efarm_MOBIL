@@ -121,6 +121,7 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
       final d = await f();
       if (d['two_factor_required'] == true) return LoginNeeds2fa(d['token'] as String);
       await _tokens.saveTokens(d['access_token'] as String, d['refresh_token'] as String);
+      _api.sessionIssue.value = null;
       useContract(await _api.contract());
       final p = Profile(Map<String, dynamic>.from(d['profile'] as Map));
       await _tokens.saveProfile(jsonEncode(p.raw));

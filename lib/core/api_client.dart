@@ -65,6 +65,9 @@ class ApiClient {
   Completer<bool>? _refreshing;
   final ResponseCache _cache;
 
+  /// Dernière raison pour laquelle la session a été perdue (affichée sur l'écran de connexion) ; vide après une connexion réussie.
+  final ValueNotifier<String?> sessionIssue = ValueNotifier(null);
+
   /// Renseigné quand la dernière lecture a été servie depuis la copie locale (réseau coupé).
   final ValueNotifier<DateTime?> offlineSince = ValueNotifier(null);
 
@@ -168,7 +171,10 @@ class ApiClient {
       if (await _refresh()) return _raw(method, path, query: query, body: body, auth: auth, retried: true);
       throw ApiException('session_expiree', 'Votre session a expiré. Reconnectez-vous.', status: 401);
     }
-    if (auth && status == 401 && (code == 'compte_desactive' || code == 'non_authentifie')) onSessionExpired?.call();
+    if (auth && status == 401 && (code == 'compte_desactive' || code == 'non_authentifie')) {
+      sessionIssue.value = 'Session interrompue ($code) : ${(err['message'] as String?) ?? 'le serveur a refusé le jeton'}';
+      onSessionExpired?.call();
+    }
     throw ApiException(code, (err['message'] as String?) ?? 'Erreur $status.', status: status,
         details: err['details'] is Map ? Map<String, dynamic>.from(err['details'] as Map) : null);
   }
@@ -189,6 +195,7 @@ class ApiClient {
         } on ApiException catch (e) {
           // Réseau coupé : on garde les jetons ; refus du serveur : session perdue
           if (!e.isNetwork) {
+            sessionIssue.value = 'Session interrompue : le rafraîchissement du jeton a été refusé (${e.code}). ${e.message}';
             await tokens.clear();
             onSessionExpired?.call();
           }

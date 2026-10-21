@@ -61,6 +61,15 @@ void main() {
     await expectLater(api.post('/auth/login', auth: false), throwsA(isA<ApiException>().having((e) => e.status, 'status', 500).having((e) => e.code, 'code', 'erreur_serveur')));
   });
 
+  test('jeton non transmis (401 non_authentifie) : raison conservée pour l\'écran de connexion', () async {
+    var out = 0;
+    final (api, _, _) = await makeClient({'GET /farm/resume': (_) => ko(401, 'non_authentifie', 'Jeton manquant')});
+    api.onSessionExpired = () => out++;
+    await expectLater(api.get('/farm/resume'), throwsA(isA<ApiException>()));
+    expect(out, 1);
+    expect(api.sessionIssue.value, contains('non_authentifie'));
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

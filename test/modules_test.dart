@@ -7,6 +7,7 @@ import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
+import 'package:efarm360/features/farm/finance_extra.dart';
 import 'package:efarm360/features/modules/compare_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -263,5 +264,40 @@ void main() {
     expect(sent, {'actif': false});
     await t.ensureVisible(find.text('Réactiver'));
     expect(find.text('Réactiver'), findsOneWidget);
+  });
+
+  testWidgets('ROI : site choisi, totaux et bandes', (t) async {
+    await _pump(t, const RoiPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}, {'id': 2, 'nom': 'Sud'}]),
+      'GET /finance/roi': (o) {
+        expect(o.queryParameters['site_id'], 2);
+        return ok({'lots': [{'lot_id': 7, 'code': 'FARM-7', 'roi_pct': 18.5}], 'total_investi': 1000000, 'total_revenu': 1400000, 'benefice_net': 400000, 'roi_global_pct': 40});
+      },
+    });
+    await t.tap(find.byType(DropdownButtonFormField<int>));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Sud').last);
+    await t.pumpAndSettle();
+    expect(find.text('ROI global'), findsOneWidget);
+    await t.scrollUntilVisible(find.text('FARM-7'), 200, scrollable: find.byType(Scrollable).last);
+    expect(find.text('FARM-7'), findsOneWidget);
+    expect(find.text('ROI 18,5 %', skipOffstage: false), findsOneWidget);
+  });
+
+  testWidgets('contrôle des chiffres : synthèse et cas à corriger en premier', (t) async {
+    await _pump(t, const FinanceControlPage(), {
+      'GET /finance/control': (_) => ok({
+            'synthese': {'erreur': 1, 'avert': 0, 'info': 0, 'ok': 1},
+            'controles': [
+              {'id': 'a', 'titre': 'Total conforme', 'gravite': 'ok', 'nb': 0, 'lignes': []},
+              {'id': 'b', 'titre': 'Vente sans ligne', 'gravite': 'erreur', 'conseil': 'Réenregistrez la vente.', 'nb': 1, 'lignes': ['V-001 : 5000 FCFA']},
+            ],
+          }),
+    });
+    expect(find.text('1 · Erreur'), findsOneWidget);
+    expect(find.text('Vente sans ligne'), findsOneWidget);
+    await t.tap(find.text('Vente sans ligne'));
+    await t.pumpAndSettle();
+    expect(find.text('• V-001 : 5000 FCFA'), findsOneWidget);
   });
 }

@@ -9,6 +9,7 @@ import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'registry_elevage.dart';
 import 'registry_gestion.dart';
+import '../farm/finance_extra.dart';
 import 'compare_page.dart';
 import 'spec.dart';
 
@@ -43,6 +44,8 @@ final List<ExtraEntry> farmExtraEntries = [
   ExtraEntry('Communication', 'Parrainage', Icons.card_giftcard, () => const ReferralPage(), roles: {'admin', 'siege'}, route: '/referral'),
   ExtraEntry('Gestion', 'Écritures comptables', Icons.menu_book_outlined, () => DataPage(title: 'Écritures du mois', path: '/accounting/entries'), roles: {'admin', 'siege'}, plan: 'comptabilite', route: '/accounting/entries'),
   ExtraEntry('Élevage', 'Bovins — tableau de bord', Icons.insights_outlined, () => const CattleSummaryPage(), plan: 'bovins', route: '/cattle/summary'),
+  ExtraEntry('Gestion', 'ROI et performance', Icons.show_chart, () => const RoiPage(), roles: {'admin', 'siege', 'responsable'}, route: '/finance/roi'),
+  ExtraEntry('Gestion', 'Contrôle des chiffres', Icons.fact_check_outlined, () => const FinanceControlPage(), roles: {'admin', 'siege'}, route: '/finance/control'),
   ExtraEntry('Élevage', 'Comparer les bandes', Icons.compare_arrows, () => const CompareBandsPage(), plan: 'bande_intelligence', route: '/lots/compare'),
   ExtraEntry('Élevage', 'Poules pondeuses', Icons.egg_alt_outlined, () => const LayingPage(), plan: 'ponte', route: '/laying'),
   ExtraEntry('Élevage', 'Ambiance (capteurs)', Icons.thermostat, () => const IotPage(), plan: 'iot', route: '/iot/sensors'),

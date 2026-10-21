@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import '../modules/data_view.dart';
 import '../modules/module_pages.dart';
 import '../modules/spec.dart';
 
@@ -268,6 +269,51 @@ final vetOrdersModule = ModuleSpec(
 
 bool _brouillon(Json r) => r['statut'] == 'brouillon';
 bool _annulable(Json r) => r['statut'] == 'brouillon' || r['statut'] == 'envoyee';
+
+/// Tableau financier du cabinet (même indicateurs que la page « Comptabilité » du site) : chiffres du mois, créances, stock à surveiller, factures impayées.
+class VetFinancePage extends ConsumerWidget {
+  const VetFinancePage({super.key});
+
+  static const _cyan = Color(0xFF155E75);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tableau financier')),
+      body: AsyncView<Map>(
+        load: () => api.get<Map>('/vet/finance'),
+        builder: (c, d) {
+          Widget section(String titre, String cle) {
+            final v = d[cle];
+            if (v is! List || v.isEmpty) return const SizedBox.shrink();
+            return Padding(padding: const EdgeInsets.only(top: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('$titre (${v.length})', style: Theme.of(c).textTheme.titleMedium),
+              DataTree(v, skip: const {'id', 'article_id'}),
+            ]));
+          }
+          return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
+              GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.6, padding: const EdgeInsets.all(4), children: [
+                Stat('Chiffre d\'affaires du mois', fcfa(d['ca_mois']), icon: Icons.trending_up, color: _cyan),
+                Stat('Encaissé ce mois-ci', fcfa(d['encaisse_mois']), icon: Icons.payments_outlined, color: Colors.green),
+                Stat('Dépenses du mois', fcfa(d['depenses_mois']), icon: Icons.trending_down, color: Colors.red),
+                Stat('Créances', fcfa(d['creances']), icon: Icons.hourglass_bottom, color: Colors.orange),
+                Stat('Devis en attente', fmtNum(d['devis_attente']), icon: Icons.request_quote_outlined, color: _cyan),
+                Stat('Factures en brouillon', fmtNum(d['factures_brouillon']), icon: Icons.edit_note, color: _cyan),
+                Stat('Valeur du stock', fcfa(d['valeur_stock']), icon: Icons.inventory_2_outlined, color: _cyan),
+                Stat('Clients', fmtNum(d['nb_clients']), icon: Icons.people_outline, color: _cyan),
+              ]),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                section('Factures impayées', 'impayees'),
+                section('Stock à surveiller', 'rupture'),
+                section('Péremptions proches', 'peremptions'),
+              ])),
+            ]);
+        },
+      ),
+    );
+  }
+}
 
 /// Produits sous leur seuil d'alerte (suggestions du serveur) : un toucher prépare la commande avec ces lignes déjà remplies.
 class OrderSuggestionsPage extends ConsumerWidget {

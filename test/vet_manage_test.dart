@@ -132,4 +132,19 @@ void main() {
     expect(find.text('Vaccin Newcastle'), findsNothing);
     expect(find.text('Le catalogue est vide.'), findsOneWidget);
   });
+
+  testWidgets('tableau financier du cabinet : indicateurs du mois et factures impayées', (t) async {
+    await _pump(t, const VetFinancePage(), {
+      'GET /vet/finance': (_) => ok({
+            'ca_mois': 450000, 'encaisse_mois': 300000, 'depenses_mois': 120000, 'creances': 150000, 'devis_attente': 2, 'factures_brouillon': 1, 'valeur_stock': 800000, 'nb_clients': 14,
+            'rupture': [], 'peremptions': [],
+            'impayees': [{'id': 3, 'numero': 'F-2026-0003', 'nom': 'Ferme Ba', 'du': 150000}],
+          }),
+    });
+    expect(find.text('Chiffre d\'affaires du mois'), findsOneWidget);
+    expect(find.text('450\u202f000 F'), findsOneWidget);
+    expect(find.text('Clients'), findsOneWidget);
+    await t.scrollUntilVisible(find.textContaining('Factures impayées'), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('Factures impayées (1)'), findsOneWidget);
+  });
 }

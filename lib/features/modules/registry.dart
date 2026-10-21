@@ -9,6 +9,7 @@ import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'registry_elevage.dart';
 import 'registry_gestion.dart';
+import 'compare_page.dart';
 import 'spec.dart';
 
 /// Modules de la ferme décrits par configuration, par rubrique du menu « Plus ».
@@ -35,14 +36,15 @@ class ExtraEntry {
 final List<ExtraEntry> farmExtraEntries = [
   ExtraEntry('Vétérinaire', 'Messages des vétérinaires', Icons.forum_outlined,
       () => RelationConversationsPage(listPath: '/vets/messages', threadBase: '/vets/messages', mySens: 'ferme', title: 'Messages des vétérinaires', name: (r) => '${r['prenom'] ?? ''} ${r['nom'] ?? ''}'.trim()),
-      roles: {'admin', 'siege', 'responsable'}, plan: 'veterinaire'),
-  ExtraEntry('Communication', 'Messagerie', Icons.forum_outlined, () => const ChatRoomsPage(), plan: 'messagerie'),
-  ExtraEntry('Communication', 'Aide et support', Icons.support_agent, () => const SupportPage()),
-  ExtraEntry('Communication', 'Formation', Icons.school_outlined, () => const TrainingPage()),
-  ExtraEntry('Communication', 'Parrainage', Icons.card_giftcard, () => const ReferralPage(), roles: {'admin', 'siege'}),
-  ExtraEntry('Gestion', 'Écritures comptables', Icons.menu_book_outlined, () => DataPage(title: 'Écritures du mois', path: '/accounting/entries'), roles: {'admin', 'siege'}, plan: 'comptabilite'),
-  ExtraEntry('Élevage', 'Bovins — tableau de bord', Icons.insights_outlined, () => const CattleSummaryPage(), plan: 'bovins'),
-  ExtraEntry('Élevage', 'Poules pondeuses', Icons.egg_alt_outlined, () => const LayingPage(), plan: 'ponte'),
-  ExtraEntry('Élevage', 'Ambiance (capteurs)', Icons.thermostat, () => const IotPage(), plan: 'iot'),
-  ExtraEntry('Élevage', 'Traite (lait)', Icons.local_drink_outlined, () => const CattleMilkPage(), plan: 'bovins'),
+      roles: {'admin', 'siege', 'responsable'}, plan: 'veterinaire', route: '/vets/messages'),
+  ExtraEntry('Communication', 'Messagerie', Icons.forum_outlined, () => const ChatRoomsPage(), plan: 'messagerie', route: '/chat/rooms'),
+  ExtraEntry('Communication', 'Aide et support', Icons.support_agent, () => const SupportPage(), route: '/support/tickets'),
+  ExtraEntry('Communication', 'Formation', Icons.school_outlined, () => const TrainingPage(), route: '/training'),
+  ExtraEntry('Communication', 'Parrainage', Icons.card_giftcard, () => const ReferralPage(), roles: {'admin', 'siege'}, route: '/referral'),
+  ExtraEntry('Gestion', 'Écritures comptables', Icons.menu_book_outlined, () => DataPage(title: 'Écritures du mois', path: '/accounting/entries'), roles: {'admin', 'siege'}, plan: 'comptabilite', route: '/accounting/entries'),
+  ExtraEntry('Élevage', 'Bovins — tableau de bord', Icons.insights_outlined, () => const CattleSummaryPage(), plan: 'bovins', route: '/cattle/summary'),
+  ExtraEntry('Élevage', 'Comparer les bandes', Icons.compare_arrows, () => const CompareBandsPage(), plan: 'bande_intelligence', route: '/lots/compare'),
+  ExtraEntry('Élevage', 'Poules pondeuses', Icons.egg_alt_outlined, () => const LayingPage(), plan: 'ponte', route: '/laying'),
+  ExtraEntry('Élevage', 'Ambiance (capteurs)', Icons.thermostat, () => const IotPage(), plan: 'iot', route: '/iot/sensors'),
+  ExtraEntry('Élevage', 'Traite (lait)', Icons.local_drink_outlined, () => const CattleMilkPage(), plan: 'bovins', route: '/cattle/milk'),
 ];

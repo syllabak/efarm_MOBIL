@@ -7,6 +7,7 @@ import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
+import 'package:efarm360/features/modules/compare_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -218,5 +219,26 @@ void main() {
     expect(find.text('Actif'), findsOneWidget);
     expect(find.text('Clôturer le lot'), findsNothing);
     expect(find.text('Saisir le rapport du jour'), findsNothing);
+  });
+
+  testWidgets('comparer les bandes : choix du site puis bandes côte à côte', (t) async {
+    Map<String, dynamic>? query;
+    await _pump(t, const CompareBandsPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}, {'id': 2, 'nom': 'Sud'}]),
+      'GET /lots/compare': (o) {
+        query = o.queryParameters;
+        return ok([
+          {'lot_id': 7, 'code': 'FARM-7', 'taux_mortalite_pct': 4.2, 'total_aliment_kg': 1500, 'marge_beneficiaire_pct': 12.5},
+        ]);
+      },
+    });
+    expect(find.text('Choisissez un site pour comparer ses dernières bandes.'), findsOneWidget);
+    await t.tap(find.byType(DropdownButtonFormField<int>));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Sud').last);
+    await t.pumpAndSettle();
+    expect(query!['site_id'], 2);
+    expect(find.text('FARM-7'), findsOneWidget);
+    expect(find.textContaining('Mortalité : 4,2 %'), findsOneWidget);
   });
 }

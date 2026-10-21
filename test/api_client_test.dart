@@ -47,6 +47,20 @@ void main() {
     expect(await api.contract(), isNull);
   });
 
+  test('adresse du serveur collée avec le chemin de l\'API : ramenée à la racine du site', () async {
+    final (api, a, t) = await makeClient({'GET /status': (_) => ok({'service': 'EFarm360'})});
+    for (final u in ['https://efarm360.danov.sn/', 'https://efarm360.danov.sn/api/mobile/v1/status', 'https://efarm360.danov.sn/api/mobile/v1']) {
+      await t.saveServer(u);
+      await api.get<Map>('/status', auth: false);
+      expect(a.calls.last.uri.toString(), 'https://efarm360.danov.sn/api/mobile/v1/status', reason: u);
+    }
+  });
+
+  test('erreur 500 non JSON : extrait de la page d\'erreur affiché', () async {
+    final (api, _, _) = await makeClient({'POST /auth/login': (_) => (status: 500, body: <String, dynamic>{})});
+    await expectLater(api.post('/auth/login', auth: false), throwsA(isA<ApiException>().having((e) => e.status, 'status', 500).having((e) => e.code, 'code', 'erreur_serveur')));
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

@@ -95,7 +95,8 @@ class ApiClient {
   }
 
   Future<String> _base() async {
-    final s = (await tokens.server).trim().replaceAll(RegExp(r'/+$'), '');
+    // On accepte aussi une adresse collée avec le chemin de l'API (…/api/mobile/v1/status) : seule la racine du site compte.
+    final s = (await tokens.server).trim().replaceFirst(RegExp(r'/api(/.*)?$'), '').replaceAll(RegExp(r'/+$'), '');
     return '$s/api/mobile/v1';
   }
 
@@ -155,6 +156,11 @@ class ApiClient {
     }
     if (json.isEmpty && status < 500) {
       throw ApiException('reponse_invalide', 'Réponse inattendue du serveur : vérifiez son adresse.', status: status);
+    }
+    if (json.isEmpty && status >= 500) {
+      // Réponse non JSON (page d'erreur PHP/Apache) : on en montre un extrait pour faciliter le diagnostic.
+      final raw = '${res.data ?? ''}'.replaceAll(RegExp(r'<[^>]*>'), ' ').replaceAll(RegExp(r'\s+'), ' ').trim();
+      throw ApiException('erreur_serveur', 'Erreur serveur ($status).${raw.isEmpty ? '' : ' ${raw.length > 200 ? raw.substring(0, 200) : raw}'}', status: status);
     }
     final err = json['error'] is Map ? Map<String, dynamic>.from(json['error'] as Map) : <String, dynamic>{};
     final code = (err['code'] as String?) ?? (status >= 500 ? 'erreur_serveur' : 'erreur');

@@ -95,7 +95,8 @@ class ApiClient {
   }
 
   Future<String> _base() async {
-    final s = (await tokens.server).trim().replaceAll(RegExp(r'/+$'), '');
+    // On accepte aussi une adresse collée avec le chemin de l'API (…/api/mobile/v1/status) : seule la racine du site compte.
+    final s = (await tokens.server).trim().replaceFirst(RegExp(r'/api(/.*)?$'), '').replaceAll(RegExp(r'/+$'), '');
     return '$s/api/mobile/v1';
   }
 

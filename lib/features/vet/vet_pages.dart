@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/server_support.dart';
 import '../../core/session.dart';
+import '../modules/module_pages.dart' show DynamicFormPage;
+import '../modules/spec.dart' show FieldSpec, FieldType;
 import '../../ui/common.dart';
 import 'vet_forms.dart';
 import 'vet_repo.dart';
@@ -160,18 +163,58 @@ class _ClientsPageState extends State<ClientsPage> {
       );
 }
 
-class ClientDetail extends StatelessWidget {
+const _clientFields = [
+  FieldSpec('nom', 'Nom / exploitation', required: true),
+  FieldSpec('contact', 'Personne à contacter'),
+  FieldSpec('telephone', 'Téléphone', type: FieldType.phone),
+  FieldSpec('email', 'E-mail', type: FieldType.email),
+  FieldSpec('adresse', 'Adresse'),
+  FieldSpec('notes', 'Notes', type: FieldType.multiline),
+];
+
+class ClientDetail extends ConsumerWidget {
   const ClientDetail({super.key, required this.repo, required this.clientId});
   final VetRepo repo;
   final Object? clientId;
+
+  Future<void> _edit(BuildContext c, WidgetRef ref, Map<String, dynamic> x) async {
+    final api = ref.read(apiProvider);
+    final ok = await Navigator.push<bool>(c, MaterialPageRoute(builder: (_) => DynamicFormPage(title: 'Modifier le client', fields: _clientFields, initialValues: x, successMessage: 'Client mis à jour.', submit: (b) => api.post('/vet/clients/${x['id']}', body: b))));
+    if (ok == true) await repo.sync();
+  }
+
+  Future<void> _delete(BuildContext c, WidgetRef ref, Map<String, dynamic> x) async {
+    final yes = await showDialog<bool>(
+        context: c,
+        builder: (d) => AlertDialog(title: const Text('Supprimer le client'), content: const Text('Supprimer ce client ? S\'il a des factures ou des ordonnances, il est archivé au lieu d\'être effacé.'), actions: [
+              TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Annuler')),
+              FilledButton(style: FilledButton.styleFrom(backgroundColor: Theme.of(d).colorScheme.error), onPressed: () => Navigator.pop(d, true), child: const Text('Confirmer')),
+            ]));
+    if (yes != true || !c.mounted) return;
+    try {
+      final r = await ref.read(apiProvider).post<Map>('/vet/clients/${x['id']}/delete');
+      await repo.sync();
+      if (!c.mounted) return;
+      showInfo(c, r['archive'] == true ? 'Client archivé (il a des documents).' : 'Client supprimé.');
+      Navigator.pop(c);
+    } catch (e) {
+      if (c.mounted) showError(c, e);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => _rebuild(repo, (c) {
+  Widget build(BuildContext context, WidgetRef ref) => _rebuild(repo, (c) {
         final x = repo.client(clientId);
         if (x == null) return Scaffold(appBar: AppBar(), body: const EmptyView('Client introuvable.'));
         final pats = [for (final p in repo.patients) if (p['client_id'] == clientId) p];
         final rdvs = [for (final r in repo.rdv) if (r['client_id'] == clientId) r];
+        // Modifier / supprimer passent directement par le serveur : impossible pour un client encore en attente d'envoi.
+        final enLigne = !isPending(clientId);
         return Scaffold(
-          appBar: AppBar(title: Text('${x['nom']}')),
+          appBar: AppBar(title: Text('${x['nom']}'), actions: [
+            if (enLigne && serverCan('POST', '/vet/clients/{id}')) IconButton(tooltip: 'Modifier', icon: const Icon(Icons.edit_outlined), onPressed: () => _edit(c, ref, x)),
+            if (enLigne && serverCan('POST', '/vet/clients/{id}/delete')) IconButton(tooltip: 'Supprimer', icon: const Icon(Icons.delete_outline), onPressed: () => _delete(c, ref, x)),
+          ]),
           body: ListView(padding: const EdgeInsets.all(16), children: [
             KeyValue('Contact', x['contact']),
             KeyValue('Téléphone', x['telephone']),

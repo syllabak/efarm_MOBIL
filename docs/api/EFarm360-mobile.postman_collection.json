@@ -1,0 +1,6597 @@
+{
+ "info": {
+  "name": "EFarm360 — API mobile v1",
+  "description": "Collection générée depuis docs/api/openapi.json. 1) Renseignez les variables « email » et « password » (onglet Variables). 2) Lancez « POST /auth/login » : le jeton est enregistré automatiquement. 3) Les autres requêtes l'utilisent (Bearer). Ne partagez jamais cette collection avec vos identifiants renseignés.",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "auth": {
+  "type": "bearer",
+  "bearer": [
+   {
+    "key": "token",
+    "value": "{{access_token}}",
+    "type": "string"
+   }
+  ]
+ },
+ "variable": [
+  {
+   "key": "base_url",
+   "value": "https://efarm360.danov.sn/api/mobile/v1"
+  },
+  {
+   "key": "email",
+   "value": ""
+  },
+  {
+   "key": "password",
+   "value": ""
+  },
+  {
+   "key": "access_token",
+   "value": ""
+  },
+  {
+   "key": "refresh_token",
+   "value": ""
+  }
+ ],
+ "item": [
+  {
+   "name": "Authentification",
+   "item": [
+    {
+     "name": "POST /auth/login",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/login",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "login"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"type\": \"ferme\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"societe\": \"\",\n  \"device_name\": \"Postman\",\n  \"platform\": \"autre\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "const r = pm.response.json();",
+         "if (r.success && r.data && r.data.access_token) {",
+         "  pm.collectionVariables.set('access_token', r.data.access_token);",
+         "  pm.collectionVariables.set('refresh_token', r.data.refresh_token);",
+         "}"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "POST /auth/2fa",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/2fa",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "2fa"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /auth/refresh",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/refresh",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "refresh"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     },
+     "event": [
+      {
+       "listen": "test",
+       "script": {
+        "type": "text/javascript",
+        "exec": [
+         "const r = pm.response.json();",
+         "if (r.success) { pm.collectionVariables.set('access_token', r.data.access_token); pm.collectionVariables.set('refresh_token', r.data.refresh_token); }"
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "name": "POST /auth/logout",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/logout",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "logout"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /auth/logout-all",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/logout-all",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "logout-all"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /me",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/me",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "me"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /devices",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/devices",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "devices"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /auth/code/request",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/code/request",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "code",
+        "request"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /auth/code/verify",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/auth/code/verify",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "auth",
+        "code",
+        "verify"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Service",
+   "item": [
+    {
+     "name": "GET /status",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/status",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "status"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Autres",
+   "item": [
+    {
+     "name": "GET /openapi.json",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/openapi.json",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "openapi.json"
+       ],
+       "variable": []
+      },
+      "auth": {
+       "type": "noauth"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Bovins",
+   "item": [
+    {
+     "name": "GET /cattle/summary",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/summary",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "summary"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /cattle/races",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/races",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "races"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /cattle/options",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/options",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "options"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /cattle/milk",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/milk",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "milk"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/milk",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/milk",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "milk"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/weighing",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/weighing",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        "weighing"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /cattle",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /cattle",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /cattle/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/{id}/events",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/:id/events",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        ":id",
+        "events"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/{id}/exit",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/:id/exit",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        ":id",
+        "exit"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /cattle/{id}/reinstate",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/cattle/:id/reinstate",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "cattle",
+        ":id",
+        "reinstate"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Capteurs",
+   "item": [
+    {
+     "name": "GET /iot/sensors",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/iot/sensors",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "iot",
+        "sensors"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /iot/sensors",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/iot/sensors",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "iot",
+        "sensors"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /iot/sensors/{id}/active",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/iot/sensors/:id/active",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "iot",
+        "sensors",
+        ":id",
+        "active"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /iot/readings",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/iot/readings",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "iot",
+        "readings"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /iot/readings",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/iot/readings",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "iot",
+        "readings"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Compte",
+   "item": [
+    {
+     "name": "GET /profile",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/profile",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "profile"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /profile",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/profile",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "profile"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /profile/password",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/profile/password",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "profile",
+        "password"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Couvoir",
+   "item": [
+    {
+     "name": "GET /hatchery/equipment",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/equipment",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        "equipment"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /hatchery/equipment",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/equipment",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        "equipment"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /hatchery",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /hatchery",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /hatchery/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /hatchery/{id}/candling",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/:id/candling",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        ":id",
+        "candling"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /hatchery/{id}/hatch",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/:id/hatch",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        ":id",
+        "hatch"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /hatchery/{id}/convert",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/hatchery/:id/convert",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "hatchery",
+        ":id",
+        "convert"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Embouche",
+   "item": [
+    {
+     "name": "GET /fattening",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /fattening",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /fattening/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/animals",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/animals",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "animals"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/remove",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/remove",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "remove"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/weighing",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/weighing",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "weighing"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/close",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/close",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "close"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/reopen",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/reopen",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "reopen"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /fattening/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/fattening/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "fattening",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Ferme",
+   "item": [
+    {
+     "name": "GET /farm/resume",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/resume",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "resume"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /farm/sites",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/sites",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "sites"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /farm/lots",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/lots",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "lots"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /farm/lots/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/lots/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "lots",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /farm/rapports",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/rapports",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "rapports"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /farm/rapports",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/rapports",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "rapports"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /farm/stock",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/farm/stock",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "farm",
+        "stock"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /alerts",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/alerts",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "alerts"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /alerts/read",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/alerts/read",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "alerts",
+        "read"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /lots/compare",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/compare",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        "compare"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /lots",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /lots/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /lots/{id}/close",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/:id/close",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        ":id",
+        "close"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /lots/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /lots/{id}/performance",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/:id/performance",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        ":id",
+        "performance"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /lots/{id}/band",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/lots/:id/band",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "lots",
+        ":id",
+        "band"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /forecast/{id}/feed",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/forecast/:id/feed",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "forecast",
+        ":id",
+        "feed"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /forecast/{id}/mortality",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/forecast/:id/mortality",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "forecast",
+        ":id",
+        "mortality"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Ferme — vétérinaires",
+   "item": [
+    {
+     "name": "GET /vets",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vets/documents",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/documents",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "documents"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vets/documents/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/documents/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "documents",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vets/documents/{id}/applied",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/documents/:id/applied",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "documents",
+        ":id",
+        "applied"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vets/messages",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/messages",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "messages"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vets/messages/{vetId}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/messages/:vetId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "messages",
+        ":vetId"
+       ],
+       "variable": [
+        {
+         "key": "vetId",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vets/messages/{vetId}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vets/messages/:vetId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vets",
+        "messages",
+        ":vetId"
+       ],
+       "variable": [
+        {
+         "key": "vetId",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Finance",
+   "item": [
+    {
+     "name": "GET /finance/summary",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/summary",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "summary"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /finance/categories",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/categories",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "categories"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /finance/expenses",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/expenses",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "expenses"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /finance/expenses",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/expenses",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "expenses"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /finance/investments",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/investments",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "investments"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /finance/investments",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/investments",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "investments"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /finance/investments/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/finance/investments/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "finance",
+        "investments",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /accounting/entries",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/accounting/entries",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "accounting",
+        "entries"
+       ],
+       "variable": []
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Formation",
+   "item": [
+    {
+     "name": "GET /training",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/training",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "training"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /training/courses/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/training/courses/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "training",
+        "courses",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /training/courses/{id}/done",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/training/courses/:id/done",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "training",
+        "courses",
+        ":id",
+        "done"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /training/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/training/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "training",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Gestion",
+   "item": [
+    {
+     "name": "GET /employees",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/employees",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "employees"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /employees",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/employees",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "employees"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /employees/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/employees/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "employees",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /employees/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/employees/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "employees",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /employees/{id}/active",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/employees/:id/active",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "employees",
+        ":id",
+        "active"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /payslips",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /payslips/generate",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips/generate",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips",
+        "generate"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /payslips/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /payslips/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /payslips/{id}/validate",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips/:id/validate",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips",
+        ":id",
+        "validate"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /payslips/{id}/pay",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/payslips/:id/pay",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "payslips",
+        ":id",
+        "pay"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /suppliers",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/suppliers",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "suppliers"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /suppliers",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/suppliers",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "suppliers"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /suppliers/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/suppliers/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "suppliers",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /suppliers/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/suppliers/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "suppliers",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /suppliers/{id}/active",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/suppliers/:id/active",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "suppliers",
+        ":id",
+        "active"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Messagerie",
+   "item": [
+    {
+     "name": "GET /chat/rooms",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/rooms",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "rooms"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /chat/colleagues",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/colleagues",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "colleagues"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /chat/rooms/{id}/messages",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/rooms/:id/messages",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "rooms",
+        ":id",
+        "messages"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /chat/rooms/{id}/messages",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/rooms/:id/messages",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "rooms",
+        ":id",
+        "messages"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /chat/direct/{userId}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/direct/:userId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "direct",
+        ":userId"
+       ],
+       "variable": [
+        {
+         "key": "userId",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /chat/groups",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/groups",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "groups"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /chat/messages/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/messages/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "messages",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /chat/messages/{id}/file",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/chat/messages/:id/file",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "chat",
+        "messages",
+        ":id",
+        "file"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Parrainage",
+   "item": [
+    {
+     "name": "GET /referral",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/referral",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "referral"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /referral/invite",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/referral/invite",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "referral",
+        "invite"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /referral/payout",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/referral/payout",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "referral",
+        "payout"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Ponte",
+   "item": [
+    {
+     "name": "GET /laying",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/laying",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "laying"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /laying/loss",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/laying/loss",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "laying",
+        "loss"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /laying/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/laying/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "laying",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Stock",
+   "item": [
+    {
+     "name": "GET /stock/alerts",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/stock/alerts",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "stock",
+        "alerts"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /stock/products",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/stock/products",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "stock",
+        "products"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /stock/movements",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/stock/movements",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "stock",
+        "movements"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /stock/entries",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/stock/entries",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "stock",
+        "entries"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /stock/exits",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/stock/exits",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "stock",
+        "exits"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Support",
+   "item": [
+    {
+     "name": "GET /support/tickets",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/tickets",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "tickets"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /support/faq",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/faq",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "faq"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /support/tickets/{id}/messages",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/tickets/:id/messages",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "tickets",
+        ":id",
+        "messages"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /support/chat",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/chat",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "chat"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /support/escalate",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/escalate",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "escalate"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /support/report",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/report",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "report"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /support/tickets/{id}/close",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/support/tickets/:id/close",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "support",
+        "tickets",
+        ":id",
+        "close"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Ventes",
+   "item": [
+    {
+     "name": "POST /sales",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /sales",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /sales/summary",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales/summary",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales",
+        "summary"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /sales/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /sales/{id}/payments",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales/:id/payments",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales",
+        ":id",
+        "payments"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /clients",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/clients",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "clients"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /sales/{id}/cancel",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/sales/:id/cancel",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "sales",
+        ":id",
+        "cancel"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Vétérinaire",
+   "item": [
+    {
+     "name": "GET /vet/dashboard",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/dashboard",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "dashboard"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/sync/snapshot",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/sync/snapshot",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "sync",
+        "snapshot"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/sync/push",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/sync/push",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "sync",
+        "push"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/clients",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/clients",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "clients"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/clients",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/clients",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "clients"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/patients",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/patients",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "patients"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/patients/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/patients/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "patients",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /vet/rendez-vous",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/rendez-vous",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "rendez-vous"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/produits",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/produits",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "produits"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/documents",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/documents",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/documents/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vet/documents/{id}/payments",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents/:id/payments",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents",
+        ":id",
+        "payments"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/ordonnances",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/ordonnances",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/ordonnances/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /vet/profile",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/profile",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "profile"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/profile",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/profile",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "profile"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/options",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/options",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "options"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/counter-client",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/counter-client",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "counter-client"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/documents/{id}/status",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents/:id/status",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents",
+        ":id",
+        "status"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/documents/{id}/convert",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents/:id/convert",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents",
+        ":id",
+        "convert"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/documents/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/documents/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "documents",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/payments/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/payments/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "payments",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/ordonnances/{id}/issue",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances/:id/issue",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances",
+        ":id",
+        "issue"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/ordonnances/{id}/bill",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances/:id/bill",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances",
+        ":id",
+        "bill"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/ordonnances/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/ordonnances/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "ordonnances",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/clients/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/clients/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "clients",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vet/clients/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/clients/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "clients",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/clients/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/clients/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "clients",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/articles",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/articles",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "articles"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/articles",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/articles",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "articles"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/articles/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/articles/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "articles",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/articles/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/articles/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "articles",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/pharmacy/entry",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/pharmacy/entry",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "pharmacy",
+        "entry"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/pharmacy/movement",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/pharmacy/movement",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "pharmacy",
+        "movement"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/pharmacy/expired",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/pharmacy/expired",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "pharmacy",
+        "expired"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/pharmacy",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/pharmacy",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "pharmacy"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/pharmacy/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/pharmacy/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "pharmacy",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /vet/suppliers",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/suppliers",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "suppliers"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/suppliers",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/suppliers",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "suppliers"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/suppliers/{id}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/suppliers/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "suppliers",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/suppliers/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/suppliers/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "suppliers",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/orders/suggestions",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders/suggestions",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders",
+        "suggestions"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/orders",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/orders",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/orders/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vet/orders/{id}/status",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders/:id/status",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders",
+        ":id",
+        "status"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/orders/{id}/receive",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/orders/:id/receive",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "orders",
+        ":id",
+        "receive"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/accounting",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/accounting",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "accounting"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/finance",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/finance",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "finance"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/expenses",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/expenses",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "expenses"
+       ],
+       "variable": []
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/expenses/{id}/delete",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/expenses/:id/delete",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "expenses",
+        ":id",
+        "delete"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "name": "Vétérinaire — fermes",
+   "item": [
+    {
+     "name": "GET /vet/farms",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "POST /vet/farms/{id}/respond",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms/:id/respond",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms",
+        ":id",
+        "respond"
+       ],
+       "variable": [
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/farms/{societeId}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms/:societeId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms",
+        ":societeId"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "GET /vet/farms/{societeId}/lots/{id}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms/:societeId/lots/:id",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms",
+        ":societeId",
+        "lots",
+        ":id"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        },
+        {
+         "key": "id",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vet/farms/{societeId}/documents",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms/:societeId/documents",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms",
+        ":societeId",
+        "documents"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "POST /vet/farms/{societeId}/cattle-event",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/farms/:societeId/cattle-event",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "farms",
+        ":societeId",
+        "cattle-event"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    },
+    {
+     "name": "GET /vet/messages",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/messages",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "messages"
+       ],
+       "variable": []
+      }
+     }
+    },
+    {
+     "name": "GET /vet/messages/{societeId}",
+     "request": {
+      "method": "GET",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/messages/:societeId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "messages",
+        ":societeId"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "name": "POST /vet/messages/{societeId}",
+     "request": {
+      "method": "POST",
+      "header": [
+       {
+        "key": "Accept",
+        "value": "application/json"
+       },
+       {
+        "key": "Content-Type",
+        "value": "application/json"
+       }
+      ],
+      "url": {
+       "raw": "{{base_url}}/vet/messages/:societeId",
+       "host": [
+        "{{base_url}}"
+       ],
+       "path": [
+        "vet",
+        "messages",
+        ":societeId"
+       ],
+       "variable": [
+        {
+         "key": "societeId",
+         "value": "1"
+        }
+       ]
+      },
+      "body": {
+       "mode": "raw",
+       "raw": "{}",
+       "options": {
+        "raw": {
+         "language": "json"
+        }
+       }
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

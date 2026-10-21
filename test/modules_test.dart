@@ -241,4 +241,27 @@ void main() {
     expect(find.text('FARM-7'), findsOneWidget);
     expect(find.textContaining('Mortalité : 4,2 %'), findsOneWidget);
   });
+
+  testWidgets('employé : désactiver demande confirmation puis envoie actif=false ; inactif propose la réactivation', (t) async {
+    Map<String, dynamic>? sent;
+    var actif = 1;
+    await _pump(t, ModuleDetailPage(employeesModule, 5), {
+      'GET /employees/5': (_) => ok({'id': 5, 'prenom': 'Awa', 'nom': 'Diop', 'actif': actif}),
+      'POST /employees/5/active': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        actif = 0;
+        return ok({'actif': false});
+      },
+    });
+    expect(find.text('Réactiver'), findsNothing);
+    await t.ensureVisible(find.text('Désactiver'));
+    await t.tap(find.text('Désactiver'));
+    await t.pumpAndSettle();
+    expect(find.text('Désactiver cet employé ? Il n\'apparaîtra plus dans la paie.'), findsOneWidget);
+    await t.tap(find.text('Confirmer'));
+    await t.pumpAndSettle();
+    expect(sent, {'actif': false});
+    await t.ensureVisible(find.text('Réactiver'));
+    expect(find.text('Réactiver'), findsOneWidget);
+  });
 }

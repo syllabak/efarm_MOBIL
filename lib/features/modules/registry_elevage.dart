@@ -155,6 +155,7 @@ final fatteningModule = ModuleSpec(
     ]),
     ActionSpec('Modifier le lot', '/fattening/{id}', icon: Icons.edit_outlined, prefill: true, successMessage: 'Lot mis à jour.', fields: _embFields),
     ActionSpec('Clôturer', '/fattening/{id}/close', icon: Icons.flag_outlined, confirm: 'Clôturer ce lot d\'embouche ?', visible: (r) => r['statut'] == 'en_cours', successMessage: 'Lot clôturé.'),
+    ActionSpec('Supprimer', '/fattening/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer ce lot d\'embouche créé par erreur ? Impossible s\'il contient déjà des opérations.', successMessage: 'Lot supprimé.'),
     ActionSpec('Rouvrir', '/fattening/{id}/reopen', icon: Icons.replay, confirm: 'Rouvrir ce lot ?', visible: (r) => r['statut'] == 'termine', successMessage: 'Lot rouvert.'),
   ],
   create: const CreateSpec('Lot', '/fattening', [

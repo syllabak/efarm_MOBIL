@@ -20,6 +20,8 @@ const _employeFields = [
   FieldSpec('taux_horaire', 'Taux horaire', type: FieldType.number, suffix: 'F/h', min: 0, hint: 'Pour un employé payé à l\'heure'),
 ];
 
+bool _estActif(Map<String, dynamic> r) => r['actif'] == 1 || r['actif'] == true || r['actif'] == '1';
+
 final employeesModule = ModuleSpec(
   id: 'employees',
   plan: 'paie',
@@ -44,6 +46,8 @@ final employeesModule = ModuleSpec(
   ],
   actions: [
     const ActionSpec('Modifier', '/employees/{id}', icon: Icons.edit_outlined, fields: _employeFields, prefill: true, successMessage: 'Employé mis à jour.'),
+    ActionSpec('Désactiver', '/employees/{id}/active', icon: Icons.person_off_outlined, body: const {'actif': false}, visible: _estActif, confirm: 'Désactiver cet employé ? Il n\'apparaîtra plus dans la paie.', successMessage: 'Employé désactivé.'),
+    ActionSpec('Réactiver', '/employees/{id}/active', icon: Icons.person_outline, body: const {'actif': true}, visible: (r) => !_estActif(r), successMessage: 'Employé réactivé.'),
   ],
   create: const CreateSpec('Employé', '/employees', [
     FieldSpec('site_id', 'Site', type: FieldType.select, required: true, optionsPath: '/farm/sites'),
@@ -132,6 +136,8 @@ final suppliersModule = ModuleSpec(
   ],
   actions: [
     const ActionSpec('Modifier', '/suppliers/{id}', icon: Icons.edit_outlined, fields: _fournisseurFields, prefill: true, successMessage: 'Fournisseur mis à jour.'),
+    ActionSpec('Désactiver', '/suppliers/{id}/active', icon: Icons.block, body: const {'actif': false}, visible: _estActif, confirm: 'Désactiver ce fournisseur ?', successMessage: 'Fournisseur désactivé.'),
+    ActionSpec('Réactiver', '/suppliers/{id}/active', icon: Icons.check_circle_outline, body: const {'actif': true}, visible: (r) => !_estActif(r), successMessage: 'Fournisseur réactivé.'),
   ],
   create: const CreateSpec('Fournisseur', '/suppliers', _fournisseurFields, roles: _gestionnaires, successMessage: 'Fournisseur ajouté.'),
   emptyText: 'Aucun fournisseur.',

@@ -3,9 +3,22 @@
 Quand le serveur répond « Erreur interne — Réessayez. » (HTTP 500), le site cache volontairement la cause en production.
 `diag_api_login.php` rejoue la requête de l'application avec l'affichage détaillé des erreurs, **sans modifier le code du site**.
 
-1. Copiez `diag_api_login.php` à la racine du site (à côté de `index.php`) et remplacez `CHANGEZ-MOI` par un secret long (lettres et chiffres).
-2. Dans l'application : Options avancées → Adresse du serveur = `https://VOTRE-DOMAINE/diag_api_login.php/VOTRE-SECRET`, puis se connecter.
-3. Le message d'erreur (fichier, ligne, cause) s'affiche. En navigateur : onglet Network → requête `login` → Response.
-4. **Supprimez `diag_api_login.php` du serveur dès le test terminé** : il révèle des chemins et des détails internes.
+1. Dans `diag_api_login.php`, remplacez `CHANGEZ-MOI` (une seule fois, ligne `const CLE_DIAG`) par un secret d'au moins 12 lettres/chiffres.
+2. Copiez le fichier à la racine du site (à côté de `index.php`).
+3. Test dans le navigateur : `https://VOTRE-DOMAINE/diag_api_login.php?k=VOTRE-SECRET&r=/api/mobile/v1/status` doit afficher le JSON du service.
+4. Dans l'application : Options avancées → Adresse du serveur = `https://VOTRE-DOMAINE/diag_api_login.php?k=VOTRE-SECRET&r=`, puis se connecter.
+5. Le message d'erreur (fichier, ligne, cause) s'affiche. En navigateur : onglet Network → requête `login` → Response.
+6. **Supprimez `diag_api_login.php` du serveur dès le test terminé** et remettez l'adresse normale dans l'application.
 
-Sans le bon secret dans l'adresse, le fichier répond 404 et ne fait rien.
+Le fichier répond aussi aux requêtes de vérification CORS de Chrome (uniquement pour ce diagnostic), ce qui permet de tester l'application web sans désactiver la sécurité du navigateur.
+
+Sans le bon secret, le fichier répond 404 et ne fait rien. L'adresse passe par des paramètres (`?k=…&r=…`) et non par un chemin,
+car certains hébergements mutualisés refusent les URL de la forme `fichier.php/chemin`.
+
+## Cause trouvée le 21/10/2026 : décalage horaire PHP / MySQL
+
+Erreur relevée : `TypeError: ApiMobileController::contexte(): Argument #1 ($j) must be of type array, null given` (connexion).
+Le serveur écrit l'expiration du jeton avec l'heure PHP (`date()`, fuseau Africa/Dakar = UTC+0) puis la compare à l'heure MySQL (`NOW()`).
+Si MySQL est réglé sur une autre heure (ex. Europe/Paris, UTC+2), un jeton valable 1 h est jugé expiré dès sa création.
+Correctif d'une ligne dans `services/ApiMobileService.php` (fonction `jeton()`) : `correctif_jetons_fuseau.patch`
+(comparer à `date('Y-m-d H:i:s')` calculé par PHP au lieu de `NOW()`). Reproduit puis validé en local avec MySQL décalé de +2 h.

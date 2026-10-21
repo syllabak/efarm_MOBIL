@@ -56,6 +56,11 @@ void main() {
     }
   });
 
+  test('erreur 500 non JSON : extrait de la page d\'erreur affiché', () async {
+    final (api, _, _) = await makeClient({'POST /auth/login': (_) => (status: 500, body: <String, dynamic>{})});
+    await expectLater(api.post('/auth/login', auth: false), throwsA(isA<ApiException>().having((e) => e.status, 'status', 500).having((e) => e.code, 'code', 'erreur_serveur')));
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

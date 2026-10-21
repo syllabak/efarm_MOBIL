@@ -269,6 +269,37 @@ final vetOrdersModule = ModuleSpec(
 bool _brouillon(Json r) => r['statut'] == 'brouillon';
 bool _annulable(Json r) => r['statut'] == 'brouillon' || r['statut'] == 'envoyee';
 
+/// Produits sous leur seuil d'alerte (suggestions du serveur) : un toucher prépare la commande avec ces lignes déjà remplies.
+class OrderSuggestionsPage extends ConsumerWidget {
+  const OrderSuggestionsPage({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Réapprovisionnement')),
+      body: AsyncView<List>(
+        load: () => api.get<List>('/vet/orders/suggestions'),
+        builder: (c, rows) {
+          if (rows.isEmpty) return const EmptyView('Aucun produit sous son seuil d\'alerte.', icon: Icons.check_circle_outline);
+          final lignes = [for (final r in rows.cast<Map>()) Map<String, dynamic>.from(r)];
+          return ListView(padding: const EdgeInsets.all(8), children: [
+            for (final r in lignes)
+              Card(child: ListTile(leading: const Icon(Icons.warning_amber, color: Colors.orange), title: Text('${r['designation']}'), subtitle: Text('À commander : ${fmtNum(r['quantite'], digits: 1)}'), trailing: Text(fcfa(r['prix_achat'])))),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: FilledButton.icon(
+                icon: const Icon(Icons.shopping_cart_outlined),
+                label: const Text('Préparer la commande'),
+                onPressed: () => Navigator.push(c, MaterialPageRoute(builder: (_) => DynamicFormPage(title: 'Nouvelle commande', fields: vetOrdersModule.create!.fields, initialValues: {'lignes': lignes}, successMessage: vetOrdersModule.create!.successMessage, submit: (b) => api.post('/vet/orders', body: b)))),
+              ),
+            ),
+          ]);
+        },
+      ),
+    );
+  }
+}
+
 /// Réception d'une commande : quantités reçues par ligne (avec lot et péremption), entrée en stock automatique.
 class ReceiveOrderPage extends ConsumerStatefulWidget {
   const ReceiveOrderPage({super.key, required this.orderId});

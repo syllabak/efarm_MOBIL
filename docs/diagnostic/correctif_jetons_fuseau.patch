@@ -1,0 +1,13 @@
+diff --git a/services/ApiMobileService.php b/services/ApiMobileService.php
+index d7f52b3..339d496 100644
+--- a/services/ApiMobileService.php
++++ b/services/ApiMobileService.php
+@@ -91,7 +91,7 @@ class ApiMobileService
+     {
+         self::assurerTables();
+         if (strlen($brut) < 20 || strlen($brut) > 120) return null;
+-        $r = Database::fetchOne("SELECT * FROM api_jetons WHERE acces_hash = ? AND etape = ? AND revoque_le IS NULL AND acces_expire > NOW()", [self::hash($brut), $etape]);
++        $r = Database::fetchOne("SELECT * FROM api_jetons WHERE acces_hash = ? AND etape = ? AND revoque_le IS NULL AND acces_expire > ?", [self::hash($brut), $etape, date('Y-m-d H:i:s')]);
+         return $r ?: null;
+     }
+ 

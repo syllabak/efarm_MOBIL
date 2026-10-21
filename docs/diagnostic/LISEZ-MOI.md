@@ -14,3 +14,11 @@ Le fichier répond aussi aux requêtes de vérification CORS de Chrome (uniqueme
 
 Sans le bon secret, le fichier répond 404 et ne fait rien. L'adresse passe par des paramètres (`?k=…&r=…`) et non par un chemin,
 car certains hébergements mutualisés refusent les URL de la forme `fichier.php/chemin`.
+
+## Cause trouvée le 21/10/2026 : décalage horaire PHP / MySQL
+
+Erreur relevée : `TypeError: ApiMobileController::contexte(): Argument #1 ($j) must be of type array, null given` (connexion).
+Le serveur écrit l'expiration du jeton avec l'heure PHP (`date()`, fuseau Africa/Dakar = UTC+0) puis la compare à l'heure MySQL (`NOW()`).
+Si MySQL est réglé sur une autre heure (ex. Europe/Paris, UTC+2), un jeton valable 1 h est jugé expiré dès sa création.
+Correctif d'une ligne dans `services/ApiMobileService.php` (fonction `jeton()`) : `correctif_jetons_fuseau.patch`
+(comparer à `date('Y-m-d H:i:s')` calculé par PHP au lieu de `NOW()`). Reproduit puis validé en local avec MySQL décalé de +2 h.

@@ -107,3 +107,18 @@ dans le code mais sont masqués. Pour réactiver un module, ajouter sa route dan
 Chaque réponse GET réussie est conservée localement (`lib/core/response_cache.dart`, un fichier JSON par requête, effacé à la déconnexion).
 Si le réseau est coupé, l'écran affiche la dernière copie et un bandeau « Hors ligne ». La saisie reste en ligne seulement ;
 la clinique vétérinaire garde sa propre synchronisation complète (saisie hors ligne). Sur le web, la copie n'est conservée qu'en mémoire.
+
+## Développer contre l'API complète
+
+Par défaut, seuls les modules supportés par le `main` du serveur sont visibles. Pour voir toute l'application pendant le développement
+(serveur de test qui expose l'API de la branche `claude/loving-faraday-c9jj8j` d'efarm360) :
+
+```
+flutter run -d windows --dart-define=FULL_API=true
+```
+
+## Détection automatique des fonctions du serveur
+
+À la connexion, l'application lit le contrat public `/api/mobile/v1/openapi.json`. Un module n'est affiché que si le serveur déclare
+sa route : dès que le site web est mis à jour avec l'API complète, les modules apparaissent sans nouvelle version de l'application.
+Si le contrat est illisible (réseau coupé au tout premier démarrage), la liste statique de `lib/core/server_support.dart` est utilisée.

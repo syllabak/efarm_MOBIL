@@ -68,6 +68,22 @@ class ApiClient {
   /// Renseigné quand la dernière lecture a été servie depuis la copie locale (réseau coupé).
   final ValueNotifier<DateTime?> offlineSince = ValueNotifier(null);
 
+  /// Récupère le contrat OpenAPI publié par le serveur (route publique, JSON brut) ; copie locale si le réseau est coupé.
+  Future<Map<String, dynamic>?> contract() async {
+    const key = 'contract';
+    try {
+      final res = await _dio.get<dynamic>('${await _base()}/openapi.json');
+      if (res.statusCode == 200 && res.data is Map) {
+        final j = Map<String, dynamic>.from(res.data as Map);
+        await _cache.write(key, j);
+        return j;
+      }
+      return null;
+    } on DioException {
+      return _cache.read(key);
+    }
+  }
+
   Future<void> clearCache() async {
     offlineSince.value = null;
     await _cache.clear();

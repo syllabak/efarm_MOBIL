@@ -38,6 +38,15 @@ void main() {
     await expectLater(api.list('/farm/lots', query: {'page': 1}), throwsA(isA<ApiException>()));
   });
 
+  test('contrat OpenAPI : lu sur le serveur, copie locale si le réseau est coupé', () async {
+    final (api, a, _) = await makeClient({'GET /openapi.json': (_) => (status: 200, body: {'paths': {'/sales': {'get': {}}}})});
+    expect((await api.contract())!['paths'], isNotEmpty);
+    a.routes.remove('GET /openapi.json');
+    expect((await api.contract())!['paths'], isNotEmpty);
+    await api.clearCache();
+    expect(await api.contract(), isNull);
+  });
+
   test('coupure réseau = ApiException reseau', () async {
     final (api, _, _) = await makeClient({});
     await expectLater(api.get('/me'), throwsA(isA<ApiException>().having((e) => e.isNetwork, 'isNetwork', true)));

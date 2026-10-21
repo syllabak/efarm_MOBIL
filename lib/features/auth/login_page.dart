@@ -147,6 +147,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  /// Vérifie l'adresse saisie : le serveur répond-il sur `/status` de l'API mobile ?
+  Future<void> _testServer() async {
+    final url = _server.text.trim();
+    if (!(url.startsWith('https://') || url.startsWith('http://'))) return showError(context, StateError('Adresse http(s) requise'));
+    try {
+      await ref.read(sessionProvider.notifier).setServer(url);
+      final r = await ref.read(apiProvider).get<Map>('/status', auth: false);
+      if (mounted) showInfo(context, 'Serveur joignable : ${r['service'] ?? 'EFarm360'}, API mobile v${r['version'] ?? '?'}.');
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final farm = _type == 'ferme';
@@ -223,6 +236,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       decoration: const InputDecoration(labelText: 'Adresse du serveur', prefixIcon: Icon(Icons.dns_outlined)),
                       validator: (v) => (v ?? '').startsWith('https://') || (v ?? '').startsWith('http://') ? null : 'Adresse http(s) requise',
                     ),
+                    Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: _busy ? null : _testServer, icon: const Icon(Icons.wifi_tethering), label: const Text('Tester la connexion au serveur'))),
                   ],
                 ]),
               ),

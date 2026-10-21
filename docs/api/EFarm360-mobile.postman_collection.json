@@ -54,17 +54,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/login",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "login"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/login",
       "auth": {
        "type": "noauth"
       },
@@ -108,17 +98,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/2fa",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "2fa"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/2fa",
       "auth": {
        "type": "noauth"
       },
@@ -147,17 +127,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/refresh",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "refresh"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/refresh",
       "auth": {
        "type": "noauth"
       },
@@ -198,17 +168,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/logout",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "logout"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/logout",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -234,17 +194,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/logout-all",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "logout-all"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/logout-all",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -266,16 +216,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/me",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "me"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/me"
      }
     },
     {
@@ -288,16 +229,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/devices",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "devices"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/devices"
      }
     },
     {
@@ -314,18 +246,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/code/request",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "code",
-        "request"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/code/request",
       "auth": {
        "type": "noauth"
       },
@@ -354,18 +275,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/auth/code/verify",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "auth",
-        "code",
-        "verify"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/auth/code/verify",
       "auth": {
        "type": "noauth"
       },
@@ -395,16 +305,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/status",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "status"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/status",
       "auth": {
        "type": "noauth"
       }
@@ -425,16 +326,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/openapi.json",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "openapi.json"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/openapi.json",
       "auth": {
        "type": "noauth"
       }
@@ -455,17 +347,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/summary",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "summary"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/cattle/summary"
      }
     },
     {
@@ -478,17 +360,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/races",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "races"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/cattle/races"
      }
     },
     {
@@ -501,17 +373,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/options",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "options"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/cattle/options"
      }
     },
     {
@@ -524,17 +386,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/milk",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "milk"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/cattle/milk"
      }
     },
     {
@@ -551,17 +403,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/milk",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "milk"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/cattle/milk",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -587,17 +429,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle/weighing",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        "weighing"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/cattle/weighing",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -619,16 +451,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/cattle"
      }
     },
     {
@@ -645,16 +468,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/cattle",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/cattle",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -678,13 +492,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/cattle/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -710,13 +517,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/cattle/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -751,14 +551,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/cattle/:id/events",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        ":id",
-        "events"
-       ],
        "variable": [
         {
          "key": "id",
@@ -793,14 +585,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/cattle/:id/exit",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        ":id",
-        "exit"
-       ],
        "variable": [
         {
          "key": "id",
@@ -835,14 +619,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/cattle/:id/reinstate",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "cattle",
-        ":id",
-        "reinstate"
-       ],
        "variable": [
         {
          "key": "id",
@@ -876,17 +652,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/iot/sensors",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "iot",
-        "sensors"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/iot/sensors"
      }
     },
     {
@@ -903,17 +669,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/iot/sensors",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "iot",
-        "sensors"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/iot/sensors",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -941,15 +697,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/iot/sensors/:id/active",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "iot",
-        "sensors",
-        ":id",
-        "active"
-       ],
        "variable": [
         {
          "key": "id",
@@ -978,17 +725,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/iot/readings",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "iot",
-        "readings"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/iot/readings"
      }
     },
     {
@@ -1005,17 +742,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/iot/readings",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "iot",
-        "readings"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/iot/readings",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1042,16 +769,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/profile",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "profile"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/profile"
      }
     },
     {
@@ -1068,16 +786,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/profile",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "profile"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/profile",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1103,17 +812,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/profile/password",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "profile",
-        "password"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/profile/password",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1140,17 +839,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/hatchery/equipment",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        "equipment"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/hatchery/equipment"
      }
     },
     {
@@ -1167,17 +856,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/hatchery/equipment",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        "equipment"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/hatchery/equipment",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1199,16 +878,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/hatchery",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/hatchery"
      }
     },
     {
@@ -1225,16 +895,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/hatchery",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/hatchery",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1258,13 +919,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/hatchery/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1290,14 +944,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/hatchery/:id/candling",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        ":id",
-        "candling"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1332,14 +978,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/hatchery/:id/hatch",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        ":id",
-        "hatch"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1374,14 +1012,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/hatchery/:id/convert",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "hatchery",
-        ":id",
-        "convert"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1415,16 +1045,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/fattening",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/fattening"
      }
     },
     {
@@ -1441,16 +1062,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/fattening",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/fattening",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1474,13 +1086,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1506,13 +1111,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1547,14 +1145,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/animals",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "animals"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1589,14 +1179,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/remove",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "remove"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1631,14 +1213,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/weighing",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "weighing"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1673,14 +1247,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/close",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "close"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1715,14 +1281,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/reopen",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "reopen"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1757,14 +1315,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/fattening/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "fattening",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1798,17 +1348,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/resume",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "resume"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/farm/resume"
      }
     },
     {
@@ -1821,17 +1361,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/sites",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "sites"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/farm/sites"
      }
     },
     {
@@ -1844,17 +1374,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/lots",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "lots"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/farm/lots"
      }
     },
     {
@@ -1869,14 +1389,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/farm/lots/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "lots",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -1896,17 +1408,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/rapports",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "rapports"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/farm/rapports"
      }
     },
     {
@@ -1923,17 +1425,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/rapports",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "rapports"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/farm/rapports",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -1955,17 +1447,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/farm/stock",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "farm",
-        "stock"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/farm/stock"
      }
     },
     {
@@ -1978,16 +1460,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/alerts",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "alerts"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/alerts"
      }
     },
     {
@@ -2004,17 +1477,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/alerts/read",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "alerts",
-        "read"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/alerts/read",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -2036,17 +1499,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/lots/compare",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        "compare"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/lots/compare"
      }
     },
     {
@@ -2063,16 +1516,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/lots",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/lots",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -2100,13 +1544,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/lots/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2141,14 +1578,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/lots/:id/close",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        ":id",
-        "close"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2183,14 +1612,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/lots/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2221,14 +1642,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/lots/:id/performance",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        ":id",
-        "performance"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2250,14 +1663,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/lots/:id/band",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "lots",
-        ":id",
-        "band"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2279,14 +1684,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/forecast/:id/feed",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "forecast",
-        ":id",
-        "feed"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2308,14 +1705,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/forecast/:id/mortality",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "forecast",
-        ":id",
-        "mortality"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2340,16 +1729,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vets",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vets"
      }
     },
     {
@@ -2362,17 +1742,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vets/documents",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "documents"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vets/documents"
      }
     },
     {
@@ -2387,14 +1757,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vets/documents/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "documents",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2420,15 +1782,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vets/documents/:id/applied",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "documents",
-        ":id",
-        "applied"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2457,17 +1810,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vets/messages",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "messages"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vets/messages"
      }
     },
     {
@@ -2482,14 +1825,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vets/messages/:vetId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "messages",
-        ":vetId"
-       ],
        "variable": [
         {
          "key": "vetId",
@@ -2515,14 +1850,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vets/messages/:vetId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vets",
-        "messages",
-        ":vetId"
-       ],
        "variable": [
         {
          "key": "vetId",
@@ -2556,17 +1883,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/summary",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "summary"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/finance/summary"
      }
     },
     {
@@ -2579,17 +1896,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/categories",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "categories"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/finance/categories"
      }
     },
     {
@@ -2602,17 +1909,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/expenses",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "expenses"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/finance/expenses"
      }
     },
     {
@@ -2629,17 +1926,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/expenses",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "expenses"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/finance/expenses",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -2661,17 +1948,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/investments",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "investments"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/finance/investments"
      }
     },
     {
@@ -2688,17 +1965,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/finance/investments",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "investments"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/finance/investments",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -2726,15 +1993,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/finance/investments/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "finance",
-        "investments",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2763,17 +2021,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/accounting/entries",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "accounting",
-        "entries"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/accounting/entries"
      }
     }
    ]
@@ -2791,16 +2039,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/training",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "training"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/training"
      }
     },
     {
@@ -2815,14 +2054,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/training/courses/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "training",
-        "courses",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2848,15 +2079,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/training/courses/:id/done",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "training",
-        "courses",
-        ":id",
-        "done"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2887,13 +2109,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/training/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "training",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -2918,16 +2133,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/employees",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "employees"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/employees"
      }
     },
     {
@@ -2944,16 +2150,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/employees",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "employees"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/employees",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -2977,13 +2174,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/employees/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "employees",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3009,13 +2199,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/employees/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "employees",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3050,14 +2233,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/employees/:id/active",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "employees",
-        ":id",
-        "active"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3086,16 +2261,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/payslips",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/payslips"
      }
     },
     {
@@ -3112,17 +2278,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/payslips/generate",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips",
-        "generate"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/payslips/generate",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3146,13 +2302,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/payslips/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3178,13 +2327,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/payslips/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3219,14 +2361,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/payslips/:id/validate",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips",
-        ":id",
-        "validate"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3261,14 +2395,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/payslips/:id/pay",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "payslips",
-        ":id",
-        "pay"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3297,16 +2423,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/suppliers",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "suppliers"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/suppliers"
      }
     },
     {
@@ -3323,16 +2440,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/suppliers",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "suppliers"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/suppliers",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3356,13 +2464,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/suppliers/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "suppliers",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3388,13 +2489,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/suppliers/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "suppliers",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3429,14 +2523,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/suppliers/:id/active",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "suppliers",
-        ":id",
-        "active"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3470,17 +2556,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/chat/rooms",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "rooms"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/chat/rooms"
      }
     },
     {
@@ -3493,17 +2569,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/chat/colleagues",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "colleagues"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/chat/colleagues"
      }
     },
     {
@@ -3518,15 +2584,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/chat/rooms/:id/messages",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "rooms",
-        ":id",
-        "messages"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3552,15 +2609,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/chat/rooms/:id/messages",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "rooms",
-        ":id",
-        "messages"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3595,14 +2643,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/chat/direct/:userId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "direct",
-        ":userId"
-       ],
        "variable": [
         {
          "key": "userId",
@@ -3635,17 +2675,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/chat/groups",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "groups"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/chat/groups",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3673,15 +2703,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/chat/messages/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "messages",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3712,15 +2733,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/chat/messages/:id/file",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "chat",
-        "messages",
-        ":id",
-        "file"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3745,16 +2757,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/referral",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "referral"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/referral"
      }
     },
     {
@@ -3771,17 +2774,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/referral/invite",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "referral",
-        "invite"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/referral/invite",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3807,17 +2800,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/referral/payout",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "referral",
-        "payout"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/referral/payout",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3844,16 +2827,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/laying",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "laying"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/laying"
      }
     },
     {
@@ -3870,17 +2844,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/laying/loss",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "laying",
-        "loss"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/laying/loss",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -3904,13 +2868,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/laying/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "laying",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -3935,17 +2892,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/stock/alerts",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "stock",
-        "alerts"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/stock/alerts"
      }
     },
     {
@@ -3958,17 +2905,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/stock/products",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "stock",
-        "products"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/stock/products"
      }
     },
     {
@@ -3981,17 +2918,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/stock/movements",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "stock",
-        "movements"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/stock/movements"
      }
     },
     {
@@ -4008,17 +2935,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/stock/entries",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "stock",
-        "entries"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/stock/entries",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4044,17 +2961,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/stock/exits",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "stock",
-        "exits"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/stock/exits",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4081,17 +2988,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/support/tickets",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "tickets"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/support/tickets"
      }
     },
     {
@@ -4104,17 +3001,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/support/faq",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "faq"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/support/faq"
      }
     },
     {
@@ -4129,15 +3016,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/support/tickets/:id/messages",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "tickets",
-        ":id",
-        "messages"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4161,17 +3039,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/support/chat",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "chat"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/support/chat",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4197,17 +3065,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/support/escalate",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "escalate"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/support/escalate",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4233,17 +3091,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/support/report",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "report"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/support/report",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4271,15 +3119,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/support/tickets/:id/close",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "support",
-        "tickets",
-        ":id",
-        "close"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4317,16 +3156,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/sales",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/sales",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4348,16 +3178,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/sales",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/sales"
      }
     },
     {
@@ -4370,17 +3191,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/sales/summary",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales",
-        "summary"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/sales/summary"
      }
     },
     {
@@ -4395,13 +3206,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/sales/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4427,14 +3231,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/sales/:id/payments",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales",
-        ":id",
-        "payments"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4463,16 +3259,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/clients",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "clients"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/clients"
      }
     },
     {
@@ -4491,14 +3278,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/sales/:id/cancel",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "sales",
-        ":id",
-        "cancel"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4532,17 +3311,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/dashboard",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "dashboard"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/dashboard"
      }
     },
     {
@@ -4555,18 +3324,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/sync/snapshot",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "sync",
-        "snapshot"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/sync/snapshot"
      }
     },
     {
@@ -4583,18 +3341,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/sync/push",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "sync",
-        "push"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/sync/push",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4616,17 +3363,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/clients",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "clients"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/clients"
      }
     },
     {
@@ -4643,17 +3380,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/clients",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "clients"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/clients",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4675,17 +3402,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/patients",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "patients"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/patients"
      }
     },
     {
@@ -4700,14 +3417,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/patients/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "patients",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4727,17 +3436,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/rendez-vous",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "rendez-vous"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/rendez-vous"
      }
     },
     {
@@ -4750,17 +3449,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/produits",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "produits"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/produits"
      }
     },
     {
@@ -4773,17 +3462,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/documents",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/documents"
      }
     },
     {
@@ -4800,17 +3479,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/documents",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/documents",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4834,14 +3503,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/documents/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4867,15 +3528,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/documents/:id/payments",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents",
-        ":id",
-        "payments"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4904,17 +3556,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/ordonnances",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/ordonnances"
      }
     },
     {
@@ -4931,17 +3573,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/ordonnances",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/ordonnances",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -4965,14 +3597,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/ordonnances/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -4992,17 +3616,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/profile",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "profile"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/profile"
      }
     },
     {
@@ -5019,17 +3633,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/profile",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "profile"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/profile",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5051,17 +3655,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/options",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "options"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/options"
      }
     },
     {
@@ -5074,17 +3668,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/counter-client",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "counter-client"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/counter-client"
      }
     },
     {
@@ -5103,15 +3687,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/documents/:id/status",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents",
-        ":id",
-        "status"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5146,15 +3721,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/documents/:id/convert",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents",
-        ":id",
-        "convert"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5189,15 +3755,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/documents/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "documents",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5232,15 +3789,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/payments/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "payments",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5275,15 +3823,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/ordonnances/:id/issue",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances",
-        ":id",
-        "issue"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5318,15 +3857,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/ordonnances/:id/bill",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances",
-        ":id",
-        "bill"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5361,15 +3891,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/ordonnances/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "ordonnances",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5400,14 +3921,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/clients/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "clients",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5433,14 +3946,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/clients/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "clients",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5475,15 +3980,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/clients/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "clients",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5512,17 +4008,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/articles",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "articles"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/articles"
      }
     },
     {
@@ -5539,17 +4025,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/articles",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "articles"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/articles",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5577,14 +4053,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/articles/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "articles",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5619,15 +4087,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/articles/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "articles",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5660,18 +4119,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/pharmacy/entry",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "pharmacy",
-        "entry"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/pharmacy/entry",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5697,18 +4145,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/pharmacy/movement",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "pharmacy",
-        "movement"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/pharmacy/movement",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5734,18 +4171,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/pharmacy/expired",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "pharmacy",
-        "expired"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/pharmacy/expired",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5767,17 +4193,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/pharmacy",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "pharmacy"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/pharmacy"
      }
     },
     {
@@ -5792,14 +4208,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/pharmacy/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "pharmacy",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5819,17 +4227,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/suppliers",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "suppliers"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/suppliers"
      }
     },
     {
@@ -5846,17 +4244,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/suppliers",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "suppliers"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/suppliers",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -5884,14 +4272,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/suppliers/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "suppliers",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5926,15 +4306,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/suppliers/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "suppliers",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -5963,18 +4334,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/orders/suggestions",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders",
-        "suggestions"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/orders/suggestions"
      }
     },
     {
@@ -5987,17 +4347,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/orders",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/orders"
      }
     },
     {
@@ -6014,17 +4364,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/orders",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/orders",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -6048,14 +4388,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/orders/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders",
-        ":id"
-       ],
        "variable": [
         {
          "key": "id",
@@ -6081,15 +4413,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/orders/:id/status",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders",
-        ":id",
-        "status"
-       ],
        "variable": [
         {
          "key": "id",
@@ -6124,15 +4447,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/orders/:id/receive",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "orders",
-        ":id",
-        "receive"
-       ],
        "variable": [
         {
          "key": "id",
@@ -6161,17 +4475,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/accounting",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "accounting"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/accounting"
      }
     },
     {
@@ -6184,17 +4488,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/finance",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "finance"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/finance"
      }
     },
     {
@@ -6211,17 +4505,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/expenses",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "expenses"
-       ],
-       "variable": []
-      },
+      "url": "{{base_url}}/vet/expenses",
       "body": {
        "mode": "raw",
        "raw": "{}",
@@ -6249,15 +4533,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/expenses/:id/delete",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "expenses",
-        ":id",
-        "delete"
-       ],
        "variable": [
         {
          "key": "id",
@@ -6291,17 +4566,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/farms",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/farms"
      }
     },
     {
@@ -6320,15 +4585,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/farms/:id/respond",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms",
-        ":id",
-        "respond"
-       ],
        "variable": [
         {
          "key": "id",
@@ -6359,14 +4615,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/farms/:societeId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms",
-        ":societeId"
-       ],
        "variable": [
         {
          "key": "societeId",
@@ -6388,16 +4636,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/farms/:societeId/lots/:id",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms",
-        ":societeId",
-        "lots",
-        ":id"
-       ],
        "variable": [
         {
          "key": "societeId",
@@ -6427,15 +4665,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/farms/:societeId/documents",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms",
-        ":societeId",
-        "documents"
-       ],
        "variable": [
         {
          "key": "societeId",
@@ -6470,15 +4699,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/farms/:societeId/cattle-event",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "farms",
-        ":societeId",
-        "cattle-event"
-       ],
        "variable": [
         {
          "key": "societeId",
@@ -6507,17 +4727,7 @@
         "value": "application/json"
        }
       ],
-      "url": {
-       "raw": "{{base_url}}/vet/messages",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "messages"
-       ],
-       "variable": []
-      }
+      "url": "{{base_url}}/vet/messages"
      }
     },
     {
@@ -6532,14 +4742,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/messages/:societeId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "messages",
-        ":societeId"
-       ],
        "variable": [
         {
          "key": "societeId",
@@ -6565,14 +4767,6 @@
       ],
       "url": {
        "raw": "{{base_url}}/vet/messages/:societeId",
-       "host": [
-        "{{base_url}}"
-       ],
-       "path": [
-        "vet",
-        "messages",
-        ":societeId"
-       ],
        "variable": [
         {
          "key": "societeId",

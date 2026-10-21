@@ -13,3 +13,14 @@
 
 Codes d'erreur utiles : `401 non_authentifie` (en-tête Authorization perdu par l'hébergement), `401 jeton_invalide` (jeton expiré),
 `404` (route non déployée), `500` (erreur du serveur : voir `storage/logs/php_errors.log`).
+
+## Erreur 404 : adresse doublée
+
+Si Postman affiche une adresse comme `https://efarm360.danov.sn/api/mobile/v1https://efarm360.danov.sn/api/mobile/v1/status`, la base a été ajoutée deux fois
+(par exemple en collant une adresse complète après `{{base_url}}`). L'adresse correcte de la requête de test est :
+
+```
+https://efarm360.danov.sn/api/mobile/v1/status
+```
+
+Dans la collection, laissez `{{base_url}}/status` (la variable `base_url` contient déjà `https://efarm360.danov.sn/api/mobile/v1`) ; ne collez jamais une adresse complète à la suite.

@@ -122,10 +122,10 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                 title: Text(spec.itemTitle(row)),
                 subtitle: spec.itemSubtitle == null ? null : Text(spec.itemSubtitle!(row)),
                 trailing: spec.itemTrailing == null ? null : Text(spec.itemTrailing!(row), style: const TextStyle(fontWeight: FontWeight.bold)),
-                onTap: spec.detailPath == null
+                onTap: spec.detailPath == null && !spec.detailFromList
                     ? null
                     : () async {
-                        await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'])));
+                        await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'], row: spec.detailFromList ? row : null)));
                         if (mounted) _reload();
                       },
               ),
@@ -139,9 +139,12 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
 
 /// Détail d'un élément : champs, listes liées, actions.
 class ModuleDetailPage extends ConsumerStatefulWidget {
-  const ModuleDetailPage(this.spec, this.id, {super.key});
+  const ModuleDetailPage(this.spec, this.id, {super.key, this.row});
   final ModuleSpec spec;
   final Object? id;
+
+  /// Ligne de la liste, quand le module n'a pas de route de détail (`detailFromList`).
+  final Map<String, dynamic>? row;
   @override
   ConsumerState<ModuleDetailPage> createState() => _ModuleDetailPageState();
 }
@@ -149,17 +152,26 @@ class ModuleDetailPage extends ConsumerStatefulWidget {
 class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
   Key _k = UniqueKey();
 
+  /// Après une action : recharge la fiche, ou revient à la liste quand la fiche vient de la liste (ligne devenue périmée).
+  void _done() {
+    if (widget.row != null) {
+      Navigator.pop(context);
+    } else {
+      setState(() => _k = UniqueKey());
+    }
+  }
+
   Future<void> _run(ActionSpec a, Json row) async {
     final api = ref.read(apiProvider);
     final path = a.path.replaceAll('{id}', '${widget.id}');
     if (a.page != null) {
       final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => a.page!(widget.id)));
-      if (ok == true && mounted) setState(() => _k = UniqueKey());
+      if (ok == true && mounted) _done();
       return;
     }
     if (a.fields.isNotEmpty) {
       final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, pathVars: {'id': widget.id}, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: {...?a.body, ...body, if (a.idKey != null) a.idKey!: widget.id}))));
-      if (ok == true && mounted) setState(() => _k = UniqueKey());
+      if (ok == true && mounted) _done();
       return;
     }
     if (a.confirm != null) {
@@ -175,7 +187,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       await api.post(path, body: a.body);
       if (!mounted) return;
       showInfo(context, a.successMessage);
-      setState(() => _k = UniqueKey());
+      _done();
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -189,7 +201,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       appBar: AppBar(title: Text(spec.title)),
       body: AsyncView<Map>(
         key: _k,
-        load: () => api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
+        load: () async => widget.row ?? await api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
           final profile = ref.watch(sessionProvider).value;

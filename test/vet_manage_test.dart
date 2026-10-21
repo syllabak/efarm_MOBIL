@@ -108,4 +108,28 @@ void main() {
     expect(find.text('Amoxicilline'), findsNothing);
     expect(find.text('Ivermectine'), findsOneWidget);
   });
+
+  testWidgets('catalogue : la fiche s\'ouvre depuis la liste, suppression puis retour à la liste rechargée', (t) async {
+    var supprime = false;
+    var deletes = 0;
+    await _pump(t, ModuleListPage(vetCatalogueModule), {
+      'GET /vet/articles': (_) => ok(supprime ? [] : [{'id': 9, 'nom': 'Vaccin Newcastle', 'type': 'produit', 'unite': 'dose', 'prix_vente': 150}], meta: {'page': 1, 'pages': 1}),
+      'POST /vet/articles/9/delete': (_) {
+        deletes++;
+        supprime = true;
+        return ok({'id': 9});
+      },
+    });
+    await t.tap(find.text('Vaccin Newcastle'));
+    await t.pumpAndSettle();
+    expect(find.text('Modifier'), findsOneWidget);
+    await t.ensureVisible(find.text('Supprimer'));
+    await t.tap(find.text('Supprimer'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Confirmer'));
+    await t.pumpAndSettle();
+    expect(deletes, 1);
+    expect(find.text('Vaccin Newcastle'), findsNothing);
+    expect(find.text('Le catalogue est vide.'), findsOneWidget);
+  });
 }

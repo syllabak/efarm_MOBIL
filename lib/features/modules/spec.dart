@@ -128,6 +128,7 @@ class ModuleSpec {
     this.searchParam,
     this.listIsPlain = false,
     this.plan,
+    this.detailFromList = false,
   });
   final String id, title, listPath;
   final IconData icon;
@@ -138,6 +139,9 @@ class ModuleSpec {
   final List<SectionSpec> sections;
   final List<ActionSpec> actions;
   final CreateSpec? create;
+
+  /// Pas de route de détail : la fiche s'ouvre avec la ligne de la liste (les actions ramènent ensuite à la liste).
+  final bool detailFromList;
   final List<FilterSpec> filters;
   final String emptyText;
 

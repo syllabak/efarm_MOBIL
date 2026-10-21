@@ -10,6 +10,12 @@ $k = (string)($_GET['k'] ?? '');
 $r = (string)($_GET['r'] ?? '');
 if (strlen(CLE_DIAG) < 12 || !hash_equals(CLE_DIAG, $k) || !str_starts_with($r, '/api/mobile/')) { http_response_code(404); exit; }
 
+// Navigateur (Chrome) : autorise l'application locale à appeler ce fichier de test (CORS), uniquement pour ce diagnostic.
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Authorization, Content-Type, Accept');
+header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') { http_response_code(204); exit; }
+
 // On rejoue la requête (même route, mêmes données) avec l'affichage détaillé des erreurs.
 unset($_GET['k'], $_GET['r']);
 $requete = http_build_query($_GET);

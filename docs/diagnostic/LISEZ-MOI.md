@@ -10,5 +10,7 @@ Quand le serveur répond « Erreur interne — Réessayez. » (HTTP 500), le sit
 5. Le message d'erreur (fichier, ligne, cause) s'affiche. En navigateur : onglet Network → requête `login` → Response.
 6. **Supprimez `diag_api_login.php` du serveur dès le test terminé** et remettez l'adresse normale dans l'application.
 
+Le fichier répond aussi aux requêtes de vérification CORS de Chrome (uniquement pour ce diagnostic), ce qui permet de tester l'application web sans désactiver la sécurité du navigateur.
+
 Sans le bon secret, le fichier répond 404 et ne fait rien. L'adresse passe par des paramètres (`?k=…&r=…`) et non par un chemin,
 car certains hébergements mutualisés refusent les URL de la forme `fichier.php/chemin`.

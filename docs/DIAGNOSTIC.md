@@ -57,7 +57,7 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 - ✅ Détection automatique des fonctions du serveur par `/openapi.json` (un module n'apparaît que si la route existe).
 - 🟡 Compatibilité : Flutter 3.44 / Dart 3.12 ; web via SQLite WebAssembly.
 - ❌ **Aucun essai sur appareil ni contre le serveur réel** : tous les écrans sont validés par tests avec un faux serveur uniquement.
-- ❌ Pas d'icône ni de nom d'application personnalisés, pas de signature de publication (keystore à créer), pas de notifications push.
+- ✅ Logo EFarm360 du site web comme icône (Android, iOS, Windows, Web). ❌ Pas de signature de publication (keystore à créer), pas de notifications push.
 - ❌ Un seul langage : français (le web propose fr, en, pt, es, ar — fichiers `database/lang/*.json`).
 - 🟡 Accessibilité : non auditée (tailles de texte, contraste, lecteur d'écran).
 
@@ -65,21 +65,21 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 
 | Page web | Mobile | Note |
 |---|---|---|
-| Tableau de bord global / par site | 🟡 | 4 indicateurs ; manquent mortalité du jour, alertes de stock, graphique mortalité 30 jours, alertes récentes, finances du mois, tableau par site |
+| Tableau de bord global / par site | 🟡 | 4 indicateurs, graphique de mortalité 30 jours, alertes récentes, finances du mois ✅ ; manquent le tableau par site et les alertes de stock |
 | Rapport journalier | ✅ | Hebdomadaire et PDF ❌🔒 |
 | Élevage / lots, fiche d'un lot | ✅ | Performance, bande, prévisions ✅ |
 | Comparer les bandes, bande | ✅ | Dépenses et rapport d'une bande ❌ |
 | Ponte, couvoir, embouche, IoT | ✅ | Exports embouche ❌🔒 |
 | Bovins (troupeau, fiche, lait, pesée, événements, sorties) | ✅ | Reproduction, alimentation, carnet de santé, rapport, import/export ❌ |
 | Ventes, clients, encaissements, annulation | ✅ | Modifier une vente, archives, facture PDF ❌🔒 |
-| Stock, alertes de stock, mouvements | ✅ | Exports ❌🔒 |
-| Finance : dépenses, investissements | ✅ | Règles, contrôle, ROI ❌ |
+| Stock, alertes de stock, mouvements | ✅ | Export CSV du stock ✅ (PDF/Excel ❌🔒) |
+| Finance : dépenses, investissements, ROI, contrôle des chiffres | ✅ | Règles de calcul (page statique) ❌ |
 | Fournisseurs, employés, paie | ✅ | Activer/désactiver ✅ |
 | Comptabilité | 🟡 | Écritures ✅, export ❌🔒 |
-| Alertes | ✅ | Seuils et historique ❌🔒 |
+| Alertes | ✅ | Seuils d'alerte par site ✅ ; historique des envois ❌ |
 | Messagerie, support, formation, parrainage | ✅ | Pièces jointes ❌🔒, guides de formation ❌ |
-| Sites | 🟡 | Liste ✅ ; création/édition ❌🔒 |
-| Profil | 🟡 | Édition + mot de passe ✅ ; double authentification ❌ |
+| Sites | ✅ | Liste, création, modification (administrateur) |
+| Profil | ✅ | Édition, mot de passe, double authentification (QR code, codes de récupération) |
 | Import, corbeille, audit, paramètres, clés API, webhooks, société | ❌🔒 | |
 | Prévisions | ✅ | |
 
@@ -88,16 +88,17 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 | Page web | Mobile | Note |
 |---|---|---|
 | Tableau de bord du cabinet | ✅ | Indicateurs, rendez-vous du jour, rappels, dernières consultations |
-| Clients, patients, rendez-vous, consultations, soins | ✅ | **Modifier/supprimer un client ❌** (route existe) |
+| Clients, patients, rendez-vous, consultations, soins | ✅ | Modifier / supprimer un client ✅ (en ligne) |
 | Devis, factures, ordonnances (création, modification, statuts) | ✅ | |
 | Catalogue, fournisseurs | ✅ | Modifier/supprimer ✅ |
 | Pharmacie (stock, lots, péremptions, mouvements) | ✅ | Étiquettes, scanner ❌🔒 |
-| Commandes fournisseurs | ✅ | Suggestions de réapprovisionnement ❌ |
-| Comptabilité, dépenses | 🟡 | Supprimer une dépense ou un paiement ❌ (route existe) |
+| Commandes fournisseurs | ✅ | Réapprovisionnement (suggestions → commande) ✅ |
+| Comptabilité, dépenses, tableau financier | ✅ | Supprimer un paiement ❌ |
 | Vente au comptoir | ✅ | |
 | Fermes suivies, documents sanitaires, messagerie ferme | ✅ | Répondre à une demande de ferme ❌ (route existe) |
 | Hors ligne | ✅ | Synchronisation avec file d'attente |
-| Inventaire, étiquettes, scanner, données (import/export), migration | ❌🔒 | |
+| Inventaire | ✅ | Comptage et ajustement des écarts |
+| Étiquettes, scanner, données (import/export), migration | ❌🔒 | Le scanner demande un paquet natif (caméra) non vérifiable sans appareil |
 | Documentation, formation, parrainage du cabinet | ❌🔒 | |
 | Équipe du cabinet | exclu | Gestion = partie administration |
 
@@ -113,6 +114,7 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 | Tableaux | tableaux à colonnes triables | listes en cartes | Choix mobile assumé |
 | Langues | 5 | 1 | Internationalisation à faire |
 | Mode sombre | non | oui (automatique) | |
+| Export de données | PDF / Excel / CSV | CSV partageable (stock, ventes, employés, fournisseurs, troupeau, catalogue) | PDF/Excel : routes serveur à ajouter |
 | Formulaires | longues pages | formulaires générés par champ | À revoir page par page |
 
 ---
@@ -125,12 +127,12 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 3. Corriger ce que ce test révèle (erreurs SQL probables, W6).
 
 **P1 — compléter sans toucher au site (routes déjà présentes)**
-- Vétérinaire : modifier/supprimer client, supprimer dépense/paiement, répondre à une demande de ferme, suggestions de commandes.
-- Ferme : finance (règles, contrôle, ROI) quand les routes existent, double authentification, FAQ du support, messages directs du chat.
+- ✅ Fait : modifier/supprimer client, réapprovisionnement, tableau financier, inventaire. Reste : supprimer un paiement.
+- ✅ Fait : ROI, contrôle des chiffres, double authentification, seuils d'alerte, sites, export CSV, tableau de bord enrichi.
 - Design : emoji et couleur du cabinet partout, tableau de bord enrichi avec graphiques.
 
 **P2 — nécessite d'ajouter des routes à l'API mobile du site**
-- Exports et partage de fichiers (PDF/Excel), pièces jointes, imports, seuils d'alerte, création de sites, paramètres, scanner de codes-barres (caméra), étiquettes, inventaire, documentation et formation du cabinet.
+- ✅ Routes ajoutées au site : ROI, contrôle des chiffres, seuils d'alerte, sites (création/modification), double authentification, inventaire. Reste : exports PDF/Excel, pièces jointes, imports, paramètres, scanner de codes-barres (caméra), étiquettes, documentation et formation du cabinet.
 
 **P3 — transversal**
 - Internationalisation (fr, en, pt, es, ar avec écriture de droite à gauche), notifications push, icône et nom de l'application, signature de publication, audit d'accessibilité, tests sur appareils.

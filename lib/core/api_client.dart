@@ -118,6 +118,17 @@ class ApiClient {
     );
   }
 
+  /// Toutes les pages d'une liste (100 par page, 40 pages au plus) : pour les exports.
+  Future<List<Map<String, dynamic>>> listAll(String path, {Map<String, dynamic>? query}) async {
+    final out = <Map<String, dynamic>>[];
+    for (var page = 1; page <= 40; page++) {
+      final r = await list(path, query: {...?query, 'page': page, 'per_page': 100});
+      out.addAll(r.items);
+      if (page >= ((r.meta['pages'] as num?)?.toInt() ?? 1)) break;
+    }
+    return out;
+  }
+
   Future<T> _send<T>(String method, String path, {Map<String, dynamic>? query, Object? body, required bool auth}) async {
     final r = await _raw(method, path, query: query, body: body, auth: auth);
     return r['data'] as T;

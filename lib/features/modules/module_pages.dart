@@ -68,17 +68,9 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
     final spec = widget.spec, api = ref.read(apiProvider);
     final cols = spec.exportColumns!;
     try {
-      final rows = <Map<String, dynamic>>[];
-      for (var page = 1; page <= 40; page++) {
-        final q = {...query(page), 'per_page': 100};
-        if (spec.listIsPlain) {
-          rows.addAll([for (final e in await api.get<List>(spec.listPath, query: q)) Map<String, dynamic>.from(e as Map)]);
-          break;
-        }
-        final r = await api.list(spec.listPath, query: q);
-        rows.addAll(r.items);
-        if (page >= ((r.meta['pages'] as num?)?.toInt() ?? 1)) break;
-      }
+      final rows = spec.listIsPlain
+          ? [for (final e in await api.get<List>(spec.listPath, query: query(1))) Map<String, dynamic>.from(e as Map)]
+          : await api.listAll(spec.listPath, query: {...query(1)}..remove('page'));
       if (rows.isEmpty) {
         if (mounted) showInfo(context, 'Rien à exporter.');
         return;

@@ -43,6 +43,7 @@ final cattleModule = ModuleSpec(
   itemSubtitle: (r) => _join([r['categorie'], r['race_nom'], r['age'], r['etat']]),
   itemTrailing: (r) => r['poids'] != null ? '${fmtNum(r['poids'], digits: 0)} kg' : '',
   detailPath: '/cattle/{id}',
+  exportColumns: const [('numero', 'N°'), ('nom', 'Nom'), ('categorie', 'Catégorie'), ('race_nom', 'Race'), ('sexe', 'Sexe'), ('age', 'Âge'), ('poids', 'Poids (kg)'), ('etat', 'État'), ('statut', 'Statut')],
   detailTitle: (r) => _join([r['numero'], r['nom']], ' · '),
   detail: const [
     ColumnSpec('categorie', 'Catégorie'),

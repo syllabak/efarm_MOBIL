@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/export.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
 import 'sale_form.dart';
@@ -27,7 +28,21 @@ class _VentesPageState extends ConsumerState<VentesPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Ventes')),
+      appBar: AppBar(title: const Text('Ventes'), actions: [
+        IconButton(
+            tooltip: 'Exporter (CSV)',
+            icon: const Icon(Icons.ios_share),
+            onPressed: () async {
+              try {
+                final rows = await api.listAll('/sales', query: {if (_paiement.isNotEmpty) 'paiement': _paiement});
+                if (rows.isEmpty) return showInfo(context, 'Rien à exporter.');
+                await shareCsv('ventes_${isoDate(DateTime.now())}.csv', const ['N°', 'Date', 'Client', 'Mode de paiement', 'Total', 'Encaissé', 'Statut'],
+                    [for (final r in rows) [r['numero'], r['date_vente'], r['client'], r['mode_paiement'], r['montant_total'], r['encaisse'], r['statut']]]);
+              } catch (e) {
+                if (context.mounted) showError(context, e);
+              }
+            }),
+      ]),
       floatingActionButton: const {'admin', 'responsable'}.contains(ref.watch(sessionProvider).value?.role)
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),

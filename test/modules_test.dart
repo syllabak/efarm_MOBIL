@@ -7,6 +7,7 @@ import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
+import 'package:efarm360/features/farm/farm_pages.dart';
 import 'package:efarm360/features/farm/finance_extra.dart';
 import 'package:efarm360/features/farm/thresholds_page.dart';
 import 'package:efarm360/features/modules/compare_page.dart';
@@ -327,5 +328,39 @@ void main() {
     expect(sent!['site_id'], 1);
     expect(sent!['seuils']['temperature'], {'warning': 31.5, 'critique': 36});
     expect(sent!['seuils']['co2'], isNull);
+  });
+
+  testWidgets('sites : création puis modification partielle (champs vides non envoyés)', (t) async {
+    final sent = <String, Map<String, dynamic>>{};
+    await _pump(t, const SitesPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 3, 'code': 'S3', 'nom': 'Nord', 'adresse': 'Thiès', 'capacite_max': 2000}]),
+      'POST /farm/sites': (o) {
+        sent['create'] = Map<String, dynamic>.from(o.data as Map);
+        return ok({'id': 4}, );
+      },
+      'POST /farm/sites/3': (o) {
+        sent['edit'] = Map<String, dynamic>.from(o.data as Map);
+        return ok({'id': 3});
+      },
+    });
+    await t.tap(find.text('Site'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextFormField).at(1), 'Sud');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent['create'], {'nom': 'Sud'});
+    await t.pump(const Duration(seconds: 6)); // le message « Site créé » ne doit plus masquer le bouton
+    await t.pumpAndSettle();
+
+    await t.tap(find.text('Nord'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextFormField).at(0), 'Nord 2');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent['edit']!['nom'], 'Nord 2');
+    expect(sent['edit']!.containsKey('telephone'), isFalse);
+    expect(sent['edit']!.containsKey('latitude'), isFalse);
   });
 }

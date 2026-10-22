@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/session.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
+import '../modules/module_pages.dart' show DynamicFormPage;
+import '../modules/spec.dart' show FieldSpec, FieldType;
 import 'ops_pages.dart';
 import 'rapport_form.dart';
 
@@ -197,18 +199,53 @@ class LowStockPage extends ConsumerWidget {
 }
 
 // ── Sites ────────────────────────────────────────────────────────────
-class SitesPage extends ConsumerWidget {
+const _siteFields = [
+  FieldSpec('nom', 'Nom du site', required: true),
+  FieldSpec('adresse', 'Adresse'),
+  FieldSpec('telephone', 'Téléphone', type: FieldType.phone),
+  FieldSpec('capacite_max', 'Capacité maximale', type: FieldType.integer, min: 0, suffix: 'têtes'),
+  FieldSpec('latitude', 'Latitude', type: FieldType.number, hint: 'Pour la météo du site (ex. 14.79)'),
+  FieldSpec('longitude', 'Longitude', type: FieldType.number, hint: 'Ex. -16.93'),
+];
+
+class SitesPage extends ConsumerStatefulWidget {
   const SitesPage({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SitesPage> createState() => _SitesPageState();
+}
+
+class _SitesPageState extends ConsumerState<SitesPage> {
+  Key _k = UniqueKey();
+
+  Future<void> _form({Map? site}) async {
+    final api = ref.read(apiProvider);
+    final fields = site == null ? [const FieldSpec('code', 'Code', hint: 'Facultatif, ex. S1'), ..._siteFields] : _siteFields;
+    final ok = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+            builder: (_) => DynamicFormPage(
+                title: site == null ? 'Nouveau site' : 'Modifier le site',
+                fields: fields,
+                initialValues: site == null ? const {} : Map<String, dynamic>.from(site),
+                successMessage: site == null ? 'Site créé.' : 'Site mis à jour.',
+                submit: (b) => site == null ? api.post('/farm/sites', body: b) : api.post('/farm/sites/${site['id']}', body: b))));
+    if (ok == true && mounted) setState(() => _k = UniqueKey());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
+    final admin = ref.watch(sessionProvider).value?.role == 'admin';
     return Scaffold(
       appBar: AppBar(title: const Text('Sites')),
+      floatingActionButton: admin && serverCan('POST', '/farm/sites') ? FloatingActionButton.extended(onPressed: () => _form(), icon: const Icon(Icons.add), label: const Text('Site')) : null,
       body: AsyncView<List>(
+        key: _k,
         load: () => api.get<List>('/farm/sites'),
         builder: (c, rows) => rows.isEmpty
             ? const EmptyView('Aucun site.')
-            : ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
+            : ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.only(bottom: 80), children: [
+                if (admin && serverCan('POST', '/farm/sites/{id}')) Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0), child: Text('Touchez un site pour le modifier. Un champ laissé vide n\'est pas modifié.', style: Theme.of(c).textTheme.bodySmall)),
                 for (final r in rows)
                   Card(
                     child: ListTile(
@@ -216,6 +253,7 @@ class SitesPage extends ConsumerWidget {
                       title: Text('${(r as Map)['nom']}'),
                       subtitle: Text('${r['code'] ?? ''}${r['adresse'] != null ? ' · ${r['adresse']}' : ''}'),
                       trailing: Text('Capacité ${fmtNum(r['capacite_max'])}'),
+                      onTap: admin && serverCan('POST', '/farm/sites/{id}') ? () => _form(site: r) : null,
                     ),
                   ),
               ]),

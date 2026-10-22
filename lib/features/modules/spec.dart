@@ -55,7 +55,7 @@ typedef RowText = String Function(Json);
 
 /// Une action sur un élément (POST) : avec ou sans formulaire, avec confirmation facultative.
 class ActionSpec {
-  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page, this.plan, this.body, this.idKey});
+  const ActionSpec(this.label, this.path, {this.icon = Icons.bolt, this.fields = const [], this.confirm, this.visible, this.destructive = false, this.successMessage = 'Fait.', this.prefill = false, this.page, this.plan, this.body, this.idKey, this.needs});
   final String label;
 
   /// Chemin avec `{id}` remplacé par l'identifiant de l'élément.
@@ -78,6 +78,9 @@ class ActionSpec {
 
   /// Champs fixes ajoutés au corps de la requête (ex. `{'action': 'envoyer'}`).
   final Map<String, dynamic>? body;
+
+  /// Route exigée du serveur pour proposer l'action, au format « METHODE /chemin » ; par défaut `POST` sur [path] (une action à écran sur mesure n'a pas de chemin propre).
+  final String? needs;
 
   /// Si renseigné, l'identifiant de l'élément est envoyé sous cette clé dans le corps (ex. `article_id`).
   final String? idKey;

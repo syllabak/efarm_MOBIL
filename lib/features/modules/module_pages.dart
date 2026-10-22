@@ -168,6 +168,13 @@ class ModuleDetailPage extends ConsumerStatefulWidget {
   ConsumerState<ModuleDetailPage> createState() => _ModuleDetailPageState();
 }
 
+bool _supported(ActionSpec a) {
+  final n = a.needs;
+  if (n == null) return serverCan('POST', a.path);
+  final i = n.indexOf(' ');
+  return serverCan(n.substring(0, i), n.substring(i + 1));
+}
+
 class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
   Key _k = UniqueKey();
 
@@ -224,7 +231,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
           final profile = ref.watch(sessionProvider).value;
-          final actions = [for (final a in spec.actions) if (serverCan('POST', a.path) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
+          final actions = [for (final a in spec.actions) if (_supported(a) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
             for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),

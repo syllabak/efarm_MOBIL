@@ -379,4 +379,30 @@ void main() {
     expect(find.text('Bénéfice net', skipOffstage: false), findsOneWidget);
     expect(find.textContaining('4 au total', skipOffstage: false), findsOneWidget);
   });
+
+  testWidgets('lot : les actions à écran propre apparaissent selon le contrat du serveur', (t) async {
+    hideUnsupported = true;
+    addTearDown(() {
+      hideUnsupported = false;
+      resetContract();
+    });
+    useContract({
+      'paths': {
+        '/lots/{id}/performance': {'get': {}},
+        '/lots/{id}/band': {'get': {}},
+        '/lots/{id}/weekly': {'get': {}},
+        '/farm/rapports': {'post': {}},
+      }
+    });
+    await _pump(t, ModuleDetailPage(lotsModule, 9), {
+      'GET /lots/9/performance': (_) => ok({
+            'lot': {'id': 9, 'code': 'FARM-9', 'statut': 'actif'},
+            'performance': {'age_jours': 10}, 'mortalite': {'nb_initial': 100, 'nb_actuel': 98}, 'causes': [], 'rapports': [],
+          }),
+    });
+    expect(find.text('Rapport hebdomadaire'), findsOneWidget);
+    expect(find.text('Tableau de bande'), findsOneWidget);
+    expect(find.text('Saisir le rapport du jour'), findsOneWidget);
+    expect(find.text('Clôturer le lot'), findsNothing); // POST /lots/{id}/close absent du contrat
+  });
 }

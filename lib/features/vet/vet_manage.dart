@@ -249,7 +249,7 @@ final vetOrdersModule = ModuleSpec(
         itemSubtitle: (r) => 'Reçu ${fmtNum(r['quantite_recue'], digits: 1)} sur ${fmtNum(r['quantite'], digits: 1)} · ${fcfa(r['prix_achat'])}', itemTrailing: (r) => '× ${fmtNum(r['quantite'], digits: 1)}'),
   ],
   actions: [
-    ActionSpec('Réceptionner', '', icon: Icons.move_to_inbox_outlined, visible: (r) => r['statut'] == 'envoyee' || r['statut'] == 'brouillon', page: (id) => ReceiveOrderPage(orderId: id)),
+    ActionSpec('Réceptionner', '', needs: 'POST /vet/orders/{id}/receive', icon: Icons.move_to_inbox_outlined, visible: (r) => r['statut'] == 'envoyee' || r['statut'] == 'brouillon', page: (id) => ReceiveOrderPage(orderId: id)),
     const ActionSpec('Marquer envoyée', '/vet/orders/{id}/status', icon: Icons.send_outlined, body: {'action': 'envoyer'}, successMessage: 'Commande envoyée.', visible: _brouillon),
     const ActionSpec('Annuler', '/vet/orders/{id}/status', icon: Icons.block, body: {'action': 'annuler'}, confirm: 'Annuler cette commande ?', visible: _annulable, successMessage: 'Commande annulée.'),
     const ActionSpec('Supprimer', '/vet/orders/{id}/status', icon: Icons.delete_outline, body: {'action': 'supprimer'}, confirm: 'Supprimer ce brouillon ?', destructive: true, visible: _brouillon, successMessage: 'Commande supprimée.'),

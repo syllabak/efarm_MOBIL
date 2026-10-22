@@ -7,6 +7,8 @@ import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import '../modules/module_pages.dart' show DynamicFormPage;
 import '../modules/spec.dart' show FieldSpec, FieldType;
+import 'home_cards.dart';
+import 'mortality_chart.dart';
 import 'ops_pages.dart';
 import 'rapport_form.dart';
 
@@ -18,7 +20,8 @@ class FarmHome extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
-    final p = ref.watch(sessionProvider).value!;
+    final p = ref.watch(sessionProvider).value;
+    if (p == null) return const SizedBox.shrink();
     return AsyncView<Map>(
       load: () => api.get<Map>('/farm/resume'),
       builder: (c, d) => ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
@@ -44,6 +47,9 @@ class FarmHome extends ConsumerWidget {
             Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined, color: const Color(0xFFCA8A04)),
           ],
         ),
+        if (serverGets('/farm/rapports')) const MortalityChartCard(),
+        if (serverGets('/alerts')) RecentAlertsCard(onSeeAll: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const AlertsPage()))),
+        if (serverGets('/finance/summary') && const {'admin', 'siege', 'responsable'}.contains(p.role)) const MonthFinanceCard(),
         if (p.canReport && serverCan('POST', '/farm/rapports'))
           Padding(
             padding: const EdgeInsets.all(12),

@@ -363,4 +363,20 @@ void main() {
     expect(sent['edit']!.containsKey('telephone'), isFalse);
     expect(sent['edit']!.containsKey('latitude'), isFalse);
   });
+
+  testWidgets('tableau de bord : mortalité, alertes récentes et finances du mois comme sur le web', (t) async {
+    await _pump(t, Scaffold(body: FarmHome(onGoto: (_) {})), {
+      'GET /farm/resume': (_) => ok({'sites_actifs': 2, 'lots_actifs': 3, 'effectif_total': 4000, 'dernier_rapport': '2026-10-20'}),
+      'GET /farm/rapports': (_) => ok([{'date_rapport': DateTime.now().toIso8601String().substring(0, 10), 'mortalite_jour': 4}], meta: {'page': 1, 'pages': 1}),
+      'GET /alerts': (_) => ok([{'id': 1, 'message': 'Mortalité élevée sur le lot FARM-7', 'lue': 0, 'created_at': '2026-10-20 08:00:00'}], meta: {'page': 1, 'pages': 1}),
+      'GET /finance/summary': (_) => ok({'total_ventes': 900000, 'total_depenses': 400000, 'benefice_net': 500000, 'creances': 0}),
+    });
+    expect(find.text('Têtes total'), findsOneWidget);
+    await t.scrollUntilVisible(find.text('💰 Finances du mois'), 300, scrollable: find.byType(Scrollable).first);
+    await t.pumpAndSettle();
+    expect(find.text('🔔 Alertes récentes', skipOffstage: false), findsOneWidget);
+    expect(find.text('Mortalité élevée sur le lot FARM-7', skipOffstage: false), findsOneWidget);
+    expect(find.text('Bénéfice net', skipOffstage: false), findsOneWidget);
+    expect(find.textContaining('4 au total', skipOffstage: false), findsOneWidget);
+  });
 }

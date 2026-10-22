@@ -87,6 +87,14 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
     }
   }
 
+  /// Relit le profil (après un changement fait depuis l'application : double authentification, nom…).
+  Future<void> refreshProfile() async {
+    final me = await _api.get<Map>('/me');
+    final p = Profile(Map<String, dynamic>.from(me));
+    await _tokens.saveProfile(jsonEncode(p.raw));
+    state = AsyncData(p);
+  }
+
   Future<void> setServer(String url) => _tokens.saveServer(url.trim());
 
   Future<LoginResult> login({required String type, required String identifier, required String password, String? company}) async {

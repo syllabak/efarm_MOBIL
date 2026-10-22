@@ -44,8 +44,11 @@ class ProfilePage extends ConsumerWidget {
             leading: const Icon(Icons.verified_outlined),
             title: Text('Licence ${lic['statut']}'),
             subtitle: Text(lic['date_expiration'] == null ? 'Sans échéance' : 'Expire le ${fmtDate(lic['date_expiration'])} (${lic['jours_restants']} j)')),
-      if (p.isFarm) ListTile(leading: const Icon(Icons.security), title: Text('Double authentification : ${p.twoFactor ? 'activée' : 'désactivée'}'), subtitle: const Text('À gérer depuis le site web.')),
-      if (p.isFarm && serverCan('PUT', '/profile')) ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Modifier mon profil'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileEditPage()))),
+      if (p.isFarm)
+        serverCan('GET', '/profile/2fa')
+            ? ListTile(leading: const Icon(Icons.security), title: Text('Double authentification : ${p.twoFactor ? 'activée' : 'désactivée'}'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TwoFactorPage())))
+            : ListTile(leading: const Icon(Icons.security), title: Text('Double authentification : ${p.twoFactor ? 'activée' : 'désactivée'}'), subtitle: const Text('À gérer depuis le site web.')),
+      if (p.isFarm && serverCan('POST', '/profile')) ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Modifier mon profil'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileEditPage()))),
       if (p.isFarm && serverCan('POST', '/profile/password')) ListTile(leading: const Icon(Icons.password), title: const Text('Changer le mot de passe'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PasswordPage()))),
       ...extra,
       const Divider(),

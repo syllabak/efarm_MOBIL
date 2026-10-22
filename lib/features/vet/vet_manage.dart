@@ -271,6 +271,83 @@ final vetOrdersModule = ModuleSpec(
 bool _brouillon(Json r) => r['statut'] == 'brouillon';
 bool _annulable(Json r) => r['statut'] == 'brouillon' || r['statut'] == 'envoyee';
 
+/// Inventaire physique (page « Inventaire » du site) : on saisit les quantités comptées ; seuls les écarts deviennent des ajustements de stock.
+class InventoryPage extends ConsumerStatefulWidget {
+  const InventoryPage({super.key});
+  @override
+  ConsumerState<InventoryPage> createState() => _InventoryPageState();
+}
+
+class _InventoryPageState extends ConsumerState<InventoryPage> {
+  final _counts = <int, TextEditingController>{};
+  final _motif = TextEditingController();
+  String _q = '';
+  bool _saving = false;
+  Key _k = UniqueKey();
+
+  @override
+  void dispose() {
+    for (final c in _counts.values) {
+      c.dispose();
+    }
+    _motif.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final comptes = <String, num>{};
+    for (final e in _counts.entries) {
+      final n = num.tryParse(e.value.text.trim().replaceAll(',', '.'));
+      if (n != null) comptes['${e.key}'] = n;
+    }
+    if (comptes.isEmpty) return showInfo(context, 'Saisissez au moins une quantité comptée.');
+    setState(() => _saving = true);
+    try {
+      final r = await ref.read(apiProvider).post<Map>('/vet/inventory', body: {'comptes': comptes, if (_motif.text.trim().isNotEmpty) 'motif': _motif.text.trim()});
+      if (!mounted) return;
+      showInfo(context, '${r['message']}');
+      for (final c in _counts.values) {
+        c.clear();
+      }
+      setState(() => _k = UniqueKey());
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Inventaire')),
+      bottomNavigationBar: SafeArea(child: Padding(padding: const EdgeInsets.all(12), child: FilledButton(onPressed: _saving ? null : _save, child: _saving ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Régulariser les écarts')))),
+      body: AsyncView<Map>(
+        key: _k,
+        load: () => api.get<Map>('/vet/pharmacy'),
+        builder: (c, d) {
+          final rows = [for (final r in (d['stock'] as List).cast<Map>()) if ('${r['nom']}'.toLowerCase().contains(_q.toLowerCase())) r];
+          return ListView(padding: const EdgeInsets.all(8), children: [
+            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher un produit'), onChanged: (v) => setState(() => _q = v))),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: TextField(controller: _motif, decoration: const InputDecoration(labelText: 'Motif (facultatif)', hintText: 'Inventaire de fin de mois'))),
+            const Padding(padding: EdgeInsets.all(8), child: Text('Comptez le stock réel : laissez vide un produit non compté. Les différences avec le stock théorique sont enregistrées comme ajustements.')),
+            for (final r in rows)
+              Card(
+                child: ListTile(
+                  title: Text('${r['nom']}'),
+                  subtitle: Text('Théorique : ${fmtNum(r['stock'], digits: 2)} ${r['unite'] ?? ''}'),
+                  trailing: SizedBox(width: 100, child: TextField(controller: _counts.putIfAbsent(int.parse('${r['id']}'), TextEditingController.new), keyboardType: const TextInputType.numberWithOptions(decimal: true), textAlign: TextAlign.end, decoration: const InputDecoration(labelText: 'Compté', isDense: true))),
+                ),
+              ),
+            const SizedBox(height: 12),
+          ]);
+        },
+      ),
+    );
+  }
+}
+
 /// Tableau financier du cabinet (même indicateurs que la page « Comptabilité » du site) : chiffres du mois, créances, stock à surveiller, factures impayées.
 class VetFinancePage extends ConsumerWidget {
   const VetFinancePage({super.key});

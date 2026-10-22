@@ -147,4 +147,24 @@ void main() {
     await t.scrollUntilVisible(find.textContaining('Factures impayées'), 200, scrollable: find.byType(Scrollable).first);
     expect(find.textContaining('Factures impayées (1)'), findsOneWidget);
   });
+
+  testWidgets('inventaire : seules les quantités comptées sont envoyées', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const InventoryPage(), {
+      'GET /vet/pharmacy': (_) => ok({'stock': [
+            {'id': 1, 'nom': 'Ivermectine', 'unite': 'flacon', 'stock': 10},
+            {'id': 2, 'nom': 'Vaccin Newcastle', 'unite': 'dose', 'stock': 50},
+          ]}),
+      'POST /vet/inventory': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'message': '1 écart(s) régularisé(s)'});
+      },
+    });
+    expect(find.text('Théorique : 10,00 flacon'), findsOneWidget);
+    await t.enterText(find.byType(TextField).at(2), '7,5'); // champs : recherche, motif, puis « Compté » du 1er produit
+    await t.tap(find.text('Régulariser les écarts'));
+    await t.pumpAndSettle();
+    expect(sent!['comptes'], {'1': 7.5});
+    expect(sent!.containsKey('motif'), isFalse);
+  });
 }

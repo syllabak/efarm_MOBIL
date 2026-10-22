@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
 import 'package:efarm360/features/farm/finance_extra.dart';
+import 'package:efarm360/features/farm/thresholds_page.dart';
 import 'package:efarm360/features/modules/compare_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -299,5 +300,32 @@ void main() {
     await t.tap(find.text('Vente sans ligne'));
     await t.pumpAndSettle();
     expect(find.text('• V-001 : 5000 FCFA'), findsOneWidget);
+  });
+
+  testWidgets('seuils d\'alerte : champ vide = valeur par défaut, corps envoyé typé', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const ThresholdsPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}]),
+      'GET /alerts/thresholds': (_) => ok({
+            'site_id': 1,
+            'types': [
+              {'type': 'temperature', 'label': 'Température (capteur)', 'unite': '°C', 'defaut_warning': 32, 'defaut_critique': 38, 'warning': 30, 'critique': 36, 'personnalise': true},
+              {'type': 'co2', 'label': 'CO₂ (capteur)', 'unite': 'ppm', 'defaut_warning': 3000, 'defaut_critique': 5000, 'warning': null, 'critique': null, 'personnalise': false},
+            ],
+          }),
+      'POST /alerts/thresholds': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'site_id': 1, 'enregistres': 1, 'par_defaut': 1});
+      },
+    });
+    expect(find.text('Température (capteur) (°C)'), findsOneWidget);
+    expect(find.text('défaut 3000'), findsNWidgets(1));
+    await t.enterText(find.byType(TextFormField).first, '31,5');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent!['site_id'], 1);
+    expect(sent!['seuils']['temperature'], {'warning': 31.5, 'critique': 36});
+    expect(sent!['seuils']['co2'], isNull);
   });
 }

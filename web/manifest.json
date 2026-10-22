@@ -1,11 +1,11 @@
 {
-    "name": "efarm360",
-    "short_name": "efarm360",
+    "name": "EFarm360",
+    "short_name": "EFarm360",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#14532D",
+    "theme_color": "#14532D",
+    "description": "EFarm360 : gestion d'élevage et cabinet vétérinaire",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

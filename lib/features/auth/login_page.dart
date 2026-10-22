@@ -173,7 +173,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Form(
                 key: _form,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Icon(Icons.agriculture, size: 64, color: Theme.of(context).colorScheme.primary),
+                  ValueListenableBuilder<String?>(
+                    valueListenable: ref.watch(apiProvider).sessionIssue,
+                    builder: (c, issue, _) => issue == null
+                        ? const SizedBox.shrink()
+                        : Card(color: Theme.of(c).colorScheme.errorContainer, child: Padding(padding: const EdgeInsets.all(12), child: Text(issue))),
+                  ),
+                  Image.asset('assets/icon/icon.png', height: 96, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => Icon(Icons.agriculture, size: 64, color: Theme.of(context).colorScheme.primary)),
                   const SizedBox(height: 8),
                   Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 24),

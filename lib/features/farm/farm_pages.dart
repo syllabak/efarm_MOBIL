@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/export.dart';
 import '../../core/session.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
+import '../modules/module_pages.dart' show DynamicFormPage;
+import '../modules/spec.dart' show FieldSpec, FieldType;
+import 'home_cards.dart';
+import 'mortality_chart.dart';
 import 'ops_pages.dart';
 import 'rapport_form.dart';
 
@@ -15,7 +20,8 @@ class FarmHome extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
-    final p = ref.watch(sessionProvider).value!;
+    final p = ref.watch(sessionProvider).value;
+    if (p == null) return const SizedBox.shrink();
     return AsyncView<Map>(
       load: () => api.get<Map>('/farm/resume'),
       builder: (c, d) => ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
@@ -41,6 +47,9 @@ class FarmHome extends ConsumerWidget {
             Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined, color: const Color(0xFFCA8A04)),
           ],
         ),
+        if (serverGets('/farm/rapports')) const MortalityChartCard(),
+        if (serverGets('/alerts')) RecentAlertsCard(onSeeAll: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const AlertsPage()))),
+        if (serverGets('/finance/summary') && const {'admin', 'siege', 'responsable'}.contains(p.role)) const MonthFinanceCard(),
         if (p.canReport && serverCan('POST', '/farm/rapports'))
           Padding(
             padding: const EdgeInsets.all(12),
@@ -145,6 +154,13 @@ class _StockPageState extends ConsumerState<StockPage> {
         builder: (c, rows) => ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
           if (serverGets('/stock/alerts')) ListTile(leading: const Icon(Icons.warning_amber), title: const Text('Produits sous le seuil'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const LowStockPage()))),
           if (canEntry && serverGets('/stock/movements')) ListTile(leading: const Icon(Icons.history), title: const Text('Historique des mouvements'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const MovementsPage()))),
+          if (rows.isNotEmpty)
+            ListTile(
+                leading: const Icon(Icons.ios_share),
+                title: const Text('Exporter le stock (CSV)'),
+                onTap: () => shareCsv('stock_${isoDate(DateTime.now())}.csv', const ['Produit', 'Site', 'Quantité', 'Unité', 'Seuil d\'alerte'], [for (final r in rows.cast<Map>()) [r['produit'], r['site_id'], r['quantite'], r['unite'], r['seuil_alerte']]]).catchError((Object e) {
+                      if (c.mounted) showError(c, e);
+                    })),
           const Divider(height: 1),
           if (rows.isEmpty) const SizedBox(height: 300, child: EmptyView('Aucun produit en stock.')),
           for (final r in rows)
@@ -197,18 +213,53 @@ class LowStockPage extends ConsumerWidget {
 }
 
 // ── Sites ────────────────────────────────────────────────────────────
-class SitesPage extends ConsumerWidget {
+const _siteFields = [
+  FieldSpec('nom', 'Nom du site', required: true),
+  FieldSpec('adresse', 'Adresse'),
+  FieldSpec('telephone', 'Téléphone', type: FieldType.phone),
+  FieldSpec('capacite_max', 'Capacité maximale', type: FieldType.integer, min: 0, suffix: 'têtes'),
+  FieldSpec('latitude', 'Latitude', type: FieldType.number, hint: 'Pour la météo du site (ex. 14.79)'),
+  FieldSpec('longitude', 'Longitude', type: FieldType.number, hint: 'Ex. -16.93'),
+];
+
+class SitesPage extends ConsumerStatefulWidget {
   const SitesPage({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SitesPage> createState() => _SitesPageState();
+}
+
+class _SitesPageState extends ConsumerState<SitesPage> {
+  Key _k = UniqueKey();
+
+  Future<void> _form({Map? site}) async {
+    final api = ref.read(apiProvider);
+    final fields = site == null ? [const FieldSpec('code', 'Code', hint: 'Facultatif, ex. S1'), ..._siteFields] : _siteFields;
+    final ok = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+            builder: (_) => DynamicFormPage(
+                title: site == null ? 'Nouveau site' : 'Modifier le site',
+                fields: fields,
+                initialValues: site == null ? const {} : Map<String, dynamic>.from(site),
+                successMessage: site == null ? 'Site créé.' : 'Site mis à jour.',
+                submit: (b) => site == null ? api.post('/farm/sites', body: b) : api.post('/farm/sites/${site['id']}', body: b))));
+    if (ok == true && mounted) setState(() => _k = UniqueKey());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
+    final admin = ref.watch(sessionProvider).value?.role == 'admin';
     return Scaffold(
       appBar: AppBar(title: const Text('Sites')),
+      floatingActionButton: admin && serverCan('POST', '/farm/sites') ? FloatingActionButton.extended(onPressed: () => _form(), icon: const Icon(Icons.add), label: const Text('Site')) : null,
       body: AsyncView<List>(
+        key: _k,
         load: () => api.get<List>('/farm/sites'),
         builder: (c, rows) => rows.isEmpty
             ? const EmptyView('Aucun site.')
-            : ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
+            : ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.only(bottom: 80), children: [
+                if (admin && serverCan('POST', '/farm/sites/{id}')) Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0), child: Text('Touchez un site pour le modifier. Un champ laissé vide n\'est pas modifié.', style: Theme.of(c).textTheme.bodySmall)),
                 for (final r in rows)
                   Card(
                     child: ListTile(
@@ -216,6 +267,7 @@ class SitesPage extends ConsumerWidget {
                       title: Text('${(r as Map)['nom']}'),
                       subtitle: Text('${r['code'] ?? ''}${r['adresse'] != null ? ' · ${r['adresse']}' : ''}'),
                       trailing: Text('Capacité ${fmtNum(r['capacite_max'])}'),
+                      onTap: admin && serverCan('POST', '/farm/sites/{id}') ? () => _form(site: r) : null,
                     ),
                   ),
               ]),

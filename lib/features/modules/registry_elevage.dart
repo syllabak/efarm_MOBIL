@@ -43,6 +43,7 @@ final cattleModule = ModuleSpec(
   itemSubtitle: (r) => _join([r['categorie'], r['race_nom'], r['age'], r['etat']]),
   itemTrailing: (r) => r['poids'] != null ? '${fmtNum(r['poids'], digits: 0)} kg' : '',
   detailPath: '/cattle/{id}',
+  exportColumns: const [('numero', 'N°'), ('nom', 'Nom'), ('categorie', 'Catégorie'), ('race_nom', 'Race'), ('sexe', 'Sexe'), ('age', 'Âge'), ('poids', 'Poids (kg)'), ('etat', 'État'), ('statut', 'Statut')],
   detailTitle: (r) => _join([r['numero'], r['nom']], ' · '),
   detail: const [
     ColumnSpec('categorie', 'Catégorie'),
@@ -155,6 +156,7 @@ final fatteningModule = ModuleSpec(
     ]),
     ActionSpec('Modifier le lot', '/fattening/{id}', icon: Icons.edit_outlined, prefill: true, successMessage: 'Lot mis à jour.', fields: _embFields),
     ActionSpec('Clôturer', '/fattening/{id}/close', icon: Icons.flag_outlined, confirm: 'Clôturer ce lot d\'embouche ?', visible: (r) => r['statut'] == 'en_cours', successMessage: 'Lot clôturé.'),
+    ActionSpec('Supprimer', '/fattening/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer ce lot d\'embouche créé par erreur ? Impossible s\'il contient déjà des opérations.', successMessage: 'Lot supprimé.'),
     ActionSpec('Rouvrir', '/fattening/{id}/reopen', icon: Icons.replay, confirm: 'Rouvrir ce lot ?', visible: (r) => r['statut'] == 'termine', successMessage: 'Lot rouvert.'),
   ],
   create: const CreateSpec('Lot', '/fattening', [
@@ -318,10 +320,11 @@ final lotsModule = ModuleSpec(
         itemSubtitle: (r) => 'Vivants ${fmtNum(r['nb_tetes_vivantes'])} · morts ${fmtNum(r['mortalite_jour'])} · ${fmtNum(r['sacs_consommes'], digits: 1)} sacs', itemTrailing: (r) => _s(r['statut'])),
   ],
   actions: [
-    ActionSpec('Saisir le rapport du jour', '', icon: Icons.edit_note, visible: (r) => r['lot']?['statut'] == 'actif', page: (id) => RapportForm(lotId: id is int ? id : int.tryParse('$id'))),
-    ActionSpec('Tableau de bande', '', icon: Icons.insights, plan: 'bande_intelligence', page: (id) => DataPage(title: 'Tableau de bande', path: '/lots/$id/band')),
-    ActionSpec('Prévision d\'aliment', '', icon: Icons.grass, plan: 'previsions', page: (id) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/$id/feed', pick: 'prevision', query: const {'ia': 1})),
-    ActionSpec('Prévision de mortalité', '', icon: Icons.trending_down, plan: 'previsions', page: (id) => DataPage(title: 'Prévision de mortalité', path: '/forecast/$id/mortality', pick: 'prevision', query: const {'ia': 1})),
+    ActionSpec('Saisir le rapport du jour', '', needs: 'POST /farm/rapports', icon: Icons.edit_note, visible: (r) => r['lot']?['statut'] == 'actif', page: (id) => RapportForm(lotId: id is int ? id : int.tryParse('$id'))),
+    ActionSpec('Rapport hebdomadaire', '', needs: 'GET /lots/{id}/weekly', icon: Icons.date_range, page: (id) => DataPage(title: 'Rapport hebdomadaire', path: '/lots/$id/weekly', pick: 'semaines')),
+    ActionSpec('Tableau de bande', '', needs: 'GET /lots/{id}/band', icon: Icons.insights, plan: 'bande_intelligence', page: (id) => DataPage(title: 'Tableau de bande', path: '/lots/$id/band')),
+    ActionSpec('Prévision d\'aliment', '', needs: 'GET /forecast/{id}/feed', icon: Icons.grass, plan: 'previsions', page: (id) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/$id/feed', pick: 'prevision', query: const {'ia': 1})),
+    ActionSpec('Prévision de mortalité', '', needs: 'GET /forecast/{id}/mortality', icon: Icons.trending_down, plan: 'previsions', page: (id) => DataPage(title: 'Prévision de mortalité', path: '/forecast/$id/mortality', pick: 'prevision', query: const {'ia': 1})),
     ActionSpec('Modifier le lot', '/lots/{id}', icon: Icons.edit_outlined, prefill: true, successMessage: 'Lot modifié.', fields: _lotEdit),
     ActionSpec('Clôturer le lot', '/lots/{id}/close', icon: Icons.flag_outlined, confirm: 'Clôturer ce lot ? Le bilan final est calculé et les alertes sont analysées.', visible: (r) => r['lot']?['statut'] == 'actif', successMessage: 'Lot clôturé.'),
     ActionSpec('Supprimer', '/lots/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer ce lot créé par erreur ? Impossible s\'il a des rapports, dépenses ou ventes.', successMessage: 'Lot supprimé.'),

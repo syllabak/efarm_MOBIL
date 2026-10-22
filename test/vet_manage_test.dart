@@ -108,4 +108,63 @@ void main() {
     expect(find.text('Amoxicilline'), findsNothing);
     expect(find.text('Ivermectine'), findsOneWidget);
   });
+
+  testWidgets('catalogue : la fiche s\'ouvre depuis la liste, suppression puis retour à la liste rechargée', (t) async {
+    var supprime = false;
+    var deletes = 0;
+    await _pump(t, ModuleListPage(vetCatalogueModule), {
+      'GET /vet/articles': (_) => ok(supprime ? [] : [{'id': 9, 'nom': 'Vaccin Newcastle', 'type': 'produit', 'unite': 'dose', 'prix_vente': 150}], meta: {'page': 1, 'pages': 1}),
+      'POST /vet/articles/9/delete': (_) {
+        deletes++;
+        supprime = true;
+        return ok({'id': 9});
+      },
+    });
+    await t.tap(find.text('Vaccin Newcastle'));
+    await t.pumpAndSettle();
+    expect(find.text('Modifier'), findsOneWidget);
+    await t.ensureVisible(find.text('Supprimer'));
+    await t.tap(find.text('Supprimer'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Confirmer'));
+    await t.pumpAndSettle();
+    expect(deletes, 1);
+    expect(find.text('Vaccin Newcastle'), findsNothing);
+    expect(find.text('Le catalogue est vide.'), findsOneWidget);
+  });
+
+  testWidgets('tableau financier du cabinet : indicateurs du mois et factures impayées', (t) async {
+    await _pump(t, const VetFinancePage(), {
+      'GET /vet/finance': (_) => ok({
+            'ca_mois': 450000, 'encaisse_mois': 300000, 'depenses_mois': 120000, 'creances': 150000, 'devis_attente': 2, 'factures_brouillon': 1, 'valeur_stock': 800000, 'nb_clients': 14,
+            'rupture': [], 'peremptions': [],
+            'impayees': [{'id': 3, 'numero': 'F-2026-0003', 'nom': 'Ferme Ba', 'du': 150000}],
+          }),
+    });
+    expect(find.text('Chiffre d\'affaires du mois'), findsOneWidget);
+    expect(find.text('450\u202f000 F'), findsOneWidget);
+    expect(find.text('Clients'), findsOneWidget);
+    await t.scrollUntilVisible(find.textContaining('Factures impayées'), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('Factures impayées (1)'), findsOneWidget);
+  });
+
+  testWidgets('inventaire : seules les quantités comptées sont envoyées', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const InventoryPage(), {
+      'GET /vet/pharmacy': (_) => ok({'stock': [
+            {'id': 1, 'nom': 'Ivermectine', 'unite': 'flacon', 'stock': 10},
+            {'id': 2, 'nom': 'Vaccin Newcastle', 'unite': 'dose', 'stock': 50},
+          ]}),
+      'POST /vet/inventory': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'message': '1 écart(s) régularisé(s)'});
+      },
+    });
+    expect(find.text('Théorique : 10,00 flacon'), findsOneWidget);
+    await t.enterText(find.byType(TextField).at(2), '7,5'); // champs : recherche, motif, puis « Compté » du 1er produit
+    await t.tap(find.text('Régulariser les écarts'));
+    await t.pumpAndSettle();
+    expect(sent!['comptes'], {'1': 7.5});
+    expect(sent!.containsKey('motif'), isFalse);
+  });
 }

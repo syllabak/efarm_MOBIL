@@ -87,6 +87,14 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
     }
   }
 
+  /// Relit le profil (après un changement fait depuis l'application : double authentification, nom…).
+  Future<void> refreshProfile() async {
+    final me = await _api.get<Map>('/me');
+    final p = Profile(Map<String, dynamic>.from(me));
+    await _tokens.saveProfile(jsonEncode(p.raw));
+    state = AsyncData(p);
+  }
+
   Future<void> setServer(String url) => _tokens.saveServer(url.trim());
 
   Future<LoginResult> login({required String type, required String identifier, required String password, String? company}) async {
@@ -121,6 +129,7 @@ class SessionNotifier extends AsyncNotifier<Profile?> {
       final d = await f();
       if (d['two_factor_required'] == true) return LoginNeeds2fa(d['token'] as String);
       await _tokens.saveTokens(d['access_token'] as String, d['refresh_token'] as String);
+      _api.sessionIssue.value = null;
       useContract(await _api.contract());
       final p = Profile(Map<String, dynamic>.from(d['profile'] as Map));
       await _tokens.saveProfile(jsonEncode(p.raw));

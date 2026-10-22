@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/session.dart';
@@ -279,6 +280,122 @@ class CabinetProfilePage extends ConsumerWidget {
             FieldSpec('mentions_facture', 'Mentions légales des factures', type: FieldType.multiline),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Double authentification (page « /profil/2fa » du site) : activer avec une application d'authentification, ou désactiver avec le mot de passe.
+class TwoFactorPage extends ConsumerStatefulWidget {
+  const TwoFactorPage({super.key});
+  @override
+  ConsumerState<TwoFactorPage> createState() => _TwoFactorPageState();
+}
+
+class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
+  Key _k = UniqueKey();
+  Map? _setup; // { secret, otpauth_url } en attente de confirmation
+  List<String>? _recovery;
+  final _code = TextEditingController(), _pwd = TextEditingController();
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _code.dispose();
+    _pwd.dispose();
+    super.dispose();
+  }
+
+  Future<void> _run(Future<void> Function() f) async {
+    setState(() => _busy = true);
+    try {
+      await f();
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Double authentification')),
+      body: AsyncView<Map>(
+        key: _k,
+        load: () => api.get<Map>('/profile/2fa'),
+        builder: (c, d) {
+          final actif = d['actif'] == true;
+          if (_recovery != null) {
+            return ListView(padding: const EdgeInsets.all(16), children: [
+              const ListTile(leading: Icon(Icons.check_circle, color: Colors.green), title: Text('Double authentification activée')),
+              const Text('Conservez ces codes de récupération dans un endroit sûr : chacun ne sert qu\'une fois si vous perdez votre téléphone. Ils ne seront plus affichés.'),
+              const SizedBox(height: 12),
+              Card(child: Padding(padding: const EdgeInsets.all(16), child: SelectableText(_recovery!.join('\n'), style: const TextStyle(fontFamily: 'monospace', fontSize: 16)))),
+              FilledButton(onPressed: () => setState(() {
+                    _recovery = null;
+                    _k = UniqueKey();
+                  }), child: const Text('J\'ai noté mes codes')),
+            ]);
+          }
+          if (actif) {
+            return ListView(padding: const EdgeInsets.all(16), children: [
+              const ListTile(leading: Icon(Icons.verified_user, color: Colors.green), title: Text('Activée'), subtitle: Text('Un code de votre application d\'authentification est demandé à chaque connexion.')),
+              const SizedBox(height: 8),
+              TextField(controller: _pwd, obscureText: true, decoration: const InputDecoration(labelText: 'Mot de passe (pour désactiver)')),
+              const SizedBox(height: 8),
+              FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: Theme.of(c).colorScheme.error),
+                  onPressed: _busy
+                      ? null
+                      : () => _run(() async {
+                            await api.post('/profile/2fa/disable', body: {'password': _pwd.text});
+                            _pwd.clear();
+                            await ref.read(sessionProvider.notifier).refreshProfile();
+                            if (mounted) setState(() => _k = UniqueKey());
+                          }),
+                  child: const Text('Désactiver')),
+            ]);
+          }
+          if (_setup == null) {
+            return ListView(padding: const EdgeInsets.all(16), children: [
+              const ListTile(leading: Icon(Icons.security), title: Text('Désactivée'), subtitle: Text('Ajoutez une seconde étape à la connexion avec Google Authenticator, Microsoft Authenticator, Authy…')),
+              FilledButton(
+                  onPressed: _busy ? null : () => _run(() async {
+                        final r = await api.post<Map>('/profile/2fa/setup');
+                        if (mounted) setState(() => _setup = Map.from(r));
+                      }),
+                  child: const Text('Commencer')),
+            ]);
+          }
+          final url = '${_setup!['otpauth_url']}', secret = '${_setup!['secret']}';
+          return ListView(padding: const EdgeInsets.all(16), children: [
+            const Text('1. Dans votre application d\'authentification, ajoutez un compte en scannant ce code, ou saisissez la clé ci-dessous.'),
+            const SizedBox(height: 12),
+            Center(child: Container(color: Colors.white, padding: const EdgeInsets.all(8), child: QrImageView(data: url, size: 200))),
+            const SizedBox(height: 8),
+            SelectableText(secret, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'monospace', fontSize: 16)),
+            TextButton.icon(onPressed: () => launchUrl(Uri.parse(url)), icon: const Icon(Icons.open_in_new), label: const Text('Ouvrir dans mon application')),
+            const SizedBox(height: 12),
+            const Text('2. Saisissez le code à 6 chiffres affiché.'),
+            TextField(controller: _code, keyboardType: TextInputType.number, maxLength: 6, decoration: const InputDecoration(labelText: 'Code à 6 chiffres')),
+            FilledButton(
+                onPressed: _busy
+                    ? null
+                    : () => _run(() async {
+                          final r = await api.post<Map>('/profile/2fa/enable', body: {'secret': secret, 'code': _code.text.trim()});
+                          _code.clear();
+                          await ref.read(sessionProvider.notifier).refreshProfile();
+                          if (mounted) setState(() {
+                                _setup = null;
+                                _recovery = [for (final x in (r['codes_recuperation'] as List)) '$x'];
+                              });
+                        }),
+                child: const Text('Activer')),
+            TextButton(onPressed: () => setState(() => _setup = null), child: const Text('Annuler')),
+          ]);
+        },
       ),
     );
   }

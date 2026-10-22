@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import 'core/session.dart';
 import 'core/theme.dart';
@@ -15,8 +16,10 @@ import 'ui/common.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Bureau : sqflite passe par FFI. Web : pas de base locale (mode hors ligne vétérinaire indisponible).
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+  // Web : SQLite dans le navigateur (WebAssembly + IndexedDB, fichiers web/sqlite3.wasm et web/sqflite_sw.js). Bureau : FFI.
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  } else if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }

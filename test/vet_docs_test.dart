@@ -49,4 +49,28 @@ void main() {
     expect(sent!['montant'], 30000);
     expect(sent!['mode'], 'especes');
   });
+
+  testWidgets('facture : suppression d\'un paiement avec confirmation', (t) async {
+    var deletes = 0;
+    final (api, _, _) = await makeClient({
+      'GET /vet/documents/7': (_) => ok({
+            'id': 7, 'type': 'facture', 'numero': 'F-0007', 'statut': 'emise', 'paiement': 'partielle', 'date_emission': '2026-10-18', 'client': {'nom': 'Ferme Ba'},
+            'total_ht': 50000, 'tva_total': 0, 'total_ttc': 50000, 'paye': 20000, 'reste': 30000, 'lignes': [],
+            'paiements': deletes == 0 ? [{'id': 1, 'date_paiement': '2026-10-19', 'montant': 20000, 'mode': 'wave'}] : [],
+          }),
+      'POST /vet/payments/1/delete': (_) {
+        deletes++;
+        return ok({'supprime': true});
+      },
+    });
+    await t.pumpWidget(ProviderScope(overrides: [apiProvider.overrideWithValue(api)], child: const MaterialApp(home: DocumentDetailPage(id: 7))));
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(find.byTooltip('Supprimer ce paiement'), 300, scrollable: find.byType(Scrollable).last);
+    await t.tap(find.byTooltip('Supprimer ce paiement'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Confirmer'));
+    await t.pumpAndSettle();
+    expect(deletes, 1);
+    expect(find.byTooltip('Supprimer ce paiement'), findsNothing);
+  });
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
 import '../../core/session.dart';
+import '../../core/export.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import 'spec.dart';
@@ -62,6 +63,24 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
 
   void _reload() => setState(() => _k = UniqueKey());
 
+  /// Exporte toute la liste (filtres et recherche inclus) en CSV, page par page, puis ouvre le partage.
+  Future<void> _export(Map<String, dynamic> Function(int) query) async {
+    final spec = widget.spec, api = ref.read(apiProvider);
+    final cols = spec.exportColumns!;
+    try {
+      final rows = spec.listIsPlain
+          ? [for (final e in await api.get<List>(spec.listPath, query: query(1))) Map<String, dynamic>.from(e as Map)]
+          : await api.listAll(spec.listPath, query: {...query(1)}..remove('page'));
+      if (rows.isEmpty) {
+        if (mounted) showInfo(context, 'Rien à exporter.');
+        return;
+      }
+      await shareCsv('${spec.id}_${isoDate(DateTime.now())}.csv', [for (final c in cols) c.$2], [for (final r in rows) [for (final c in cols) r[c.$1]]]);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final spec = widget.spec;
@@ -76,7 +95,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
           if (spec.searchParam != null && _q.isNotEmpty) spec.searchParam!: _q,
         };
     return Scaffold(
-      appBar: widget.embedded ? null : AppBar(title: Text(spec.title)),
+      appBar: widget.embedded ? null : AppBar(title: Text(spec.title), actions: [if (spec.exportColumns != null) IconButton(tooltip: 'Exporter (CSV)', icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
@@ -122,10 +141,10 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                 title: Text(spec.itemTitle(row)),
                 subtitle: spec.itemSubtitle == null ? null : Text(spec.itemSubtitle!(row)),
                 trailing: spec.itemTrailing == null ? null : Text(spec.itemTrailing!(row), style: const TextStyle(fontWeight: FontWeight.bold)),
-                onTap: spec.detailPath == null
+                onTap: spec.detailPath == null && !spec.detailFromList
                     ? null
                     : () async {
-                        await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'])));
+                        await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'], row: spec.detailFromList ? row : null)));
                         if (mounted) _reload();
                       },
               ),
@@ -139,27 +158,46 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
 
 /// Détail d'un élément : champs, listes liées, actions.
 class ModuleDetailPage extends ConsumerStatefulWidget {
-  const ModuleDetailPage(this.spec, this.id, {super.key});
+  const ModuleDetailPage(this.spec, this.id, {super.key, this.row});
   final ModuleSpec spec;
   final Object? id;
+
+  /// Ligne de la liste, quand le module n'a pas de route de détail (`detailFromList`).
+  final Map<String, dynamic>? row;
   @override
   ConsumerState<ModuleDetailPage> createState() => _ModuleDetailPageState();
 }
 
+bool _supported(ActionSpec a) {
+  final n = a.needs;
+  if (n == null) return serverCan('POST', a.path);
+  final i = n.indexOf(' ');
+  return serverCan(n.substring(0, i), n.substring(i + 1));
+}
+
 class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
   Key _k = UniqueKey();
+
+  /// Après une action : recharge la fiche, ou revient à la liste quand la fiche vient de la liste (ligne devenue périmée).
+  void _done() {
+    if (widget.row != null) {
+      Navigator.pop(context);
+    } else {
+      setState(() => _k = UniqueKey());
+    }
+  }
 
   Future<void> _run(ActionSpec a, Json row) async {
     final api = ref.read(apiProvider);
     final path = a.path.replaceAll('{id}', '${widget.id}');
     if (a.page != null) {
       final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => a.page!(widget.id)));
-      if (ok == true && mounted) setState(() => _k = UniqueKey());
+      if (ok == true && mounted) _done();
       return;
     }
     if (a.fields.isNotEmpty) {
       final ok = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => DynamicFormPage(title: a.label, fields: a.fields, pathVars: {'id': widget.id}, initialValues: a.prefill ? row : const {}, successMessage: a.successMessage, submit: (body) => api.post(path, body: {...?a.body, ...body, if (a.idKey != null) a.idKey!: widget.id}))));
-      if (ok == true && mounted) setState(() => _k = UniqueKey());
+      if (ok == true && mounted) _done();
       return;
     }
     if (a.confirm != null) {
@@ -175,7 +213,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       await api.post(path, body: a.body);
       if (!mounted) return;
       showInfo(context, a.successMessage);
-      setState(() => _k = UniqueKey());
+      _done();
     } catch (e) {
       if (mounted) showError(context, e);
     }
@@ -189,11 +227,11 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
       appBar: AppBar(title: Text(spec.title)),
       body: AsyncView<Map>(
         key: _k,
-        load: () => api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
+        load: () async => widget.row ?? await api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
         builder: (c, raw) {
           final row = Map<String, dynamic>.from(raw);
           final profile = ref.watch(sessionProvider).value;
-          final actions = [for (final a in spec.actions) if (serverCan('POST', a.path) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
+          final actions = [for (final a in spec.actions) if (_supported(a) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
             for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),

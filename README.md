@@ -91,7 +91,7 @@ Le job CI `apk` publie aussi un APK en artefact.
 
 Les plateformes `windows/` et `web/` sont générées. Lancer avec `flutter run -d windows` ou `flutter run -d chrome`.
 - Windows : la base locale vétérinaire utilise `sqflite_common_ffi` (initialisé dans `main.dart`).
-- Web : pas de base locale, donc le mode hors ligne vétérinaire est indisponible. Le serveur doit autoriser le CORS pour l'origine de l'app.
+- Web : la base locale du cabinet vétérinaire est un SQLite dans le navigateur (WebAssembly, `web/sqlite3.wasm` et `web/sqflite_sw.js`, générés par `dart run sqflite_common_ffi_web:setup`). Le serveur doit autoriser le CORS pour l'origine de l'app.
 
 ## Modules masqués (serveur non implémenté)
 

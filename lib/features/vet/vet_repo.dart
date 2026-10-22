@@ -64,6 +64,7 @@ class VetRepo extends ChangeNotifier {
 
   Future<void> open() async {
     final dir = await getDatabasesPath();
+    _opened.add(p.join(dir, 'vet_$key.db'));
     _db = await openDatabase(p.join(dir, 'vet_$key.db'), version: 1, onCreate: (d, _) async {
       await d.execute('CREATE TABLE docs (kind TEXT NOT NULL, id INTEGER NOT NULL, json TEXT NOT NULL, PRIMARY KEY (kind, id))');
       await d.execute('CREATE TABLE queue (seq INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT UNIQUE NOT NULL, type TEXT NOT NULL, donnees TEXT NOT NULL, created_at TEXT NOT NULL, etat TEXT NOT NULL, message TEXT)');
@@ -255,8 +256,17 @@ class VetRepo extends ChangeNotifier {
   }
 
   /// Efface toutes les copies locales du cabinet (déconnexion) : elles contiennent des données de clients.
+  static final Set<String> _opened = {};
+
   static Future<void> wipeAll() async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      // Pas de liste de fichiers dans le navigateur : on efface les bases ouvertes pendant cette session.
+      for (final f in _opened) {
+        await deleteDatabase(f);
+      }
+      _opened.clear();
+      return;
+    }
     final dir = await getDatabasesPath();
     for (final f in await Directory(dir).list().toList()) {
       final n = p.basename(f.path);
@@ -278,7 +288,6 @@ final vetRepoProvider = FutureProvider.autoDispose<VetRepo>((ref) async {
   final api = ref.watch(apiProvider);
   final profile = ref.watch(sessionProvider.select((s) => s.value));
   if (profile == null || !profile.isVet) throw StateError('Compte vétérinaire requis');
-  if (kIsWeb) throw StateError('Le cabinet vétérinaire utilise une base locale : ouvrez l\'application sur Android, iOS ou Windows.');
   // Une base par compte (le collaborateur et le titulaire n'ont pas les mêmes droits)
   final repo = VetRepo(api, '${profile.id}_${_stableHash(profile.email.toLowerCase())}');
   await repo.open();

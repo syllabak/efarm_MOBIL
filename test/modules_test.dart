@@ -7,6 +7,10 @@ import 'package:efarm360/features/modules/registry_gestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
+import 'package:efarm360/features/farm/farm_pages.dart';
+import 'package:efarm360/features/farm/finance_extra.dart';
+import 'package:efarm360/features/farm/thresholds_page.dart';
+import 'package:efarm360/features/modules/compare_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -218,5 +222,187 @@ void main() {
     expect(find.text('Actif'), findsOneWidget);
     expect(find.text('Clôturer le lot'), findsNothing);
     expect(find.text('Saisir le rapport du jour'), findsNothing);
+  });
+
+  testWidgets('comparer les bandes : choix du site puis bandes côte à côte', (t) async {
+    Map<String, dynamic>? query;
+    await _pump(t, const CompareBandsPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}, {'id': 2, 'nom': 'Sud'}]),
+      'GET /lots/compare': (o) {
+        query = o.queryParameters;
+        return ok([
+          {'lot_id': 7, 'code': 'FARM-7', 'taux_mortalite_pct': 4.2, 'total_aliment_kg': 1500, 'marge_beneficiaire_pct': 12.5},
+        ]);
+      },
+    });
+    expect(find.text('Choisissez un site pour comparer ses dernières bandes.'), findsOneWidget);
+    await t.tap(find.byType(DropdownButtonFormField<int>));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Sud').last);
+    await t.pumpAndSettle();
+    expect(query!['site_id'], 2);
+    expect(find.text('FARM-7'), findsOneWidget);
+    expect(find.textContaining('Mortalité : 4,2 %'), findsOneWidget);
+  });
+
+  testWidgets('employé : désactiver demande confirmation puis envoie actif=false ; inactif propose la réactivation', (t) async {
+    Map<String, dynamic>? sent;
+    var actif = 1;
+    await _pump(t, ModuleDetailPage(employeesModule, 5), {
+      'GET /employees/5': (_) => ok({'id': 5, 'prenom': 'Awa', 'nom': 'Diop', 'actif': actif}),
+      'POST /employees/5/active': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        actif = 0;
+        return ok({'actif': false});
+      },
+    });
+    expect(find.text('Réactiver'), findsNothing);
+    await t.ensureVisible(find.text('Désactiver'));
+    await t.tap(find.text('Désactiver'));
+    await t.pumpAndSettle();
+    expect(find.text('Désactiver cet employé ? Il n\'apparaîtra plus dans la paie.'), findsOneWidget);
+    await t.tap(find.text('Confirmer'));
+    await t.pumpAndSettle();
+    expect(sent, {'actif': false});
+    await t.ensureVisible(find.text('Réactiver'));
+    expect(find.text('Réactiver'), findsOneWidget);
+  });
+
+  testWidgets('ROI : site choisi, totaux et bandes', (t) async {
+    await _pump(t, const RoiPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}, {'id': 2, 'nom': 'Sud'}]),
+      'GET /finance/roi': (o) {
+        expect(o.queryParameters['site_id'], 2);
+        return ok({'lots': [{'lot_id': 7, 'code': 'FARM-7', 'roi_pct': 18.5}], 'total_investi': 1000000, 'total_revenu': 1400000, 'benefice_net': 400000, 'roi_global_pct': 40});
+      },
+    });
+    await t.tap(find.byType(DropdownButtonFormField<int>));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Sud').last);
+    await t.pumpAndSettle();
+    expect(find.text('ROI global'), findsOneWidget);
+    await t.scrollUntilVisible(find.text('FARM-7'), 200, scrollable: find.byType(Scrollable).last);
+    expect(find.text('FARM-7'), findsOneWidget);
+    expect(find.text('ROI 18,5 %', skipOffstage: false), findsOneWidget);
+  });
+
+  testWidgets('contrôle des chiffres : synthèse et cas à corriger en premier', (t) async {
+    await _pump(t, const FinanceControlPage(), {
+      'GET /finance/control': (_) => ok({
+            'synthese': {'erreur': 1, 'avert': 0, 'info': 0, 'ok': 1},
+            'controles': [
+              {'id': 'a', 'titre': 'Total conforme', 'gravite': 'ok', 'nb': 0, 'lignes': []},
+              {'id': 'b', 'titre': 'Vente sans ligne', 'gravite': 'erreur', 'conseil': 'Réenregistrez la vente.', 'nb': 1, 'lignes': ['V-001 : 5000 FCFA']},
+            ],
+          }),
+    });
+    expect(find.text('1 · Erreur'), findsOneWidget);
+    expect(find.text('Vente sans ligne'), findsOneWidget);
+    await t.tap(find.text('Vente sans ligne'));
+    await t.pumpAndSettle();
+    expect(find.text('• V-001 : 5000 FCFA'), findsOneWidget);
+  });
+
+  testWidgets('seuils d\'alerte : champ vide = valeur par défaut, corps envoyé typé', (t) async {
+    Map<String, dynamic>? sent;
+    await _pump(t, const ThresholdsPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 1, 'nom': 'Nord'}]),
+      'GET /alerts/thresholds': (_) => ok({
+            'site_id': 1,
+            'types': [
+              {'type': 'temperature', 'label': 'Température (capteur)', 'unite': '°C', 'defaut_warning': 32, 'defaut_critique': 38, 'warning': 30, 'critique': 36, 'personnalise': true},
+              {'type': 'co2', 'label': 'CO₂ (capteur)', 'unite': 'ppm', 'defaut_warning': 3000, 'defaut_critique': 5000, 'warning': null, 'critique': null, 'personnalise': false},
+            ],
+          }),
+      'POST /alerts/thresholds': (o) {
+        sent = Map<String, dynamic>.from(o.data as Map);
+        return ok({'site_id': 1, 'enregistres': 1, 'par_defaut': 1});
+      },
+    });
+    expect(find.text('Température (capteur) (°C)'), findsOneWidget);
+    expect(find.text('défaut 3000'), findsNWidgets(1));
+    await t.enterText(find.byType(TextFormField).first, '31,5');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent!['site_id'], 1);
+    expect(sent!['seuils']['temperature'], {'warning': 31.5, 'critique': 36});
+    expect(sent!['seuils']['co2'], isNull);
+  });
+
+  testWidgets('sites : création puis modification partielle (champs vides non envoyés)', (t) async {
+    final sent = <String, Map<String, dynamic>>{};
+    await _pump(t, const SitesPage(), {
+      'GET /farm/sites': (_) => ok([{'id': 3, 'code': 'S3', 'nom': 'Nord', 'adresse': 'Thiès', 'capacite_max': 2000}]),
+      'POST /farm/sites': (o) {
+        sent['create'] = Map<String, dynamic>.from(o.data as Map);
+        return ok({'id': 4}, );
+      },
+      'POST /farm/sites/3': (o) {
+        sent['edit'] = Map<String, dynamic>.from(o.data as Map);
+        return ok({'id': 3});
+      },
+    });
+    await t.tap(find.text('Site'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextFormField).at(1), 'Sud');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent['create'], {'nom': 'Sud'});
+    await t.pump(const Duration(seconds: 6)); // le message « Site créé » ne doit plus masquer le bouton
+    await t.pumpAndSettle();
+
+    await t.tap(find.text('Nord'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextFormField).at(0), 'Nord 2');
+    await t.ensureVisible(find.text('Enregistrer'));
+    await t.tap(find.text('Enregistrer'));
+    await t.pumpAndSettle();
+    expect(sent['edit']!['nom'], 'Nord 2');
+    expect(sent['edit']!.containsKey('telephone'), isFalse);
+    expect(sent['edit']!.containsKey('latitude'), isFalse);
+  });
+
+  testWidgets('tableau de bord : mortalité, alertes récentes et finances du mois comme sur le web', (t) async {
+    await _pump(t, Scaffold(body: FarmHome(onGoto: (_) {})), {
+      'GET /farm/resume': (_) => ok({'sites_actifs': 2, 'lots_actifs': 3, 'effectif_total': 4000, 'dernier_rapport': '2026-10-20'}),
+      'GET /farm/rapports': (_) => ok([{'date_rapport': DateTime.now().toIso8601String().substring(0, 10), 'mortalite_jour': 4}], meta: {'page': 1, 'pages': 1}),
+      'GET /alerts': (_) => ok([{'id': 1, 'message': 'Mortalité élevée sur le lot FARM-7', 'lue': 0, 'created_at': '2026-10-20 08:00:00'}], meta: {'page': 1, 'pages': 1}),
+      'GET /finance/summary': (_) => ok({'total_ventes': 900000, 'total_depenses': 400000, 'benefice_net': 500000, 'creances': 0}),
+    });
+    expect(find.text('Têtes total'), findsOneWidget);
+    await t.scrollUntilVisible(find.text('💰 Finances du mois'), 300, scrollable: find.byType(Scrollable).first);
+    await t.pumpAndSettle();
+    expect(find.text('🔔 Alertes récentes', skipOffstage: false), findsOneWidget);
+    expect(find.text('Mortalité élevée sur le lot FARM-7', skipOffstage: false), findsOneWidget);
+    expect(find.text('Bénéfice net', skipOffstage: false), findsOneWidget);
+    expect(find.textContaining('4 au total', skipOffstage: false), findsOneWidget);
+  });
+
+  testWidgets('lot : les actions à écran propre apparaissent selon le contrat du serveur', (t) async {
+    hideUnsupported = true;
+    addTearDown(() {
+      hideUnsupported = false;
+      resetContract();
+    });
+    useContract({
+      'paths': {
+        '/lots/{id}/performance': {'get': {}},
+        '/lots/{id}/band': {'get': {}},
+        '/lots/{id}/weekly': {'get': {}},
+        '/farm/rapports': {'post': {}},
+      }
+    });
+    await _pump(t, ModuleDetailPage(lotsModule, 9), {
+      'GET /lots/9/performance': (_) => ok({
+            'lot': {'id': 9, 'code': 'FARM-9', 'statut': 'actif'},
+            'performance': {'age_jours': 10}, 'mortalite': {'nb_initial': 100, 'nb_actuel': 98}, 'causes': [], 'rapports': [],
+          }),
+    });
+    expect(find.text('Rapport hebdomadaire'), findsOneWidget);
+    expect(find.text('Tableau de bande'), findsOneWidget);
+    expect(find.text('Saisir le rapport du jour'), findsOneWidget);
+    expect(find.text('Clôturer le lot'), findsNothing); // POST /lots/{id}/close absent du contrat
   });
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import '../modules/data_view.dart';
 import '../modules/module_pages.dart';
 import '../modules/spec.dart';
 
@@ -45,7 +46,26 @@ final vetCatalogueModule = ModuleSpec(
   itemTitle: (r) => _s(r['nom']),
   itemSubtitle: (r) => _join([_categoriesArticle['${r['categorie']}'], r['code'], r['unite']]),
   itemTrailing: (r) => fcfa(r['prix_vente']),
-  detailPath: null,
+  detailFromList: true,
+  exportColumns: const [('nom', 'Nom'), ('type', 'Type'), ('categorie', 'Catégorie'), ('code', 'Code'), ('unite', 'Unité'), ('prix_achat', 'Prix d\'achat'), ('prix_vente', 'Prix de vente'), ('tva_pct', 'TVA %')],
+  detailTitle: (r) => _s(r['nom']),
+  detail: [
+    ColumnSpec('type', 'Type', fmt: Fmt.label, labels: const {'produit': 'Produit', 'service': 'Prestation'}),
+    ColumnSpec('categorie', 'Catégorie', fmt: Fmt.label, labels: _categoriesArticle),
+    const ColumnSpec('code', 'Code'),
+    const ColumnSpec('unite', 'Unité'),
+    const ColumnSpec('prix_achat', 'Prix d\'achat', fmt: Fmt.money),
+    const ColumnSpec('prix_vente', 'Prix de vente', fmt: Fmt.money),
+    const ColumnSpec('tva_pct', 'TVA', fmt: Fmt.percent),
+    const ColumnSpec('seuil_alerte', 'Seuil d\'alerte', fmt: Fmt.number),
+    const ColumnSpec('ordonnance_requise', 'Ordonnance requise', fmt: Fmt.bool),
+    const ColumnSpec('code_barres', 'Code-barres'),
+    const ColumnSpec('emplacement', 'Emplacement'),
+  ],
+  actions: const [
+    ActionSpec('Modifier', '/vet/articles/{id}', icon: Icons.edit_outlined, prefill: true, fields: _articleFields, successMessage: 'Article mis à jour.'),
+    ActionSpec('Supprimer', '/vet/articles/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer cet article du catalogue ?', successMessage: 'Article supprimé.'),
+  ],
   create: const CreateSpec('Article', '/vet/articles', _articleFields, successMessage: 'Article ajouté.'),
   emptyText: 'Le catalogue est vide.',
 );
@@ -68,6 +88,19 @@ final vetSuppliersModule = ModuleSpec(
   itemTitle: (r) => _s(r['nom']),
   itemSubtitle: (r) => _join([r['telephone'], r['email']]),
   itemTrailing: (r) => (num.tryParse(_s(r['achats'])) ?? 0) > 0 ? fcfa(r['achats']) : '',
+  detailFromList: true,
+  detailTitle: (r) => _s(r['nom']),
+  detail: const [
+    ColumnSpec('telephone', 'Téléphone'),
+    ColumnSpec('email', 'E-mail'),
+    ColumnSpec('adresse', 'Adresse'),
+    ColumnSpec('achats', 'Achats cumulés', fmt: Fmt.money),
+    ColumnSpec('notes', 'Notes'),
+  ],
+  actions: const [
+    ActionSpec('Modifier', '/vet/suppliers/{id}', icon: Icons.edit_outlined, prefill: true, fields: _fourFields, successMessage: 'Fournisseur mis à jour.'),
+    ActionSpec('Supprimer', '/vet/suppliers/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer ce fournisseur ?', successMessage: 'Fournisseur supprimé.'),
+  ],
   create: const CreateSpec('Fournisseur', '/vet/suppliers', _fourFields, successMessage: 'Fournisseur ajouté.'),
   emptyText: 'Aucun fournisseur.',
 );
@@ -216,7 +249,7 @@ final vetOrdersModule = ModuleSpec(
         itemSubtitle: (r) => 'Reçu ${fmtNum(r['quantite_recue'], digits: 1)} sur ${fmtNum(r['quantite'], digits: 1)} · ${fcfa(r['prix_achat'])}', itemTrailing: (r) => '× ${fmtNum(r['quantite'], digits: 1)}'),
   ],
   actions: [
-    ActionSpec('Réceptionner', '', icon: Icons.move_to_inbox_outlined, visible: (r) => r['statut'] == 'envoyee' || r['statut'] == 'brouillon', page: (id) => ReceiveOrderPage(orderId: id)),
+    ActionSpec('Réceptionner', '', needs: 'POST /vet/orders/{id}/receive', icon: Icons.move_to_inbox_outlined, visible: (r) => r['statut'] == 'envoyee' || r['statut'] == 'brouillon', page: (id) => ReceiveOrderPage(orderId: id)),
     const ActionSpec('Marquer envoyée', '/vet/orders/{id}/status', icon: Icons.send_outlined, body: {'action': 'envoyer'}, successMessage: 'Commande envoyée.', visible: _brouillon),
     const ActionSpec('Annuler', '/vet/orders/{id}/status', icon: Icons.block, body: {'action': 'annuler'}, confirm: 'Annuler cette commande ?', visible: _annulable, successMessage: 'Commande annulée.'),
     const ActionSpec('Supprimer', '/vet/orders/{id}/status', icon: Icons.delete_outline, body: {'action': 'supprimer'}, confirm: 'Supprimer ce brouillon ?', destructive: true, visible: _brouillon, successMessage: 'Commande supprimée.'),
@@ -237,6 +270,159 @@ final vetOrdersModule = ModuleSpec(
 
 bool _brouillon(Json r) => r['statut'] == 'brouillon';
 bool _annulable(Json r) => r['statut'] == 'brouillon' || r['statut'] == 'envoyee';
+
+/// Inventaire physique (page « Inventaire » du site) : on saisit les quantités comptées ; seuls les écarts deviennent des ajustements de stock.
+class InventoryPage extends ConsumerStatefulWidget {
+  const InventoryPage({super.key});
+  @override
+  ConsumerState<InventoryPage> createState() => _InventoryPageState();
+}
+
+class _InventoryPageState extends ConsumerState<InventoryPage> {
+  final _counts = <int, TextEditingController>{};
+  final _motif = TextEditingController();
+  String _q = '';
+  bool _saving = false;
+  Key _k = UniqueKey();
+
+  @override
+  void dispose() {
+    for (final c in _counts.values) {
+      c.dispose();
+    }
+    _motif.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final comptes = <String, num>{};
+    for (final e in _counts.entries) {
+      final n = num.tryParse(e.value.text.trim().replaceAll(',', '.'));
+      if (n != null) comptes['${e.key}'] = n;
+    }
+    if (comptes.isEmpty) return showInfo(context, 'Saisissez au moins une quantité comptée.');
+    setState(() => _saving = true);
+    try {
+      final r = await ref.read(apiProvider).post<Map>('/vet/inventory', body: {'comptes': comptes, if (_motif.text.trim().isNotEmpty) 'motif': _motif.text.trim()});
+      if (!mounted) return;
+      showInfo(context, '${r['message']}');
+      for (final c in _counts.values) {
+        c.clear();
+      }
+      setState(() => _k = UniqueKey());
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Inventaire')),
+      bottomNavigationBar: SafeArea(child: Padding(padding: const EdgeInsets.all(12), child: FilledButton(onPressed: _saving ? null : _save, child: _saving ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Régulariser les écarts')))),
+      body: AsyncView<Map>(
+        key: _k,
+        load: () => api.get<Map>('/vet/pharmacy'),
+        builder: (c, d) {
+          final rows = [for (final r in (d['stock'] as List).cast<Map>()) if ('${r['nom']}'.toLowerCase().contains(_q.toLowerCase())) r];
+          return ListView(padding: const EdgeInsets.all(8), children: [
+            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher un produit'), onChanged: (v) => setState(() => _q = v))),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: TextField(controller: _motif, decoration: const InputDecoration(labelText: 'Motif (facultatif)', hintText: 'Inventaire de fin de mois'))),
+            const Padding(padding: EdgeInsets.all(8), child: Text('Comptez le stock réel : laissez vide un produit non compté. Les différences avec le stock théorique sont enregistrées comme ajustements.')),
+            for (final r in rows)
+              Card(
+                child: ListTile(
+                  title: Text('${r['nom']}'),
+                  subtitle: Text('Théorique : ${fmtNum(r['stock'], digits: 2)} ${r['unite'] ?? ''}'),
+                  trailing: SizedBox(width: 100, child: TextField(controller: _counts.putIfAbsent(int.parse('${r['id']}'), TextEditingController.new), keyboardType: const TextInputType.numberWithOptions(decimal: true), textAlign: TextAlign.end, decoration: const InputDecoration(labelText: 'Compté', isDense: true))),
+                ),
+              ),
+            const SizedBox(height: 12),
+          ]);
+        },
+      ),
+    );
+  }
+}
+
+/// Tableau financier du cabinet (même indicateurs que la page « Comptabilité » du site) : chiffres du mois, créances, stock à surveiller, factures impayées.
+class VetFinancePage extends ConsumerWidget {
+  const VetFinancePage({super.key});
+
+  static const _cyan = Color(0xFF155E75);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tableau financier')),
+      body: AsyncView<Map>(
+        load: () => api.get<Map>('/vet/finance'),
+        builder: (c, d) {
+          Widget section(String titre, String cle) {
+            final v = d[cle];
+            if (v is! List || v.isEmpty) return const SizedBox.shrink();
+            return Padding(padding: const EdgeInsets.only(top: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('$titre (${v.length})', style: Theme.of(c).textTheme.titleMedium),
+              DataTree(v, skip: const {'id', 'article_id'}),
+            ]));
+          }
+          return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
+              GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.6, padding: const EdgeInsets.all(4), children: [
+                Stat('Chiffre d\'affaires du mois', fcfa(d['ca_mois']), icon: Icons.trending_up, color: _cyan),
+                Stat('Encaissé ce mois-ci', fcfa(d['encaisse_mois']), icon: Icons.payments_outlined, color: Colors.green),
+                Stat('Dépenses du mois', fcfa(d['depenses_mois']), icon: Icons.trending_down, color: Colors.red),
+                Stat('Créances', fcfa(d['creances']), icon: Icons.hourglass_bottom, color: Colors.orange),
+                Stat('Devis en attente', fmtNum(d['devis_attente']), icon: Icons.request_quote_outlined, color: _cyan),
+                Stat('Factures en brouillon', fmtNum(d['factures_brouillon']), icon: Icons.edit_note, color: _cyan),
+                Stat('Valeur du stock', fcfa(d['valeur_stock']), icon: Icons.inventory_2_outlined, color: _cyan),
+                Stat('Clients', fmtNum(d['nb_clients']), icon: Icons.people_outline, color: _cyan),
+              ]),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                section('Factures impayées', 'impayees'),
+                section('Stock à surveiller', 'rupture'),
+                section('Péremptions proches', 'peremptions'),
+              ])),
+            ]);
+        },
+      ),
+    );
+  }
+}
+
+/// Produits sous leur seuil d'alerte (suggestions du serveur) : un toucher prépare la commande avec ces lignes déjà remplies.
+class OrderSuggestionsPage extends ConsumerWidget {
+  const OrderSuggestionsPage({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final api = ref.watch(apiProvider);
+    return Scaffold(
+      appBar: AppBar(title: const Text('Réapprovisionnement')),
+      body: AsyncView<List>(
+        load: () => api.get<List>('/vet/orders/suggestions'),
+        builder: (c, rows) {
+          if (rows.isEmpty) return const EmptyView('Aucun produit sous son seuil d\'alerte.', icon: Icons.check_circle_outline);
+          final lignes = [for (final r in rows.cast<Map>()) Map<String, dynamic>.from(r)];
+          return ListView(padding: const EdgeInsets.all(8), children: [
+            for (final r in lignes)
+              Card(child: ListTile(leading: const Icon(Icons.warning_amber, color: Colors.orange), title: Text('${r['designation']}'), subtitle: Text('À commander : ${fmtNum(r['quantite'], digits: 1)}'), trailing: Text(fcfa(r['prix_achat'])))),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: FilledButton.icon(
+                icon: const Icon(Icons.shopping_cart_outlined),
+                label: const Text('Préparer la commande'),
+                onPressed: () => Navigator.push(c, MaterialPageRoute(builder: (_) => DynamicFormPage(title: 'Nouvelle commande', fields: vetOrdersModule.create!.fields, initialValues: {'lignes': lignes}, successMessage: vetOrdersModule.create!.successMessage, submit: (b) => api.post('/vet/orders', body: b)))),
+              ),
+            ),
+          ]);
+        },
+      ),
+    );
+  }
+}
 
 /// Réception d'une commande : quantités reçues par ligne (avec lot et péremption), entrée en stock automatique.
 class ReceiveOrderPage extends ConsumerStatefulWidget {

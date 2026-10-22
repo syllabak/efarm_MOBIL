@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/export.dart';
 import '../../core/session.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
@@ -147,6 +148,13 @@ class _StockPageState extends ConsumerState<StockPage> {
         builder: (c, rows) => ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
           if (serverGets('/stock/alerts')) ListTile(leading: const Icon(Icons.warning_amber), title: const Text('Produits sous le seuil'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const LowStockPage()))),
           if (canEntry && serverGets('/stock/movements')) ListTile(leading: const Icon(Icons.history), title: const Text('Historique des mouvements'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const MovementsPage()))),
+          if (rows.isNotEmpty)
+            ListTile(
+                leading: const Icon(Icons.ios_share),
+                title: const Text('Exporter le stock (CSV)'),
+                onTap: () => shareCsv('stock_${isoDate(DateTime.now())}.csv', const ['Produit', 'Site', 'Quantité', 'Unité', 'Seuil d\'alerte'], [for (final r in rows.cast<Map>()) [r['produit'], r['site_id'], r['quantite'], r['unite'], r['seuil_alerte']]]).catchError((Object e) {
+                      if (c.mounted) showError(c, e);
+                    })),
           const Divider(height: 1),
           if (rows.isEmpty) const SizedBox(height: 300, child: EmptyView('Aucun produit en stock.')),
           for (final r in rows)

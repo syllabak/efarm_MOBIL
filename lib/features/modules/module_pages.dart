@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
 import '../../core/session.dart';
+import '../../core/export.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import 'spec.dart';
@@ -62,6 +63,32 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
 
   void _reload() => setState(() => _k = UniqueKey());
 
+  /// Exporte toute la liste (filtres et recherche inclus) en CSV, page par page, puis ouvre le partage.
+  Future<void> _export(Map<String, dynamic> Function(int) query) async {
+    final spec = widget.spec, api = ref.read(apiProvider);
+    final cols = spec.exportColumns!;
+    try {
+      final rows = <Map<String, dynamic>>[];
+      for (var page = 1; page <= 40; page++) {
+        final q = {...query(page), 'per_page': 100};
+        if (spec.listIsPlain) {
+          rows.addAll([for (final e in await api.get<List>(spec.listPath, query: q)) Map<String, dynamic>.from(e as Map)]);
+          break;
+        }
+        final r = await api.list(spec.listPath, query: q);
+        rows.addAll(r.items);
+        if (page >= ((r.meta['pages'] as num?)?.toInt() ?? 1)) break;
+      }
+      if (rows.isEmpty) {
+        if (mounted) showInfo(context, 'Rien à exporter.');
+        return;
+      }
+      await shareCsv('${spec.id}_${isoDate(DateTime.now())}.csv', [for (final c in cols) c.$2], [for (final r in rows) [for (final c in cols) r[c.$1]]]);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final spec = widget.spec;
@@ -76,7 +103,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
           if (spec.searchParam != null && _q.isNotEmpty) spec.searchParam!: _q,
         };
     return Scaffold(
-      appBar: widget.embedded ? null : AppBar(title: Text(spec.title)),
+      appBar: widget.embedded ? null : AppBar(title: Text(spec.title), actions: [if (spec.exportColumns != null) IconButton(tooltip: 'Exporter (CSV)', icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),

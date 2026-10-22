@@ -34,6 +34,7 @@ final employeesModule = ModuleSpec(
   itemSubtitle: (r) => _join([r['poste'], r['site'], if (r['actif'] == 0 || r['actif'] == false) 'inactif']),
   itemTrailing: (r) => r['salaire'] != null ? money(r['salaire']) : (r['taux_horaire'] != null ? '${fmtNum(r['taux_horaire'])} F/h' : ''),
   detailPath: '/employees/{id}',
+  exportColumns: const [('prenom', 'Prénom'), ('nom', 'Nom'), ('poste', 'Poste'), ('site', 'Site'), ('salaire', 'Salaire mensuel'), ('actif', 'Actif')],
   detailTitle: (r) => _join([r['prenom'], r['nom']], ' '),
   detail: const [
     ColumnSpec('poste', 'Poste'),
@@ -121,6 +122,7 @@ final suppliersModule = ModuleSpec(
   itemSubtitle: (r) => _join([r['categorie'], r['telephone'], if (r['actif'] == 0 || r['actif'] == false) 'inactif']),
   itemTrailing: (r) => (num.tryParse(_s(r['total_achats'])) ?? 0) > 0 ? money(r['total_achats']) : '',
   detailPath: '/suppliers/{id}',
+  exportColumns: const [('nom', 'Fournisseur'), ('telephone', 'Téléphone'), ('email', 'E-mail'), ('adresse', 'Adresse')],
   detailTitle: (r) => _s(r['nom']),
   detail: const [
     ColumnSpec('contact', 'Contact'),

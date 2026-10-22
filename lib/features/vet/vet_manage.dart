@@ -47,6 +47,7 @@ final vetCatalogueModule = ModuleSpec(
   itemSubtitle: (r) => _join([_categoriesArticle['${r['categorie']}'], r['code'], r['unite']]),
   itemTrailing: (r) => fcfa(r['prix_vente']),
   detailFromList: true,
+  exportColumns: const [('nom', 'Nom'), ('type', 'Type'), ('categorie', 'Catégorie'), ('code', 'Code'), ('unite', 'Unité'), ('prix_achat', 'Prix d\'achat'), ('prix_vente', 'Prix de vente'), ('tva_pct', 'TVA %')],
   detailTitle: (r) => _s(r['nom']),
   detail: [
     ColumnSpec('type', 'Type', fmt: Fmt.label, labels: const {'produit': 'Produit', 'service': 'Prestation'}),

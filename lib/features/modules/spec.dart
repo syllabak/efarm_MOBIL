@@ -129,6 +129,7 @@ class ModuleSpec {
     this.listIsPlain = false,
     this.plan,
     this.detailFromList = false,
+    this.exportColumns,
   });
   final String id, title, listPath;
   final IconData icon;
@@ -142,6 +143,9 @@ class ModuleSpec {
 
   /// Pas de route de détail : la fiche s'ouvre avec la ligne de la liste (les actions ramènent ensuite à la liste).
   final bool detailFromList;
+
+  /// Colonnes (clé de la ligne, titre) de l'export CSV de la liste ; absent = pas d'export.
+  final List<(String, String)>? exportColumns;
   final List<FilterSpec> filters;
   final String emptyText;
 

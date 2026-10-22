@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/server_support.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
 import '../modules/module_pages.dart';
@@ -135,6 +136,24 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
     }
   }
 
+  Future<void> _deletePayment(Map p) async {
+    final yes = await showDialog<bool>(
+        context: context,
+        builder: (d) => AlertDialog(title: const Text('Supprimer le paiement'), content: Text('Supprimer l\'encaissement de ${fcfa(p['montant'])} ? Le reste à payer de la facture sera recalculé.'), actions: [
+              TextButton(onPressed: () => Navigator.pop(d, false), child: const Text('Annuler')),
+              FilledButton(style: FilledButton.styleFrom(backgroundColor: Theme.of(d).colorScheme.error), onPressed: () => Navigator.pop(d, true), child: const Text('Confirmer')),
+            ]));
+    if (yes != true) return;
+    try {
+      await ref.read(apiProvider).post('/vet/payments/${p['id']}/delete');
+      if (!mounted) return;
+      showInfo(context, 'Paiement supprimé.');
+      _reload();
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
@@ -176,6 +195,7 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
                   leading: const Icon(Icons.payments_outlined),
                   title: Text(fcfa(p['montant'])),
                   subtitle: Text('${fmtDate(p['date_paiement'])} · ${_modesVet['${p['mode']}'] ?? p['mode']}${p['reference'] != null ? ' · ${p['reference']}' : ''}'),
+                  trailing: p['id'] != null && serverCan('POST', '/vet/payments/{id}/delete') ? IconButton(tooltip: 'Supprimer ce paiement', icon: const Icon(Icons.delete_outline), onPressed: () => _deletePayment(p)) : null,
                 ),
             ],
             if ((d['notes'] as String?)?.isNotEmpty == true) KeyValue('Notes', d['notes']),

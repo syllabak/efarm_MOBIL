@@ -166,8 +166,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final farm = _type == 'ferme';
+    // Même fond que la page de connexion du site : dégradé vert 900 → 800 → émeraude 700 (cyan pour le vétérinaire)
+    final vet = _type == 'veterinaire';
     return Scaffold(
-      body: SafeArea(
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: vet ? const [Color(0xFF164E63), Color(0xFF155E75), Color(0xFF0E7490)] : const [Color(0xFF14532D), Color(0xFF166534), Color(0xFF047857)])),
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -176,17 +181,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Form(
                 key: _form,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  const Align(alignment: AlignmentDirectional.centerEnd, child: LanguageButton()),
+                  Align(alignment: AlignmentDirectional.centerEnd, child: Theme(data: Theme.of(context).copyWith(textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Colors.white))), child: const LanguageButton())),
                   ValueListenableBuilder<String?>(
                     valueListenable: ref.watch(apiProvider).sessionIssue,
                     builder: (c, issue, _) => issue == null
                         ? const SizedBox.shrink()
                         : Card(color: Theme.of(c).colorScheme.errorContainer, child: Padding(padding: const EdgeInsets.all(12), child: Text(issue))),
                   ),
-                  Image.asset('assets/icon/icon.png', height: 96, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => Icon(Icons.agriculture, size: 64, color: Theme.of(context).colorScheme.primary)),
+                  Image.asset('assets/icon/icon.png', height: 80, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => const Text('🐓', textAlign: TextAlign.center, style: TextStyle(fontSize: 56))),
                   const SizedBox(height: 8),
-                  Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Text(vet ? 'Espace vétérinaire' : 'Gestion intelligente d\'élevage avicole', textAlign: TextAlign.center, style: TextStyle(color: vet ? const Color(0xFFA5F3FC) : const Color(0xFFBBF7D0), fontSize: 14)),
                   const SizedBox(height: 24),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Text('Connexion à votre espace', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: const Color(0xFF1F2937))),
+                        const SizedBox(height: 20),
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'ferme', label: Text('Exploitation'), icon: Icon(Icons.home_work_outlined)),
@@ -248,11 +264,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                     Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: _busy ? null : _testServer, icon: const Icon(Icons.wifi_tethering), label: const Text('Tester la connexion au serveur'))),
                   ],
+                      ]),
+                    ),
+                  ),
                 ]),
               ),
             ),
           ),
         ),
+      ),
       ),
     );
   }

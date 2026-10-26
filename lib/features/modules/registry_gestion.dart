@@ -155,6 +155,18 @@ final investmentsModule = ModuleSpec(
   itemTitle: (r) => _s(r['description']),
   itemSubtitle: (r) => _join([fmtDate(r['date_investissement']), r['categorie'], r['lot_code'], r['facture_ref']]),
   itemTrailing: (r) => money(r['montant']),
+  detailFromList: true,
+  detailTitle: (r) => _s(r['description']),
+  detail: const [
+    ColumnSpec('date_investissement', 'Date', fmt: Fmt.date),
+    ColumnSpec('montant', 'Montant', fmt: Fmt.money),
+    ColumnSpec('categorie', 'Catégorie'),
+    ColumnSpec('lot_code', 'Lot'),
+    ColumnSpec('facture_ref', 'N° de facture'),
+  ],
+  actions: [
+    const ActionSpec('Supprimer', '/finance/investments/{id}/delete', icon: Icons.delete_outline, destructive: true, confirm: 'Supprimer cet investissement ?', successMessage: 'Investissement supprimé.'),
+  ],
   create: const CreateSpec('Investissement', '/finance/investments', [
     FieldSpec('site_id', 'Site', type: FieldType.select, optionsPath: '/farm/sites', hint: 'Laissez vide si votre compte est rattaché à un site'),
     FieldSpec('description', 'Description', required: true, hint: 'Équipement, bâtiment, véhicule…'),

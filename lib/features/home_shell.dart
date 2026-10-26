@@ -65,7 +65,7 @@ class _FarmShellState extends State<_FarmShell> {
       }, tab: _i, inDrawer: true)),
       body: content,
       bottomNavigationBar: NavigationBar(selectedIndex: _i, onDestinationSelected: _goto, destinations: [
-        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Accueil'),
+        NavigationDestination(icon: const Icon(Icons.dashboard_outlined), selectedIcon: const Icon(Icons.dashboard), label: tr('Accueil')),
         NavigationDestination(icon: const Icon(Icons.egg_alt_outlined), selectedIcon: const Icon(Icons.egg_alt), label: tr('Lots')),
         NavigationDestination(icon: const Icon(Icons.assignment_outlined), selectedIcon: const Icon(Icons.assignment), label: tr('Rapports')),
         NavigationDestination(icon: const Icon(Icons.inventory_2_outlined), selectedIcon: const Icon(Icons.inventory_2), label: tr('Stock')),

@@ -8,6 +8,7 @@ import '../../core/session.dart';
 import '../../core/export.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
+import '../../ui/web_menu.dart';
 import 'spec.dart';
 
 /// Valeur d'une clé, y compris imbriquée (`bilan.nb_presents`).
@@ -97,7 +98,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
           if (spec.searchParam != null && _q.isNotEmpty) spec.searchParam!: _q,
         };
     return Scaffold(
-      appBar: widget.embedded ? null : AppBar(title: Text(spec.title), actions: [if (spec.exportColumns != null) IconButton(tooltip: tr('Exporter (CSV)'), icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
+      appBar: widget.embedded ? null : AppBar(title: Text(webTitle(spec.title)), actions: [if (spec.exportColumns != null) IconButton(tooltip: tr('Exporter (CSV)'), icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
@@ -226,7 +227,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
     final spec = widget.spec;
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(spec.title)),
+      appBar: AppBar(title: Text(webTitle(spec.title))),
       body: AsyncView<Map>(
         key: _k,
         load: () async => widget.row ?? await api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),

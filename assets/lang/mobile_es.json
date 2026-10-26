@@ -351,5 +351,9 @@
 "Libellé * (produit, acte)": "Denominación * (producto, acto)",
 "Client *": "Cliente *",
 "Patient (facultatif)": "Paciente (opcional)",
-"Description": "Descripción"
+"Description": "Descripción",
+"Élevage & Lots": "Cría y Lotes",
+"Espace ferme": "Espacio de la granja",
+"Menu": "Menú",
+"Traite (lait)": "Ordeño (leche)"
 }

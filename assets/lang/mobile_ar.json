@@ -351,5 +351,9 @@
 "Libellé * (produit, acte)": "التسمية * (المنتج، الإجراء)",
 "Client *": "العميل *",
 "Patient (facultatif)": "المريض (اختياري)",
-"Description": "الوصف"
+"Description": "الوصف",
+"Élevage & Lots": "التربية والدفعات",
+"Espace ferme": "فضاء المزرعة",
+"Menu": "القائمة",
+"Traite (lait)": "الحلب (الحليب)"
 }

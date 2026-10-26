@@ -351,5 +351,9 @@
 "Libellé * (produit, acte)": "Label * (product, procedure)",
 "Client *": "Client *",
 "Patient (facultatif)": "Patient (optional)",
-"Description": "Description"
+"Description": "Description",
+"Élevage & Lots": "Livestock & Flocks",
+"Espace ferme": "Farm space",
+"Menu": "Menu",
+"Traite (lait)": "Milking (milk)"
 }

@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
+import '../../ui/language_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
 import '../../core/session.dart';
+import '../../core/theme.dart';
 import '../../ui/common.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -128,7 +132,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             final ctl = TextEditingController();
             return AlertDialog(
               title: const Text('Code reçu'),
-              content: TextField(controller: ctl, autofocus: true, keyboardType: TextInputType.number, maxLength: 6, decoration: const InputDecoration(labelText: 'Code à 6 chiffres')),
+              content: TextField(controller: ctl, autofocus: true, keyboardType: TextInputType.number, maxLength: 6, decoration: InputDecoration(labelText: tr('Code à 6 chiffres'))),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
                 FilledButton(onPressed: () => Navigator.pop(context, ctl.text.trim()), child: const Text('Valider')),
@@ -163,8 +167,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final farm = _type == 'ferme';
+    // Même fond que la page de connexion du site : dégradé vert 900 → 800 → émeraude 700 (cyan pour le vétérinaire)
+    final vet = _type == 'veterinaire';
     return Scaffold(
-      body: SafeArea(
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: vet ? const [Color(0xFF164E63), Color(0xFF155E75), Color(0xFF0E7490)] : const [Color(0xFF14532D), Color(0xFF166534), Color(0xFF047857)])),
+        child: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -173,16 +182,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Form(
                 key: _form,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Align(alignment: AlignmentDirectional.centerEnd, child: Theme(data: Theme.of(context).copyWith(textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Colors.white))), child: const LanguageButton())),
                   ValueListenableBuilder<String?>(
                     valueListenable: ref.watch(apiProvider).sessionIssue,
                     builder: (c, issue, _) => issue == null
                         ? const SizedBox.shrink()
                         : Card(color: Theme.of(c).colorScheme.errorContainer, child: Padding(padding: const EdgeInsets.all(12), child: Text(issue))),
                   ),
-                  Image.asset('assets/icon/icon.png', height: 96, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => Icon(Icons.agriculture, size: 64, color: Theme.of(context).colorScheme.primary)),
+                  ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.asset('assets/icon/icon.png', height: 80, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => const Text('🐓', textAlign: TextAlign.center, style: TextStyle(fontSize: 56)))),
                   const SizedBox(height: 8),
-                  Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
+                  const SizedBox(height: 4),
+                  Text(vet ? 'Espace vétérinaire' : 'Gestion intelligente d\'élevage avicole', textAlign: TextAlign.center, style: TextStyle(color: vet ? const Color(0xFFA5F3FC) : const Color(0xFFBBF7D0), fontSize: 14)),
                   const SizedBox(height: 24),
+                  Theme(
+                    data: buildTheme(Theme.of(context).brightness, vet: vet),
+                    child: Card(
+                    margin: EdgeInsets.zero,
+                    elevation: 8,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Text('Connexion à votre espace', textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600, color: const Color(0xFF1F2937))),
+                        const SizedBox(height: 20),
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(value: 'ferme', label: Text('Exploitation'), icon: Icon(Icons.home_work_outlined)),
@@ -209,7 +232,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       obscureText: _hidePw,
                       autofillHints: const [AutofillHints.password],
                       decoration: InputDecoration(
-                          labelText: 'Mot de passe',
+                          labelText: tr('Mot de passe'),
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(icon: Icon(_hidePw ? Icons.visibility : Icons.visibility_off), onPressed: () => setState(() => _hidePw = !_hidePw))),
                       validator: (v) => (v ?? '').isEmpty ? 'Requis' : null,
@@ -218,7 +241,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ],
                   if (farm && _advanced) ...[
                     const SizedBox(height: 12),
-                    TextFormField(controller: _company, decoration: const InputDecoration(labelText: 'Code société (facultatif)', prefixIcon: Icon(Icons.business))),
+                    TextFormField(controller: _company, decoration: InputDecoration(labelText: tr('Code société (facultatif)'), prefixIcon: Icon(Icons.business))),
                   ],
                   const SizedBox(height: 20),
                   FilledButton(
@@ -239,16 +262,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     TextFormField(
                       controller: _server,
                       keyboardType: TextInputType.url,
-                      decoration: const InputDecoration(labelText: 'Adresse du serveur', prefixIcon: Icon(Icons.dns_outlined)),
+                      decoration: InputDecoration(labelText: tr('Adresse du serveur'), prefixIcon: Icon(Icons.dns_outlined)),
                       validator: (v) => (v ?? '').startsWith('https://') || (v ?? '').startsWith('http://') ? null : 'Adresse http(s) requise',
                     ),
                     Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: _busy ? null : _testServer, icon: const Icon(Icons.wifi_tethering), label: const Text('Tester la connexion au serveur'))),
                   ],
+                      ]),
+                    ),
+                  )),
                 ]),
               ),
             ),
           ),
         ),
+      ),
       ),
     );
   }

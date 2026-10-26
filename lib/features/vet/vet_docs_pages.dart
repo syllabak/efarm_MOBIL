@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/server_support.dart';
@@ -34,7 +36,7 @@ class _DocumentsPageState extends ConsumerState<DocumentsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Devis et factures'), actions: [
         IconButton(
-          tooltip: 'Vente au comptoir',
+          tooltip: tr('Vente au comptoir'),
           icon: const Icon(Icons.point_of_sale),
           onPressed: () async {
             try {
@@ -195,19 +197,19 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
                   leading: const Icon(Icons.payments_outlined),
                   title: Text(fcfa(p['montant'])),
                   subtitle: Text('${fmtDate(p['date_paiement'])} · ${_modesVet['${p['mode']}'] ?? p['mode']}${p['reference'] != null ? ' · ${p['reference']}' : ''}'),
-                  trailing: p['id'] != null && serverCan('POST', '/vet/payments/{id}/delete') ? IconButton(tooltip: 'Supprimer ce paiement', icon: const Icon(Icons.delete_outline), onPressed: () => _deletePayment(p)) : null,
+                  trailing: p['id'] != null && serverCan('POST', '/vet/payments/{id}/delete') ? IconButton(tooltip: tr('Supprimer ce paiement'), icon: const Icon(Icons.delete_outline), onPressed: () => _deletePayment(p)) : null,
                 ),
             ],
             if ((d['notes'] as String?)?.isNotEmpty == true) KeyValue('Notes', d['notes']),
             if (canPay) Padding(padding: const EdgeInsets.only(top: 16), child: FilledButton.icon(onPressed: () => _pay(reste), icon: const Icon(Icons.add_card), label: const Text('Encaisser un paiement'))),
             const SizedBox(height: 16),
             Wrap(spacing: 8, runSpacing: 8, children: [
-              if (facture && d['statut'] == 'brouillon') VetActionButton(label: 'Émettre', icon: Icons.verified_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'emettre'}, confirm: 'Émettre cette facture ? Le stock des produits sera déduit et la facture ne sera plus modifiable.', onDone: _reload),
-              if (facture && d['statut'] == 'emise' && (d['paye'] as num) <= 0) VetActionButton(label: 'Annuler la facture', icon: Icons.block, path: '/vet/documents/${widget.id}/status', body: const {'action': 'annuler'}, confirm: 'Annuler cette facture ? Le stock sera remis en place.', destructive: true, onDone: _reload),
-              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Marquer envoyé', icon: Icons.send_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'envoye'}, onDone: _reload),
-              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Accepté', icon: Icons.thumb_up_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'accepte'}, onDone: _reload),
-              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: 'Refusé', icon: Icons.thumb_down_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'refuse'}, onDone: _reload),
-              if (!facture && d['statut'] != 'refuse') VetActionButton(label: 'Convertir en facture', icon: Icons.swap_horiz, path: '/vet/documents/${widget.id}/convert', onDone: _reload),
+              if (facture && d['statut'] == 'brouillon') VetActionButton(label: tr('Émettre'), icon: Icons.verified_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'emettre'}, confirm: 'Émettre cette facture ? Le stock des produits sera déduit et la facture ne sera plus modifiable.', onDone: _reload),
+              if (facture && d['statut'] == 'emise' && (d['paye'] as num) <= 0) VetActionButton(label: tr('Annuler la facture'), icon: Icons.block, path: '/vet/documents/${widget.id}/status', body: const {'action': 'annuler'}, confirm: 'Annuler cette facture ? Le stock sera remis en place.', destructive: true, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: tr('Marquer envoyé'), icon: Icons.send_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'envoye'}, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: tr('Accepté'), icon: Icons.thumb_up_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'accepte'}, onDone: _reload),
+              if (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])) VetActionButton(label: tr('Refusé'), icon: Icons.thumb_down_outlined, path: '/vet/documents/${widget.id}/status', body: const {'action': 'refuse'}, onDone: _reload),
+              if (!facture && d['statut'] != 'refuse') VetActionButton(label: tr('Convertir en facture'), icon: Icons.swap_horiz, path: '/vet/documents/${widget.id}/convert', onDone: _reload),
               if ((facture && d['statut'] == 'brouillon') || (!facture && const {'brouillon', 'envoye'}.contains(d['statut'])))
                 FilledButton.tonalIcon(
                     icon: const Icon(Icons.edit_outlined),
@@ -224,7 +226,7 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
                                   submit: (b) => ref.read(apiProvider).post('/vet/documents', body: {...b, 'id': widget.id, 'type': d['type']}))));
                       if (ok == true) _reload();
                     }),
-              if (const {'brouillon', 'refuse'}.contains(d['statut'])) VetActionButton(label: 'Supprimer', icon: Icons.delete_outline, path: '/vet/documents/${widget.id}/delete', confirm: 'Supprimer ce document ?', destructive: true, popAfter: true, onDone: _reload),
+              if (const {'brouillon', 'refuse'}.contains(d['statut'])) VetActionButton(label: tr('Supprimer'), icon: Icons.delete_outline, path: '/vet/documents/${widget.id}/delete', confirm: 'Supprimer ce document ?', destructive: true, popAfter: true, onDone: _reload),
             ]),
           ]);
         },
@@ -255,7 +257,7 @@ class _VetPaymentDialogState extends State<_VetPaymentDialog> {
             TextFormField(
               controller: _montant,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'Montant', helperText: 'Reste : ${fcfa(widget.reste)}', suffixText: 'F'),
+              decoration: InputDecoration(labelText: tr('Montant'), helperText: tr('Reste : ${fcfa(widget.reste)}'), suffixText: 'F'),
               validator: (v) {
                 final n = num.tryParse((v ?? '').replaceAll(',', '.'));
                 if (n == null || n <= 0) return 'Montant invalide';
@@ -264,9 +266,9 @@ class _VetPaymentDialogState extends State<_VetPaymentDialog> {
               },
             ),
             const SizedBox(height: 12),
-            DropdownButtonFormField<String>(initialValue: _mode, decoration: const InputDecoration(labelText: 'Mode'), items: [for (final e in _modesVet.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => _mode = v!),
+            DropdownButtonFormField<String>(initialValue: _mode, decoration: InputDecoration(labelText: tr('Mode')), items: [for (final e in _modesVet.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => _mode = v!),
             const SizedBox(height: 12),
-            TextFormField(controller: _ref, decoration: const InputDecoration(labelText: 'Référence (facultatif)')),
+            TextFormField(controller: _ref, decoration: InputDecoration(labelText: tr('Référence (facultatif)'))),
           ]),
         ),
         actions: [
@@ -355,8 +357,8 @@ class _OrdonnanceDetailPageState extends ConsumerState<OrdonnanceDetailPage> {
           if ((o['instructions'] as String?)?.isNotEmpty == true) ...[const Divider(height: 24), KeyValue('Instructions', o['instructions'])],
           const SizedBox(height: 16),
           Wrap(spacing: 8, runSpacing: 8, children: [
-            if (o['statut'] == 'brouillon') VetActionButton(label: 'Émettre', icon: Icons.verified_outlined, path: '/vet/ordonnances/$id/issue', confirm: 'Émettre cette ordonnance ? Elle ne sera plus modifiable.', onDone: _reload),
-            if (o['statut'] != 'brouillon' && o['facture_id'] == null) VetActionButton(label: 'Créer la facture', icon: Icons.receipt_long_outlined, path: '/vet/ordonnances/$id/bill', onDone: _reload),
+            if (o['statut'] == 'brouillon') VetActionButton(label: tr('Émettre'), icon: Icons.verified_outlined, path: '/vet/ordonnances/$id/issue', confirm: 'Émettre cette ordonnance ? Elle ne sera plus modifiable.', onDone: _reload),
+            if (o['statut'] != 'brouillon' && o['facture_id'] == null) VetActionButton(label: tr('Créer la facture'), icon: Icons.receipt_long_outlined, path: '/vet/ordonnances/$id/bill', onDone: _reload),
             if (o['statut'] == 'brouillon')
               FilledButton.tonalIcon(
                   icon: const Icon(Icons.edit_outlined),
@@ -373,7 +375,7 @@ class _OrdonnanceDetailPageState extends ConsumerState<OrdonnanceDetailPage> {
                                 submit: (b) => api.post('/vet/ordonnances', body: {...b, 'id': id}))));
                     if (ok == true) _reload();
                   }),
-            if (o['statut'] == 'brouillon') VetActionButton(label: 'Supprimer', icon: Icons.delete_outline, path: '/vet/ordonnances/$id/delete', confirm: 'Supprimer cette ordonnance ?', destructive: true, popAfter: true, onDone: _reload),
+            if (o['statut'] == 'brouillon') VetActionButton(label: tr('Supprimer'), icon: Icons.delete_outline, path: '/vet/ordonnances/$id/delete', confirm: 'Supprimer cette ordonnance ?', destructive: true, popAfter: true, onDone: _reload),
           ]),
         ]),
       ),

@@ -8,6 +8,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
+import 'core/i18n.dart';
 import 'core/session.dart';
 import 'core/theme.dart';
 import 'features/auth/login_page.dart';
@@ -23,22 +24,30 @@ Future<void> main() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-  await initializeDateFormatting('fr_FR');
+  await initializeDateFormatting();
+  await I18n.instance.init();
   runApp(const ProviderScope(child: EFarmApp()));
 }
 
 class EFarmApp extends StatelessWidget {
   const EFarmApp({super.key});
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'EFarm360',
-        debugShowCheckedModeBanner: false,
-        theme: buildTheme(Brightness.light),
-        darkTheme: buildTheme(Brightness.dark),
-        locale: const Locale('fr', 'FR'),
-        supportedLocales: const [Locale('fr', 'FR')],
-        localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-        home: const _Root(),
+  Widget build(BuildContext context) => ListenableBuilder(
+        listenable: I18n.instance,
+        // la clé reconstruit tout l'arbre quand la langue change (les textes sont traduits à la construction)
+        builder: (context, _) => KeyedSubtree(
+          key: ValueKey(I18n.instance.code),
+          child: MaterialApp(
+            title: 'EFarm360',
+            debugShowCheckedModeBanner: false,
+            theme: buildTheme(Brightness.light),
+            darkTheme: buildTheme(Brightness.dark),
+            locale: I18n.instance.locale,
+            supportedLocales: [for (final c in I18n.languages.keys) Locale(c)],
+            localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+            home: const _Root(),
+          ),
+        ),
       );
 }
 

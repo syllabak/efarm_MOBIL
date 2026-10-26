@@ -239,6 +239,18 @@ final sensorsModule = ModuleSpec(
   roles: null,
   itemTitle: (r) => _s(r['nom']),
   itemSubtitle: (r) => _join([r['type'], r['actif'] == 0 || r['actif'] == '0' ? 'inactif' : 'actif', if (r['derniere_lecture_at'] != null) 'dernière lecture ${fmtDateTime(r['derniere_lecture_at'])}']),
+  detailFromList: true,
+  detailTitle: (r) => _s(r['nom']),
+  detail: const [
+    ColumnSpec('site_nom', 'Site'),
+    ColumnSpec('type', 'Type'),
+    ColumnSpec('actif', 'Actif', fmt: Fmt.bool),
+    ColumnSpec('derniere_lecture_at', 'Dernière lecture', fmt: Fmt.dateTime),
+  ],
+  actions: [
+    ActionSpec('Désactiver', '/iot/sensors/{id}/active', icon: Icons.block, body: const {'actif': false}, visible: (r) => !(r['actif'] == 0 || r['actif'] == '0' || r['actif'] == false), confirm: 'Désactiver ce capteur ?', successMessage: 'Capteur désactivé.'),
+    ActionSpec('Activer', '/iot/sensors/{id}/active', icon: Icons.check_circle_outline, body: const {'actif': true}, visible: (r) => r['actif'] == 0 || r['actif'] == '0' || r['actif'] == false, successMessage: 'Capteur activé.'),
+  ],
   create: const CreateSpec('Capteur', '/iot/sensors', [
     FieldSpec('site_id', 'Site', type: FieldType.select, required: true, optionsPath: '/farm/sites'),
     FieldSpec('nom', 'Nom du capteur', required: true),

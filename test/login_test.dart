@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:efarm360/core/session.dart';
 import 'package:efarm360/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,9 @@ import 'helpers.dart';
 
 void main() {
   testWidgets('sans jeton : écran de connexion, bascule exploitation / vétérinaire / code', (t) async {
+    t.view.physicalSize = const Size(800, 1600);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
     FlutterSecureStorage.setMockInitialValues({});
     await t.pumpWidget(const ProviderScope(child: EFarmApp()));
     await t.pumpAndSettle();
@@ -31,6 +35,9 @@ void main() {
   });
 
   testWidgets('test du serveur : succès affiché à l\'utilisateur', (t) async {
+    t.view.physicalSize = const Size(800, 1600);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
     final (api, _, _) = await makeClient({'GET /status': (_) => ok({'service': 'EFarm360', 'version': '1.0'})}, access: null, refresh: null);
     await t.pumpWidget(ProviderScope(overrides: [apiProvider.overrideWithValue(api)], child: const EFarmApp()));
     await t.pumpAndSettle();

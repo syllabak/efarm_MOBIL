@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -43,7 +45,7 @@ class _CompareBandsPageState extends ConsumerState<CompareBandsPage> {
                 padding: const EdgeInsets.all(12),
                 child: DropdownButtonFormField<int>(
                   initialValue: _site,
-                  decoration: const InputDecoration(labelText: 'Site'),
+                  decoration: InputDecoration(labelText: tr('Site')),
                   items: [for (final s in sites) DropdownMenuItem(value: (s as Map)['id'] as int, child: Text('${s['nom']}'))],
                   onChanged: (v) => setState(() {
                     _site = v;

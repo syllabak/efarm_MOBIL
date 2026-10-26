@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
@@ -6,6 +8,7 @@ import '../../core/session.dart';
 import '../../core/export.dart';
 import '../../core/server_support.dart';
 import '../../ui/common.dart';
+import '../../ui/web_menu.dart';
 import 'spec.dart';
 
 /// Valeur d'une clé, y compris imbriquée (`bilan.nb_presents`).
@@ -95,7 +98,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
           if (spec.searchParam != null && _q.isNotEmpty) spec.searchParam!: _q,
         };
     return Scaffold(
-      appBar: widget.embedded ? null : AppBar(title: Text(spec.title), actions: [if (spec.exportColumns != null) IconButton(tooltip: 'Exporter (CSV)', icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
+      appBar: widget.embedded ? null : AppBar(title: Text(webTitle(spec.title)), actions: [if (spec.exportColumns != null) IconButton(tooltip: tr('Exporter (CSV)'), icon: const Icon(Icons.ios_share), onPressed: () => _export(query))]),
       floatingActionButton: canCreate
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.add),
@@ -122,7 +125,7 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
             ]),
           ),
         if (spec.searchParam != null)
-          Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher'), onChanged: (v) {
+          Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher')), onChanged: (v) {
                 _q = v.trim();
                 _reload();
               })),
@@ -224,7 +227,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
     final spec = widget.spec;
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(spec.title)),
+      appBar: AppBar(title: Text(webTitle(spec.title))),
       body: AsyncView<Map>(
         key: _k,
         load: () async => widget.row ?? await api.get<Map>(spec.detailPath!.replaceAll('{id}', '${widget.id}')),
@@ -432,7 +435,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
         return DropdownButtonFormField<String>(
           initialValue: _values[f.key] == null ? null : '${_values[f.key]}',
           isExpanded: true,
-          decoration: InputDecoration(labelText: '${f.label}$req'),
+          decoration: InputDecoration(labelText: tr('${f.label}$req')),
           items: [for (final e in ch.entries) DropdownMenuItem(value: e.key, child: Text(e.value, overflow: TextOverflow.ellipsis))],
           validator: f.required ? (v) => v == null ? 'Requis' : null : null,
           onChanged: (v) => _values[f.key] = v,
@@ -451,7 +454,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
               }
             },
             child: InputDecorator(
-              decoration: InputDecoration(labelText: '${f.label}${f.required ? ' *' : ''}', errorText: st.errorText, suffixIcon: const Icon(Icons.search)),
+              decoration: InputDecoration(labelText: tr('${f.label}${f.required ? ' *' : ''}'), errorText: st.errorText, suffixIcon: const Icon(Icons.search)),
               child: Text(_values[f.key] == null ? 'Choisir…' : '${(_values[f.key] as Map)['label']}'),
             ),
           ),
@@ -491,7 +494,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
                               controller: ls[i][sf.key] as TextEditingController,
                               maxLines: sf.type == FieldType.multiline ? 2 : 1,
                               keyboardType: (sf.type == FieldType.number || sf.type == FieldType.integer) ? TextInputType.numberWithOptions(decimal: sf.type == FieldType.number) : null,
-                              decoration: InputDecoration(labelText: '${sf.label}${sf.required ? ' *' : ''}', suffixText: sf.suffix, isDense: true),
+                              decoration: InputDecoration(labelText: tr('${sf.label}${sf.required ? ' *' : ''}'), suffixText: sf.suffix, isDense: true),
                               validator: (v) {
                                 final t = (v ?? '').trim();
                                 if (t.isEmpty) return sf.required ? 'Requis' : null;
@@ -515,7 +518,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
           initialValue: _values[f.key] as Set<String>,
           validator: f.required ? (v) => (_values[f.key] as Set<String>).isEmpty ? 'Choisissez au moins un élément' : null : null,
           builder: (st) => InputDecorator(
-            decoration: InputDecoration(labelText: '${f.label}${f.required ? ' *' : ''}', errorText: st.errorText),
+            decoration: InputDecoration(labelText: tr('${f.label}${f.required ? ' *' : ''}'), errorText: st.errorText),
             child: Column(children: [
               if (ch.isEmpty) const Padding(padding: EdgeInsets.all(8), child: Text('Aucun choix disponible.')),
               if (ch.isNotEmpty)
@@ -560,7 +563,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
               }
             },
             child: InputDecorator(
-              decoration: InputDecoration(labelText: '${f.label}$req', errorText: st.errorText, suffixIcon: const Icon(Icons.event)),
+              decoration: InputDecoration(labelText: tr('${f.label}$req'), errorText: st.errorText, suffixIcon: const Icon(Icons.event)),
               child: Text(_values[f.key] == null ? 'Choisir…' : fmtDate(isoDate(_values[f.key] as DateTime))),
             ),
           ),
@@ -578,7 +581,7 @@ class _DynamicFormPageState extends ConsumerState<DynamicFormPage> {
                   : f.type == FieldType.email
                       ? TextInputType.emailAddress
                       : null,
-          decoration: InputDecoration(labelText: '${f.label}$req', suffixText: f.suffix, helperText: f.hint),
+          decoration: InputDecoration(labelText: tr('${f.label}$req'), suffixText: f.suffix, helperText: f.hint),
           validator: (v) {
             final t = (v ?? '').trim();
             if (t.isEmpty) return f.required ? 'Requis' : null;
@@ -637,7 +640,7 @@ class _PickSheetState extends State<_PickSheet> {
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.7,
             child: Column(children: [
-              Padding(padding: const EdgeInsets.all(12), child: TextField(autofocus: true, decoration: InputDecoration(labelText: 'Rechercher — ${widget.title}', prefixIcon: const Icon(Icons.search)), onChanged: (v) => setState(() => _q = v.trim()))),
+              Padding(padding: const EdgeInsets.all(12), child: TextField(autofocus: true, decoration: InputDecoration(labelText: tr('Rechercher — ${widget.title}'), prefixIcon: const Icon(Icons.search)), onChanged: (v) => setState(() => _q = v.trim()))),
               Expanded(
                 child: PagedList(
                   key: ValueKey(_q),

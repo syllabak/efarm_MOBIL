@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -34,7 +36,7 @@ class _ThresholdsPageState extends ConsumerState<ThresholdsPage> {
                 padding: const EdgeInsets.all(12),
                 child: DropdownButtonFormField<int>(
                   initialValue: _site,
-                  decoration: const InputDecoration(labelText: 'Site'),
+                  decoration: InputDecoration(labelText: tr('Site')),
                   items: [for (final s in sites) DropdownMenuItem(value: (s as Map)['id'] as int, child: Text('${s['nom']}'))],
                   onChanged: (v) => setState(() {
                     _site = v;
@@ -121,9 +123,9 @@ class _EditorState extends ConsumerState<_Editor> {
                   Text('${t['label']}${'${t['unite']}'.isEmpty ? '' : ' (${t['unite']})'}', style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 8),
                   Row(children: [
-                    Expanded(child: TextFormField(controller: _w['${t['type']}'], keyboardType: const TextInputType.numberWithOptions(decimal: true), validator: _valid, decoration: InputDecoration(labelText: 'Avertissement', helperText: 'défaut ${_txt(t['defaut_warning'])}'))),
+                    Expanded(child: TextFormField(controller: _w['${t['type']}'], keyboardType: const TextInputType.numberWithOptions(decimal: true), validator: _valid, decoration: InputDecoration(labelText: tr('Avertissement'), helperText: tr('défaut ${_txt(t['defaut_warning'])}')))),
                     const SizedBox(width: 8),
-                    Expanded(child: TextFormField(controller: _c['${t['type']}'], keyboardType: const TextInputType.numberWithOptions(decimal: true), validator: _valid, decoration: InputDecoration(labelText: 'Critique', helperText: 'défaut ${_txt(t['defaut_critique'])}'))),
+                    Expanded(child: TextFormField(controller: _c['${t['type']}'], keyboardType: const TextInputType.numberWithOptions(decimal: true), validator: _valid, decoration: InputDecoration(labelText: tr('Critique'), helperText: tr('défaut ${_txt(t['defaut_critique'])}')))),
                   ]),
                 ]),
               ),

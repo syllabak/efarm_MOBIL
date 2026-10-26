@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -203,7 +205,7 @@ class _SupportThreadPageState extends ConsumerState<SupportThreadPage> {
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
                         child: Row(children: [
-                          Expanded(child: TextField(controller: _ctl, minLines: 1, maxLines: 4, maxLength: 1500, decoration: const InputDecoration(hintText: 'Votre message', isDense: true, counterText: ''), onSubmitted: (_) => _send())),
+                          Expanded(child: TextField(controller: _ctl, minLines: 1, maxLines: 4, maxLength: 1500, decoration: InputDecoration(hintText: tr('Votre message'), isDense: true, counterText: ''), onSubmitted: (_) => _send())),
                           const SizedBox(width: 6),
                           IconButton.filled(onPressed: _sending ? null : _send, icon: const Icon(Icons.send)),
                         ]),

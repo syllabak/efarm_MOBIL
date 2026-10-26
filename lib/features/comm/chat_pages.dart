@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -61,7 +63,7 @@ class _ChatRoomsPageState extends ConsumerState<ChatRoomsPage> {
     final api = ref.watch(apiProvider);
     final canGroup = const {'admin', 'siege', 'responsable'}.contains(ref.watch(sessionProvider).value?.role);
     return Scaffold(
-      appBar: AppBar(title: const Text('Messagerie'), actions: [if (canGroup) IconButton(tooltip: 'Nouveau groupe', icon: const Icon(Icons.group_add_outlined), onPressed: _newGroup)]),
+      appBar: AppBar(title: const Text('Messagerie'), actions: [if (canGroup) IconButton(tooltip: tr('Nouveau groupe'), icon: const Icon(Icons.group_add_outlined), onPressed: _newGroup)]),
       floatingActionButton: FloatingActionButton(onPressed: _openDirect, child: const Icon(Icons.edit_outlined)),
       body: AsyncView<List>(
         key: _k,
@@ -216,7 +218,7 @@ class _ChatThreadPageState extends ConsumerState<ChatThreadPage> {
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
                         child: Row(children: [
-                          Expanded(child: TextField(controller: _ctl, minLines: 1, maxLines: 4, textCapitalization: TextCapitalization.sentences, decoration: const InputDecoration(hintText: 'Votre message', isDense: true), onSubmitted: (_) => _send())),
+                          Expanded(child: TextField(controller: _ctl, minLines: 1, maxLines: 4, textCapitalization: TextCapitalization.sentences, decoration: InputDecoration(hintText: tr('Votre message'), isDense: true), onSubmitted: (_) => _send())),
                           const SizedBox(width: 6),
                           IconButton.filled(onPressed: _sending ? null : _send, icon: const Icon(Icons.send)),
                         ]),

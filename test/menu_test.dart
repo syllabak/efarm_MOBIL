@@ -14,6 +14,9 @@ class _Admin extends SessionNotifier {
 
 void main() {
   Future<void> pump(WidgetTester t) async {
+    t.view.physicalSize = const Size(800, 3000);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
     final (api, _, _) = await makeClient({});
     await t.pumpWidget(ProviderScope(overrides: [apiProvider.overrideWithValue(api), sessionProvider.overrideWith(_Admin.new)], child: const MaterialApp(home: Scaffold(body: FarmMore()))));
     await t.pumpAndSettle();
@@ -23,9 +26,9 @@ void main() {
     hideUnsupported = true;
     addTearDown(() => hideUnsupported = false);
     await pump(t);
-    expect(find.text('Sites'), findsOneWidget);
+    expect(find.text('Sites & Fermes'), findsOneWidget);
     expect(find.text('Mon compte'), findsOneWidget);
-    for (final m in ['Ventes', 'Clients', 'Finance et dépenses', 'Alertes', 'Bovins', 'Messagerie']) {
+    for (final m in ['Ventes commerciales', 'Clients', 'Finance & ROI', 'Alertes', 'Bovins', 'Messagerie']) {
       expect(find.text(m), findsNothing, reason: m);
     }
   });
@@ -33,8 +36,8 @@ void main() {
   testWidgets('serveur complet : les modules reviennent', (t) async {
     hideUnsupported = false;
     await pump(t);
-    expect(find.text('Ventes', skipOffstage: false), findsOneWidget);
-    expect(find.text('Finance et dépenses', skipOffstage: false), findsOneWidget);
+    expect(find.text('Ventes commerciales', skipOffstage: false), findsOneWidget);
+    expect(find.text('Finance & ROI', skipOffstage: false), findsOneWidget);
     expect(find.text('Alertes', skipOffstage: false), findsOneWidget);
   });
 }

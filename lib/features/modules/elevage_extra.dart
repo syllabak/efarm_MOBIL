@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -263,7 +265,7 @@ class _IotPageState extends ConsumerState<IotPage> {
                         padding: const EdgeInsets.all(8),
                         child: DropdownButtonFormField<int>(
                             initialValue: _site,
-                            decoration: const InputDecoration(labelText: 'Site'),
+                            decoration: InputDecoration(labelText: tr('Site')),
                             items: [for (final s in _sites) DropdownMenuItem(value: s['id'] as int, child: Text('${s['nom']}'))],
                             onChanged: (v) => setState(() {
                                   _site = v;

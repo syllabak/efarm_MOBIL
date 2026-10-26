@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/export.dart';
@@ -30,7 +32,7 @@ class _VentesPageState extends ConsumerState<VentesPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Ventes'), actions: [
         IconButton(
-            tooltip: 'Exporter (CSV)',
+            tooltip: tr('Exporter (CSV)'),
             icon: const Icon(Icons.ios_share),
             onPressed: () async {
               try {
@@ -223,7 +225,7 @@ class _PaymentDialogState extends State<_PaymentDialog> {
             TextFormField(
               controller: _montant,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: 'Montant', helperText: 'Reste : ${money(widget.reste)}', suffixText: 'F'),
+              decoration: InputDecoration(labelText: tr('Montant'), helperText: tr('Reste : ${money(widget.reste)}'), suffixText: 'F'),
               validator: (v) {
                 final n = num.tryParse((v ?? '').replaceAll(',', '.'));
                 if (n == null || n <= 0) return 'Montant invalide';
@@ -232,9 +234,9 @@ class _PaymentDialogState extends State<_PaymentDialog> {
               },
             ),
             const SizedBox(height: 12),
-            DropdownButtonFormField<String>(initialValue: _mode, decoration: const InputDecoration(labelText: 'Mode'), items: [for (final e in _modes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => _mode = v!),
+            DropdownButtonFormField<String>(initialValue: _mode, decoration: InputDecoration(labelText: tr('Mode')), items: [for (final e in _modes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => _mode = v!),
             const SizedBox(height: 12),
-            TextFormField(controller: _ref, decoration: const InputDecoration(labelText: 'Référence (facultatif)')),
+            TextFormField(controller: _ref, decoration: InputDecoration(labelText: tr('Référence (facultatif)'))),
           ]),
         ),
         actions: [
@@ -265,7 +267,7 @@ class _ClientsVentePageState extends ConsumerState<ClientsVentePage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Clients')),
       body: Column(children: [
-        Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher'), onChanged: (v) => setState(() => _q = v.trim()))),
+        Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher')), onChanged: (v) => setState(() => _q = v.trim()))),
         Expanded(
           child: PagedList(
             key: ValueKey(_q),
@@ -441,13 +443,13 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                     TextFormField(
                       controller: _montant,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(labelText: 'Montant *', suffixText: 'F'),
+                      decoration: InputDecoration(labelText: tr('Montant *'), suffixText: 'F'),
                       validator: (v) => (num.tryParse((v ?? '').replaceAll(',', '.')) ?? 0) > 0 ? null : 'Montant invalide',
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(
                       initialValue: _cat,
-                      decoration: const InputDecoration(labelText: 'Catégorie *'),
+                      decoration: InputDecoration(labelText: tr('Catégorie *')),
                       items: [for (final c in _cats) DropdownMenuItem(value: c['id'] as int, child: Text('${c['nom']}'))],
                       onChanged: (v) => _cat = v,
                       validator: (v) => v == null ? 'Requis' : null,
@@ -456,14 +458,14 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                       const SizedBox(height: 12),
                       DropdownButtonFormField<int>(
                         initialValue: _site,
-                        decoration: const InputDecoration(labelText: 'Site *'),
+                        decoration: InputDecoration(labelText: tr('Site *')),
                         items: [for (final s in _sites) DropdownMenuItem(value: s['id'] as int, child: Text('${s['nom']}'))],
                         onChanged: (v) => _site = v,
                         validator: (v) => v == null ? 'Requis' : null,
                       ),
                     ],
                     const SizedBox(height: 12),
-                    TextFormField(controller: _desc, decoration: const InputDecoration(labelText: 'Description *'), validator: (v) => (v ?? '').trim().isEmpty ? 'Requis' : null),
+                    TextFormField(controller: _desc, decoration: InputDecoration(labelText: tr('Description *')), validator: (v) => (v ?? '').trim().isEmpty ? 'Requis' : null),
                     const SizedBox(height: 12),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -476,7 +478,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(controller: _facture, decoration: const InputDecoration(labelText: 'N° de facture (facultatif)')),
+                    TextFormField(controller: _facture, decoration: InputDecoration(labelText: tr('N° de facture (facultatif)'))),
                     const SizedBox(height: 20),
                     FilledButton.icon(onPressed: _saving ? null : _save, icon: const Icon(Icons.save), label: const Text('Enregistrer')),
                   ]),

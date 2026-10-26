@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:efarm360/core/server_support.dart';
 import 'package:efarm360/features/farm/farm_pages.dart';
+import 'package:efarm360/features/farm/dashboard.dart';
 import 'package:efarm360/features/farm/finance_extra.dart';
 import 'package:efarm360/features/farm/thresholds_page.dart';
 import 'package:efarm360/features/modules/compare_page.dart';

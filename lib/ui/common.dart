@@ -162,11 +162,15 @@ class _PagedListState extends State<PagedList> {
 }
 
 class Stat extends StatelessWidget {
-  const Stat(this.label, this.value, {super.key, this.icon, this.color});
+  const Stat(this.label, this.value, {super.key, this.icon, this.emoji, this.color});
   final String label;
   final String value;
   final IconData? icon;
+
+  /// Emoji de l'indicateur sur le site web (prioritaire sur [icon]).
+  final String? emoji;
   final Color? color;
+
   /// Carte à la manière des indicateurs du site web : filet coloré à gauche, icône et valeur sur la même ligne.
   @override
   Widget build(BuildContext context) {
@@ -179,7 +183,7 @@ class Stat extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              if (icon != null) Icon(icon, color: c) else const SizedBox.shrink(),
+              if (emoji != null) Text(emoji!, style: const TextStyle(fontSize: 24)) else if (icon != null) Icon(icon, color: c) else const SizedBox.shrink(),
               const SizedBox(width: 8),
               Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: c)))),
             ]),

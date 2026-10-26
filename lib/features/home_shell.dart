@@ -11,6 +11,7 @@ import '../ui/sidebar.dart';
 import '../core/i18n.dart';
 import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
+import 'farm/dashboard.dart';
 import 'farm/ops_pages.dart';
 import 'modules/module_pages.dart';
 import 'modules/registry.dart';
@@ -40,7 +41,7 @@ class _FarmShell extends StatefulWidget {
 
 class _FarmShellState extends State<_FarmShell> {
   int _i = 0;
-  static const _titles = ['📊 Tableau de bord', '🐣 Élevage & Lots', '📋 Rapport journalier', '📦 Stock', '☰ Menu'];
+  static const _titles = ['🐓 EFarm360', '🐣 Élevage & Lots', '📋 Rapport journalier', '📦 Stock', '📂 Menu'];
 
   void _goto(int i) => setState(() => _i = i);
 

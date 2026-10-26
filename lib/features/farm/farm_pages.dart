@@ -13,59 +13,6 @@ import 'mortality_chart.dart';
 import 'ops_pages.dart';
 import 'rapport_form.dart';
 
-// ── Accueil ──────────────────────────────────────────────────────────
-class FarmHome extends ConsumerWidget {
-  const FarmHome({super.key, required this.onGoto});
-  final void Function(int tab) onGoto;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final api = ref.watch(apiProvider);
-    final p = ref.watch(sessionProvider).value;
-    if (p == null) return const SizedBox.shrink();
-    return AsyncView<Map>(
-      load: () => api.get<Map>('/farm/resume'),
-      builder: (c, d) => ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-          child: Text('Bonjour ${p.fullName}', style: Theme.of(c).textTheme.titleLarge),
-        ),
-        if (p.companyName != null) Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(p.companyName!)),
-        if (p.licence != null && (p.licence!['jours_restants'] as int?) != null && (p.licence!['jours_restants'] as int) <= 15)
-          Card(
-              color: Theme.of(c).colorScheme.errorContainer,
-              child: ListTile(leading: const Icon(Icons.warning_amber), title: Text('Licence : ${p.licence!['jours_restants']} jour(s) restant(s)'), subtitle: const Text('Renouvelez depuis le site web.'))),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1.6,
-          padding: const EdgeInsets.all(4),
-          children: [
-            Stat('Sites actifs', fmtNum(d['sites_actifs']), icon: Icons.location_on_outlined, color: const Color(0xFF9333EA)),
-            Stat('Lots actifs', fmtNum(d['lots_actifs']), icon: Icons.egg_alt_outlined, color: const Color(0xFF1D4ED8)),
-            Stat('Têtes total', fmtNum(d['effectif_total']), icon: Icons.pets, color: const Color(0xFF15803D)),
-            Stat('Dernier rapport', fmtDate(d['dernier_rapport']), icon: Icons.assignment_outlined, color: const Color(0xFFCA8A04)),
-          ],
-        ),
-        if (serverGets('/farm/rapports')) const MortalityChartCard(),
-        if (serverGets('/alerts')) RecentAlertsCard(onSeeAll: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const AlertsPage()))),
-        if (serverGets('/finance/summary') && const {'admin', 'siege', 'responsable'}.contains(p.role)) const MonthFinanceCard(),
-        if (p.canReport && serverCan('POST', '/farm/rapports'))
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: FilledButton.icon(
-                onPressed: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const RapportForm())),
-                icon: const Icon(Icons.edit_note),
-                label: const Text('Saisir le rapport du jour')),
-          ),
-        ListTile(leading: const Icon(Icons.inventory_2_outlined), title: const Text('Voir le stock'), trailing: const Icon(Icons.chevron_right), onTap: () => onGoto(3)),
-        ListTile(leading: const Icon(Icons.location_city_outlined), title: const Text('Sites'), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const SitesPage()))),
-      ]),
-    );
-  }
-}
-
 // ── Rapports ─────────────────────────────────────────────────────────
 class RapportTile extends StatelessWidget {
   const RapportTile(this.r, {super.key});

@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -343,7 +345,7 @@ class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
             return ListView(padding: const EdgeInsets.all(16), children: [
               const ListTile(leading: Icon(Icons.verified_user, color: Colors.green), title: Text('Activée'), subtitle: Text('Un code de votre application d\'authentification est demandé à chaque connexion.')),
               const SizedBox(height: 8),
-              TextField(controller: _pwd, obscureText: true, decoration: const InputDecoration(labelText: 'Mot de passe (pour désactiver)')),
+              TextField(controller: _pwd, obscureText: true, decoration: InputDecoration(labelText: tr('Mot de passe (pour désactiver)'))),
               const SizedBox(height: 8),
               FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: Theme.of(c).colorScheme.error),
@@ -379,7 +381,7 @@ class _TwoFactorPageState extends ConsumerState<TwoFactorPage> {
             TextButton.icon(onPressed: () => launchUrl(Uri.parse(url)), icon: const Icon(Icons.open_in_new), label: const Text('Ouvrir dans mon application')),
             const SizedBox(height: 12),
             const Text('2. Saisissez le code à 6 chiffres affiché.'),
-            TextField(controller: _code, keyboardType: TextInputType.number, maxLength: 6, decoration: const InputDecoration(labelText: 'Code à 6 chiffres')),
+            TextField(controller: _code, keyboardType: TextInputType.number, maxLength: 6, decoration: InputDecoration(labelText: tr('Code à 6 chiffres'))),
             FilledButton(
                 onPressed: _busy
                     ? null

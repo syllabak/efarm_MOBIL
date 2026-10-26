@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
@@ -164,7 +166,7 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                     if (allSites) ...[
                       DropdownButtonFormField<int>(
                         initialValue: _site,
-                        decoration: const InputDecoration(labelText: 'Site *'),
+                        decoration: InputDecoration(labelText: tr('Site *')),
                         items: [for (final s in _sites) DropdownMenuItem(value: s['id'] as int, child: Text('${s['nom']}'))],
                         validator: (v) => v == null ? 'Requis' : null,
                         onChanged: (v) async {
@@ -182,17 +184,17 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                     if (_lots.isNotEmpty && !_sansLot)
                       DropdownButtonFormField<int>(
                         initialValue: _lot,
-                        decoration: const InputDecoration(labelText: 'Lot concerné *'),
+                        decoration: InputDecoration(labelText: tr('Lot concerné *')),
                         items: [for (final l in _lots) DropdownMenuItem(value: l['id'] as int, child: Text('${l['code']} · ${fmtNum(l['nb_actuel'])} têtes'))],
                         validator: (v) => v == null ? 'Choisissez un lot ou cochez « sans lot »' : null,
                         onChanged: (v) => _lot = v,
                       ),
                     if (_lots.isNotEmpty) CheckboxListTile(contentPadding: EdgeInsets.zero, value: _sansLot, onChanged: (v) => setState(() => _sansLot = v ?? false), title: const Text('Vente liée à aucun lot')),
                     InputDecorator(
-                      decoration: InputDecoration(labelText: 'Client', suffixIcon: _client != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _client = null)) : const Icon(Icons.search)),
+                      decoration: InputDecoration(labelText: tr('Client'), suffixIcon: _client != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => _client = null)) : const Icon(Icons.search)),
                       child: InkWell(onTap: _pickClient, child: Text(_client == null ? 'Client comptoir — toucher pour choisir' : '${_client!['prenom'] ?? ''} ${_client!['nom'] ?? ''}'.trim())),
                     ),
-                    if (_client == null) ...[const SizedBox(height: 12), TextFormField(controller: _clientLibre, decoration: const InputDecoration(labelText: 'Nom du client (facultatif)'))],
+                    if (_client == null) ...[const SizedBox(height: 12), TextFormField(controller: _clientLibre, decoration: InputDecoration(labelText: tr('Nom du client (facultatif)')))],
                     const SizedBox(height: 12),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -213,16 +215,16 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                           padding: const EdgeInsets.all(12),
                           child: Column(children: [
                             Row(children: [
-                              Expanded(child: TextFormField(controller: _lines[i].designation, decoration: const InputDecoration(labelText: 'Désignation *'), validator: (v) => (v ?? '').trim().isEmpty ? 'Requis' : null)),
+                              Expanded(child: TextFormField(controller: _lines[i].designation, decoration: InputDecoration(labelText: tr('Désignation *')), validator: (v) => (v ?? '').trim().isEmpty ? 'Requis' : null)),
                               if (_lines.length > 1) IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => setState(() => _lines.removeAt(i).dispose())),
                             ]),
                             const SizedBox(height: 8),
                             Row(children: [
-                              Expanded(child: TextFormField(controller: _lines[i].quantite, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Qté'), validator: _pos, onChanged: (_) => setState(() {}))),
+                              Expanded(child: TextFormField(controller: _lines[i].quantite, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Qté')), validator: _pos, onChanged: (_) => setState(() {}))),
                               const SizedBox(width: 8),
-                              Expanded(child: TextFormField(controller: _lines[i].unite, decoration: const InputDecoration(labelText: 'Unité'))),
+                              Expanded(child: TextFormField(controller: _lines[i].unite, decoration: InputDecoration(labelText: tr('Unité')))),
                               const SizedBox(width: 8),
-                              Expanded(flex: 2, child: TextFormField(controller: _lines[i].prix, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Prix unitaire', suffixText: 'F'), validator: (v) => _pos(v, zero: true), onChanged: (_) => setState(() {}))),
+                              Expanded(flex: 2, child: TextFormField(controller: _lines[i].prix, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Prix unitaire'), suffixText: 'F'), validator: (v) => _pos(v, zero: true), onChanged: (_) => setState(() {}))),
                             ]),
                             Align(alignment: Alignment.centerRight, child: Padding(padding: const EdgeInsets.only(top: 6), child: Text(money(_lines[i].total), style: const TextStyle(fontWeight: FontWeight.bold)))),
                           ]),
@@ -233,7 +235,7 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                     TextFormField(
                       controller: _remise,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(labelText: 'Remise globale', suffixText: '%'),
+                      decoration: InputDecoration(labelText: tr('Remise globale'), suffixText: '%'),
                       validator: (v) {
                         final n = num.tryParse((v ?? '0').replaceAll(',', '.'));
                         return n == null || n < 0 || n > 100 ? '0 à 100' : null;
@@ -243,7 +245,7 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       initialValue: _mode,
-                      decoration: const InputDecoration(labelText: 'Paiement'),
+                      decoration: InputDecoration(labelText: tr('Paiement')),
                       items: const [
                         DropdownMenuItem(value: 'especes', child: Text('Espèces')),
                         DropdownMenuItem(value: 'mobile_money', child: Text('Mobile money')),
@@ -254,7 +256,7 @@ class _SaleFormState extends ConsumerState<SaleForm> {
                       onChanged: (v) => _mode = v!,
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(controller: _notes, maxLines: 2, decoration: const InputDecoration(labelText: 'Notes')),
+                    TextFormField(controller: _notes, maxLines: 2, decoration: InputDecoration(labelText: tr('Notes'))),
                     const Divider(height: 32),
                     Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                       Text('Total', style: Theme.of(context).textTheme.titleMedium),
@@ -290,7 +292,7 @@ class _ClientPickerState extends State<_ClientPicker> {
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.7,
             child: Column(children: [
-              Padding(padding: const EdgeInsets.all(12), child: TextField(autofocus: true, decoration: const InputDecoration(labelText: 'Rechercher un client', prefixIcon: Icon(Icons.search)), onChanged: (v) => setState(() => _q = v.trim()))),
+              Padding(padding: const EdgeInsets.all(12), child: TextField(autofocus: true, decoration: InputDecoration(labelText: tr('Rechercher un client'), prefixIcon: Icon(Icons.search)), onChanged: (v) => setState(() => _q = v.trim()))),
               ListTile(leading: const Icon(Icons.storefront), title: const Text('Client comptoir'), onTap: () => Navigator.pop(context, <String, dynamic>{})),
               Expanded(
                 child: PagedList(

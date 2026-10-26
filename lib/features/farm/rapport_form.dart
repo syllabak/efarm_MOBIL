@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -158,7 +160,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                         DropdownButtonFormField<int>(
                           initialValue: _lot!['id'] as int,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Lot'),
+                          decoration: InputDecoration(labelText: tr('Lot')),
                           items: [for (final l in _lots) DropdownMenuItem(value: l['id'] as int, child: Text('${l['code']} · ${fmtNum(l['nb_actuel'])} têtes', overflow: TextOverflow.ellipsis))],
                           onChanged: (id) => setState(() {
                             _lot = _lots.firstWhere((l) => l['id'] == id);
@@ -187,7 +189,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   initialValue: _causes_[i].cause,
-                                  decoration: const InputDecoration(labelText: 'Cause'),
+                                  decoration: InputDecoration(labelText: tr('Cause')),
                                   items: [for (final e in _causes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))],
                                   onChanged: (v) => _causes_[i] = (cause: v!, qte: _causes_[i].qte),
                                 ),
@@ -195,7 +197,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                               const SizedBox(width: 8),
                               SizedBox(
                                   width: 90,
-                                  child: TextFormField(controller: _causes_[i].qte, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Nb'))),
+                                  child: TextFormField(controller: _causes_[i].qte, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: tr('Nb')))),
                               IconButton(icon: const Icon(Icons.close), onPressed: () => setState(() => _causes_.removeAt(i).qte.dispose())),
                             ]),
                           ),
@@ -225,9 +227,9 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                             Expanded(child: _field(_declasses, 'Déclassés', integer: true)),
                           ]),
                         ],
-                        TextFormField(controller: _incidents, maxLines: 2, decoration: const InputDecoration(labelText: 'Incidents')),
+                        TextFormField(controller: _incidents, maxLines: 2, decoration: InputDecoration(labelText: tr('Incidents'))),
                         const SizedBox(height: 12),
-                        TextFormField(controller: _obs, maxLines: 3, decoration: const InputDecoration(labelText: 'Observations')),
+                        TextFormField(controller: _obs, maxLines: 3, decoration: InputDecoration(labelText: tr('Observations'))),
                         const SizedBox(height: 20),
                         FilledButton.icon(
                           onPressed: _saving ? null : _save,

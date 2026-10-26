@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -156,9 +158,9 @@ class _CattleMilkPageState extends ConsumerState<CattleMilkPage> {
                                 trailing: SizedBox(
                                   width: 170,
                                   child: Row(children: [
-                                    Expanded(child: TextField(controller: _matin[id], enabled: canWrite, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Matin', isDense: true))),
+                                    Expanded(child: TextField(controller: _matin[id], enabled: canWrite, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Matin'), isDense: true))),
                                     const SizedBox(width: 8),
-                                    Expanded(child: TextField(controller: _soir[id], enabled: canWrite, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Soir', isDense: true))),
+                                    Expanded(child: TextField(controller: _soir[id], enabled: canWrite, onChanged: (_) => setState(() {}), keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Soir'), isDense: true))),
                                   ]),
                                 ),
                               );

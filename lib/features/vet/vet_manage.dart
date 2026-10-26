@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -329,15 +331,15 @@ class _InventoryPageState extends ConsumerState<InventoryPage> {
         builder: (c, d) {
           final rows = [for (final r in (d['stock'] as List).cast<Map>()) if ('${r['nom']}'.toLowerCase().contains(_q.toLowerCase())) r];
           return ListView(padding: const EdgeInsets.all(8), children: [
-            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher un produit'), onChanged: (v) => setState(() => _q = v))),
-            Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: TextField(controller: _motif, decoration: const InputDecoration(labelText: 'Motif (facultatif)', hintText: 'Inventaire de fin de mois'))),
+            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher un produit')), onChanged: (v) => setState(() => _q = v))),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: TextField(controller: _motif, decoration: InputDecoration(labelText: tr('Motif (facultatif)'), hintText: tr('Inventaire de fin de mois')))),
             const Padding(padding: EdgeInsets.all(8), child: Text('Comptez le stock réel : laissez vide un produit non compté. Les différences avec le stock théorique sont enregistrées comme ajustements.')),
             for (final r in rows)
               Card(
                 child: ListTile(
                   title: Text('${r['nom']}'),
                   subtitle: Text('Théorique : ${fmtNum(r['stock'], digits: 2)} ${r['unite'] ?? ''}'),
-                  trailing: SizedBox(width: 100, child: TextField(controller: _counts.putIfAbsent(int.parse('${r['id']}'), TextEditingController.new), keyboardType: const TextInputType.numberWithOptions(decimal: true), textAlign: TextAlign.end, decoration: const InputDecoration(labelText: 'Compté', isDense: true))),
+                  trailing: SizedBox(width: 100, child: TextField(controller: _counts.putIfAbsent(int.parse('${r['id']}'), TextEditingController.new), keyboardType: const TextInputType.numberWithOptions(decimal: true), textAlign: TextAlign.end, decoration: InputDecoration(labelText: tr('Compté'), isDense: true))),
                 ),
               ),
             const SizedBox(height: 12),
@@ -513,9 +515,9 @@ class _ReceiveOrderPageState extends ConsumerState<ReceiveOrderPage> {
                             if (l['article_id'] == null) const Text('Ligne libre : à enregistrer en pharmacie', style: TextStyle(color: Colors.orange)),
                             const SizedBox(height: 8),
                             Row(children: [
-                              Expanded(child: TextField(controller: _qte[int.parse('${l['id']}')], keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Reçu', isDense: true))),
+                              Expanded(child: TextField(controller: _qte[int.parse('${l['id']}')], keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Reçu'), isDense: true))),
                               const SizedBox(width: 8),
-                              Expanded(child: TextField(controller: _lot[int.parse('${l['id']}')], decoration: const InputDecoration(labelText: 'N° de lot', isDense: true))),
+                              Expanded(child: TextField(controller: _lot[int.parse('${l['id']}')], decoration: InputDecoration(labelText: tr('N° de lot'), isDense: true))),
                             ]),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(

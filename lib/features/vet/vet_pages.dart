@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/server_support.dart';
@@ -135,7 +137,7 @@ class _ClientsPageState extends State<ClientsPage> {
           final list = [for (final x in widget.repo.clients) if ('${x['nom']} ${x['telephone'] ?? ''} ${x['contact'] ?? ''}'.toLowerCase().contains(_q.toLowerCase())) x];
           return Column(children: [
             SyncBanner(widget.repo),
-            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher un client'), onChanged: (v) => setState(() => _q = v))),
+            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher un client')), onChanged: (v) => setState(() => _q = v))),
             Expanded(
               child: list.isEmpty
                   ? const EmptyView('Aucun client.')
@@ -212,8 +214,8 @@ class ClientDetail extends ConsumerWidget {
         final enLigne = !isPending(clientId);
         return Scaffold(
           appBar: AppBar(title: Text('${x['nom']}'), actions: [
-            if (enLigne && serverCan('POST', '/vet/clients/{id}')) IconButton(tooltip: 'Modifier', icon: const Icon(Icons.edit_outlined), onPressed: () => _edit(c, ref, x)),
-            if (enLigne && serverCan('POST', '/vet/clients/{id}/delete')) IconButton(tooltip: 'Supprimer', icon: const Icon(Icons.delete_outline), onPressed: () => _delete(c, ref, x)),
+            if (enLigne && serverCan('POST', '/vet/clients/{id}')) IconButton(tooltip: tr('Modifier'), icon: const Icon(Icons.edit_outlined), onPressed: () => _edit(c, ref, x)),
+            if (enLigne && serverCan('POST', '/vet/clients/{id}/delete')) IconButton(tooltip: tr('Supprimer'), icon: const Icon(Icons.delete_outline), onPressed: () => _delete(c, ref, x)),
           ]),
           body: ListView(padding: const EdgeInsets.all(16), children: [
             KeyValue('Contact', x['contact']),
@@ -288,7 +290,7 @@ class _PatientsPageState extends State<PatientsPage> {
           final list = [for (final x in widget.repo.patients) if ('${x['nom']} ${x['identification'] ?? ''} ${widget.repo.client(x['client_id'])?['nom'] ?? ''}'.toLowerCase().contains(_q.toLowerCase())) x];
           return Column(children: [
             SyncBanner(widget.repo),
-            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Nom, identification, propriétaire'), onChanged: (v) => setState(() => _q = v))),
+            Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Nom, identification, propriétaire')), onChanged: (v) => setState(() => _q = v))),
             Expanded(child: list.isEmpty ? const EmptyView('Aucun patient.') : ListView(children: [for (final p in list) PatientTile(p, repo: widget.repo, showClient: true), const SizedBox(height: 80)])),
           ]);
         }),
@@ -434,7 +436,7 @@ class _ProduitsPageState extends State<ProduitsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Pharmacie')),
       body: Column(children: [
-        Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: const InputDecoration(prefixIcon: Icon(Icons.search), labelText: 'Rechercher un produit'), onChanged: (v) => setState(() => _q = v))),
+        Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher un produit')), onChanged: (v) => setState(() => _q = v))),
         Expanded(
           child: list.isEmpty
               ? const EmptyView('Aucun produit.')

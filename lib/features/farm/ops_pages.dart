@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/session.dart';
@@ -171,7 +173,7 @@ class _StockMovementFormState extends ConsumerState<StockMovementForm> {
                     if (allSites) ...[
                       DropdownButtonFormField<int>(
                         initialValue: _site,
-                        decoration: const InputDecoration(labelText: 'Site *'),
+                        decoration: InputDecoration(labelText: tr('Site *')),
                         items: [for (final s in _sites) DropdownMenuItem(value: s['id'] as int, child: Text('${s['nom']}'))],
                         validator: (v) => v == null ? 'Requis' : null,
                         onChanged: (v) => _site = v,
@@ -181,7 +183,7 @@ class _StockMovementFormState extends ConsumerState<StockMovementForm> {
                     DropdownButtonFormField<int>(
                       initialValue: _product,
                       isExpanded: true,
-                      decoration: const InputDecoration(labelText: 'Produit *'),
+                      decoration: InputDecoration(labelText: tr('Produit *')),
                       items: [for (final x in _products) DropdownMenuItem(value: x['id'] as int, child: Text('${x['nom']} (${x['unite']})', overflow: TextOverflow.ellipsis))],
                       validator: (v) => v == null ? 'Requis' : null,
                       onChanged: (v) => setState(() => _product = v),
@@ -190,7 +192,7 @@ class _StockMovementFormState extends ConsumerState<StockMovementForm> {
                     TextFormField(
                       controller: _qte,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(labelText: 'Quantité *', suffixText: unite as String?),
+                      decoration: InputDecoration(labelText: tr('Quantité *'), suffixText: unite as String?),
                       validator: (v) => (num.tryParse((v ?? '').replaceAll(',', '.')) ?? 0) > 0 ? null : 'Quantité invalide',
                     ),
                     if (widget.entry) ...[
@@ -198,14 +200,14 @@ class _StockMovementFormState extends ConsumerState<StockMovementForm> {
                       TextFormField(
                         controller: _cout,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(labelText: 'Prix unitaire d\'achat', suffixText: 'F', helperText: 'Si renseigné, une dépense est créée automatiquement.'),
+                        decoration: InputDecoration(labelText: tr('Prix unitaire d\'achat'), suffixText: 'F', helperText: tr('Si renseigné, une dépense est créée automatiquement.')),
                         validator: (v) => (v ?? '').trim().isEmpty || (num.tryParse(v!.replaceAll(',', '.')) ?? -1) >= 0 ? null : 'Invalide',
                       ),
                       const SizedBox(height: 12),
-                      TextFormField(controller: _ref, decoration: const InputDecoration(labelText: 'Référence (bon, facture)')),
+                      TextFormField(controller: _ref, decoration: InputDecoration(labelText: tr('Référence (bon, facture)'))),
                     ],
                     const SizedBox(height: 12),
-                    TextFormField(controller: _note, maxLines: 2, decoration: const InputDecoration(labelText: 'Note')),
+                    TextFormField(controller: _note, maxLines: 2, decoration: InputDecoration(labelText: tr('Note'))),
                     const SizedBox(height: 20),
                     FilledButton.icon(onPressed: _saving ? null : _save, icon: const Icon(Icons.save), label: const Text('Enregistrer')),
                   ]),

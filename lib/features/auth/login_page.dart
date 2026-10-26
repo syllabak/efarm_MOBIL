@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
+import '../../ui/language_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
@@ -128,7 +131,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             final ctl = TextEditingController();
             return AlertDialog(
               title: const Text('Code reçu'),
-              content: TextField(controller: ctl, autofocus: true, keyboardType: TextInputType.number, maxLength: 6, decoration: const InputDecoration(labelText: 'Code à 6 chiffres')),
+              content: TextField(controller: ctl, autofocus: true, keyboardType: TextInputType.number, maxLength: 6, decoration: InputDecoration(labelText: tr('Code à 6 chiffres'))),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
                 FilledButton(onPressed: () => Navigator.pop(context, ctl.text.trim()), child: const Text('Valider')),
@@ -173,6 +176,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               child: Form(
                 key: _form,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  const Align(alignment: AlignmentDirectional.centerEnd, child: LanguageButton()),
                   ValueListenableBuilder<String?>(
                     valueListenable: ref.watch(apiProvider).sessionIssue,
                     builder: (c, issue, _) => issue == null
@@ -209,7 +213,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       obscureText: _hidePw,
                       autofillHints: const [AutofillHints.password],
                       decoration: InputDecoration(
-                          labelText: 'Mot de passe',
+                          labelText: tr('Mot de passe'),
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(icon: Icon(_hidePw ? Icons.visibility : Icons.visibility_off), onPressed: () => setState(() => _hidePw = !_hidePw))),
                       validator: (v) => (v ?? '').isEmpty ? 'Requis' : null,
@@ -218,7 +222,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ],
                   if (farm && _advanced) ...[
                     const SizedBox(height: 12),
-                    TextFormField(controller: _company, decoration: const InputDecoration(labelText: 'Code société (facultatif)', prefixIcon: Icon(Icons.business))),
+                    TextFormField(controller: _company, decoration: InputDecoration(labelText: tr('Code société (facultatif)'), prefixIcon: Icon(Icons.business))),
                   ],
                   const SizedBox(height: 20),
                   FilledButton(
@@ -239,7 +243,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     TextFormField(
                       controller: _server,
                       keyboardType: TextInputType.url,
-                      decoration: const InputDecoration(labelText: 'Adresse du serveur', prefixIcon: Icon(Icons.dns_outlined)),
+                      decoration: InputDecoration(labelText: tr('Adresse du serveur'), prefixIcon: Icon(Icons.dns_outlined)),
                       validator: (v) => (v ?? '').startsWith('https://') || (v ?? '').startsWith('http://') ? null : 'Adresse http(s) requise',
                     ),
                     Align(alignment: Alignment.centerLeft, child: TextButton.icon(onPressed: _busy ? null : _testServer, icon: const Icon(Icons.wifi_tethering), label: const Text('Tester la connexion au serveur'))),

@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../ui/tr_text.dart';
+import '../../ui/language_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/server_support.dart';
@@ -37,6 +39,7 @@ class ProfilePage extends ConsumerWidget {
         subtitle: Text('${p.email}\n${p.isFarm ? p.role : (p.isOwnerVet ? 'Titulaire' : 'Collaborateur · ${p.raw['profil']}')}'),
         isThreeLine: true,
       ),
+      const LanguageTile(),
       if (p.companyName != null) ListTile(leading: const Icon(Icons.business), title: Text(p.companyName!), subtitle: Text(p.allSites ? 'Tous les sites' : 'Site n° ${p.siteId}')),
       if (p.cabinetOwner != null) ListTile(leading: const Icon(Icons.local_hospital_outlined), title: Text('Cabinet de ${p.cabinetOwner}')),
       if (lic != null)

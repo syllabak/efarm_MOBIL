@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../../core/i18n.dart';
+import '../../ui/tr_text.dart';
 import 'package:intl/intl.dart';
 
 import '../../ui/common.dart';
@@ -49,7 +51,7 @@ class _PickerState extends State<_Picker> {
           child: Column(children: [
             Padding(
                 padding: const EdgeInsets.all(12),
-                child: TextField(autofocus: true, decoration: InputDecoration(labelText: 'Rechercher — ${widget.title}', prefixIcon: const Icon(Icons.search)), onChanged: (v) => setState(() => _q = v))),
+                child: TextField(autofocus: true, decoration: InputDecoration(labelText: tr('Rechercher — ${widget.title}'), prefixIcon: const Icon(Icons.search)), onChanged: (v) => setState(() => _q = v))),
             Expanded(
               child: list.isEmpty
                   ? const EmptyView('Aucun résultat.')
@@ -140,12 +142,12 @@ class _ClientFormState extends _FormState<ClientForm> {
   String get title => 'Nouveau client';
   @override
   List<Widget> fields(BuildContext context) => [
-        TextFormField(controller: nom, decoration: const InputDecoration(labelText: 'Nom / exploitation *'), validator: _req, textCapitalization: TextCapitalization.words),
-        TextFormField(controller: contact, decoration: const InputDecoration(labelText: 'Personne à contacter')),
-        TextFormField(controller: tel, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Téléphone')),
-        TextFormField(controller: email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'E-mail'), validator: (v) => (v ?? '').isEmpty || v!.contains('@') ? null : 'E-mail invalide'),
-        TextFormField(controller: adresse, decoration: const InputDecoration(labelText: 'Adresse')),
-        TextFormField(controller: notes, maxLines: 3, decoration: const InputDecoration(labelText: 'Notes')),
+        TextFormField(controller: nom, decoration: InputDecoration(labelText: tr('Nom / exploitation *')), validator: _req, textCapitalization: TextCapitalization.words),
+        TextFormField(controller: contact, decoration: InputDecoration(labelText: tr('Personne à contacter'))),
+        TextFormField(controller: tel, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: tr('Téléphone'))),
+        TextFormField(controller: email, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: tr('E-mail')), validator: (v) => (v ?? '').isEmpty || v!.contains('@') ? null : 'E-mail invalide'),
+        TextFormField(controller: adresse, decoration: InputDecoration(labelText: tr('Adresse'))),
+        TextFormField(controller: notes, maxLines: 3, decoration: InputDecoration(labelText: tr('Notes'))),
       ];
   @override
   Future<void> submit() => widget.repo.enqueue('client.creer', {
@@ -178,7 +180,7 @@ class _PatientFormState extends _FormState<PatientForm> {
   @override
   List<Widget> fields(BuildContext context) => [
         InputDecorator(
-          decoration: const InputDecoration(labelText: 'Propriétaire *'),
+          decoration: InputDecoration(labelText: tr('Propriétaire *')),
           child: InkWell(
             onTap: () async {
               final c = await pickClient(context, widget.repo);
@@ -192,17 +194,17 @@ class _PatientFormState extends _FormState<PatientForm> {
             selected: {type},
             onSelectionChanged: (s) => setState(() => type = s.first)),
         TextFormField(controller: nom, decoration: InputDecoration(labelText: type == 'groupe' ? 'Nom du groupe *' : 'Nom *'), validator: _req),
-        if (type == 'groupe') TextFormField(controller: effectif, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Effectif')),
-        DropdownButtonFormField<String>(initialValue: espece, decoration: const InputDecoration(labelText: 'Espèce'), items: [for (final e in especes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => espece = v!),
-        TextFormField(controller: race, decoration: const InputDecoration(labelText: 'Race')),
-        DropdownButtonFormField<String>(initialValue: sexe, decoration: const InputDecoration(labelText: 'Sexe'), items: [for (final e in sexes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => sexe = v!),
-        _DateField(label: 'Date de naissance', value: naissance, onPick: () async {
+        if (type == 'groupe') TextFormField(controller: effectif, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: tr('Effectif'))),
+        DropdownButtonFormField<String>(initialValue: espece, decoration: InputDecoration(labelText: tr('Espèce')), items: [for (final e in especes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => espece = v!),
+        TextFormField(controller: race, decoration: InputDecoration(labelText: tr('Race'))),
+        DropdownButtonFormField<String>(initialValue: sexe, decoration: InputDecoration(labelText: tr('Sexe')), items: [for (final e in sexes.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => sexe = v!),
+        _DateField(label: tr('Date de naissance'), value: naissance, onPick: () async {
           final d = await _pickDate(context, naissance, last: DateTime.now());
           if (d != null) setState(() => naissance = d);
         }, onClear: () => setState(() => naissance = null)),
-        TextFormField(controller: ident, decoration: const InputDecoration(labelText: 'Identification (boucle, puce…)')),
-        TextFormField(controller: poids, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Poids', suffixText: 'kg'), validator: _nb),
-        TextFormField(controller: notes, maxLines: 3, decoration: const InputDecoration(labelText: 'Notes')),
+        TextFormField(controller: ident, decoration: InputDecoration(labelText: tr('Identification (boucle, puce…)'))),
+        TextFormField(controller: poids, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Poids'), suffixText: 'kg'), validator: _nb),
+        TextFormField(controller: notes, maxLines: 3, decoration: InputDecoration(labelText: tr('Notes'))),
       ];
   @override
   Future<void> submit() async {
@@ -234,18 +236,18 @@ class _ConsultationFormState extends _FormState<ConsultationForm> {
   String get title => 'Consultation — ${widget.patient['nom']}';
   @override
   List<Widget> fields(BuildContext context) => [
-        TextFormField(controller: motif, decoration: const InputDecoration(labelText: 'Motif *'), validator: _req),
-        TextFormField(controller: anamnese, maxLines: 3, decoration: const InputDecoration(labelText: 'Anamnèse')),
-        TextFormField(controller: examen, maxLines: 3, decoration: const InputDecoration(labelText: 'Examen clinique')),
+        TextFormField(controller: motif, decoration: InputDecoration(labelText: tr('Motif *')), validator: _req),
+        TextFormField(controller: anamnese, maxLines: 3, decoration: InputDecoration(labelText: tr('Anamnèse'))),
+        TextFormField(controller: examen, maxLines: 3, decoration: InputDecoration(labelText: tr('Examen clinique'))),
         Row(children: [
-          Expanded(child: TextFormField(controller: temp, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Température', suffixText: '°C'), validator: _nb)),
+          Expanded(child: TextFormField(controller: temp, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Température'), suffixText: '°C'), validator: _nb)),
           const SizedBox(width: 12),
-          Expanded(child: TextFormField(controller: poids, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Poids', suffixText: 'kg'), validator: _nb)),
+          Expanded(child: TextFormField(controller: poids, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: tr('Poids'), suffixText: 'kg'), validator: _nb)),
         ]),
-        TextFormField(controller: diag, maxLines: 2, decoration: const InputDecoration(labelText: 'Diagnostic')),
-        TextFormField(controller: trait, maxLines: 3, decoration: const InputDecoration(labelText: 'Traitement')),
-        TextFormField(controller: obs, maxLines: 2, decoration: const InputDecoration(labelText: 'Observations')),
-        _DateField(label: 'Prochaine visite', value: prochaine, onPick: () async {
+        TextFormField(controller: diag, maxLines: 2, decoration: InputDecoration(labelText: tr('Diagnostic'))),
+        TextFormField(controller: trait, maxLines: 3, decoration: InputDecoration(labelText: tr('Traitement'))),
+        TextFormField(controller: obs, maxLines: 2, decoration: InputDecoration(labelText: tr('Observations'))),
+        _DateField(label: tr('Prochaine visite'), value: prochaine, onPick: () async {
           final d = await _pickDate(context, prochaine, first: DateTime.now());
           if (d != null) setState(() => prochaine = d);
         }, onClear: () => setState(() => prochaine = null)),
@@ -278,18 +280,18 @@ class _SoinFormState extends _FormState<SoinForm> {
   String get title => 'Soin — ${widget.patient['nom']}';
   @override
   List<Widget> fields(BuildContext context) => [
-        DropdownButtonFormField<String>(initialValue: type, decoration: const InputDecoration(labelText: 'Type'), items: [for (final e in typesSoin.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => type = v!),
-        TextFormField(controller: libelle, decoration: const InputDecoration(labelText: 'Libellé * (produit, acte)'), validator: _req),
-        TextFormField(controller: lot, decoration: const InputDecoration(labelText: 'N° de lot')),
-        _DateField(label: 'Date de l\'acte', value: date, onPick: () async {
+        DropdownButtonFormField<String>(initialValue: type, decoration: InputDecoration(labelText: tr('Type')), items: [for (final e in typesSoin.entries) DropdownMenuItem(value: e.key, child: Text(e.value))], onChanged: (v) => type = v!),
+        TextFormField(controller: libelle, decoration: InputDecoration(labelText: tr('Libellé * (produit, acte)')), validator: _req),
+        TextFormField(controller: lot, decoration: InputDecoration(labelText: tr('N° de lot'))),
+        _DateField(label: tr('Date de l\'acte'), value: date, onPick: () async {
           final d = await _pickDate(context, date, last: DateTime.now());
           if (d != null) setState(() => date = d);
         }),
-        _DateField(label: 'Rappel le', value: rappel, onPick: () async {
+        _DateField(label: tr('Rappel le'), value: rappel, onPick: () async {
           final d = await _pickDate(context, rappel ?? date.add(const Duration(days: 30)), first: date);
           if (d != null) setState(() => rappel = d);
         }, onClear: () => setState(() => rappel = null)),
-        TextFormField(controller: notes, maxLines: 2, decoration: const InputDecoration(labelText: 'Notes')),
+        TextFormField(controller: notes, maxLines: 2, decoration: InputDecoration(labelText: tr('Notes'))),
       ];
   @override
   Future<void> submit() => widget.repo.enqueue('soin.creer', {
@@ -324,7 +326,7 @@ class _RdvFormState extends _FormState<RdvForm> {
   @override
   List<Widget> fields(BuildContext context) => [
         InputDecorator(
-          decoration: const InputDecoration(labelText: 'Client *'),
+          decoration: InputDecoration(labelText: tr('Client *')),
           child: InkWell(
             onTap: () async {
               final c = await pickClient(context, widget.repo);
@@ -339,7 +341,7 @@ class _RdvFormState extends _FormState<RdvForm> {
           ),
         ),
         InputDecorator(
-          decoration: InputDecoration(labelText: 'Patient (facultatif)', suffixIcon: patient != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => patient = null)) : null),
+          decoration: InputDecoration(labelText: tr('Patient (facultatif)'), suffixIcon: patient != null ? IconButton(icon: const Icon(Icons.clear), onPressed: () => setState(() => patient = null)) : null),
           child: InkWell(
             onTap: client == null
                 ? null
@@ -350,12 +352,12 @@ class _RdvFormState extends _FormState<RdvForm> {
             child: Text(patient == null ? 'Choisir…' : '${patient!['nom']}'),
           ),
         ),
-        _DateField(label: 'Jour', value: day, onPick: () async {
+        _DateField(label: tr('Jour'), value: day, onPick: () async {
           final d = await _pickDate(context, day, first: DateTime.now().subtract(const Duration(days: 1)));
           if (d != null) setState(() => day = d);
         }),
         InputDecorator(
-          decoration: const InputDecoration(labelText: 'Heure', suffixIcon: Icon(Icons.schedule)),
+          decoration: InputDecoration(labelText: tr('Heure'), suffixIcon: Icon(Icons.schedule)),
           child: InkWell(
               onTap: () async {
                 final t = await showTimePicker(context: context, initialTime: time);
@@ -363,9 +365,9 @@ class _RdvFormState extends _FormState<RdvForm> {
               },
               child: Text(time.format(context))),
         ),
-        TextFormField(controller: duree, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Durée', suffixText: 'min')),
-        TextFormField(controller: motif, decoration: const InputDecoration(labelText: 'Motif')),
-        TextFormField(controller: notes, maxLines: 2, decoration: const InputDecoration(labelText: 'Notes')),
+        TextFormField(controller: duree, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: tr('Durée'), suffixText: 'min')),
+        TextFormField(controller: motif, decoration: InputDecoration(labelText: tr('Motif'))),
+        TextFormField(controller: notes, maxLines: 2, decoration: InputDecoration(labelText: tr('Notes'))),
       ];
   @override
   Future<void> submit() async {

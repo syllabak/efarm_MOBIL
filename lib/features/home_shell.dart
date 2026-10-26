@@ -205,19 +205,19 @@ class _VetShellState extends ConsumerState<_VetShell> {
         // Rubriques du cabinet (les mêmes dans le menu latéral et dans l'onglet Compte)
         final cab = <(String, String, IconData, Widget Function())>[
           if (full && p.can('documents')) ('🧾', 'Devis et factures', Icons.receipt_long_outlined, () => const DocumentsPage()),
-          if (full && p.can('ordonnances')) ('📝', 'Ordonnances', Icons.description_outlined, () => const OrdonnancesPage()),
+          if (full && p.can('ordonnances')) ('💊', 'Ordonnances', Icons.description_outlined, () => const OrdonnancesPage()),
           if (full && p.can('profil')) ('🏥', 'Mon cabinet', Icons.business_outlined, () => const CabinetProfilePage()),
           if (full && p.can('fermes')) ('🏭', 'Mes fermes', Icons.agriculture, () => const VetFarmsPage()),
           if (full && p.can('fermes')) ('💬', 'Messages des fermes', Icons.forum_outlined, () => RelationConversationsPage(listPath: '/vet/messages', threadBase: '/vet/messages', mySens: 'veto', title: 'Messages des fermes', name: (r) => '${r['nom']}')),
-          if (full && p.can('stock')) ('💊', 'Pharmacie (stock, lots, péremptions)', Icons.medication_outlined, () => const PharmacyPage()),
+          if (full && p.can('stock')) ('🧪', 'Pharmacie (stock, lots, péremptions)', Icons.medication_outlined, () => const PharmacyPage()),
           if (full && p.can('stock') && serverCan('POST', '/vet/inventory')) ('📋', 'Inventaire', Icons.fact_check_outlined, () => const InventoryPage()),
-          if (full && p.can('stock')) ('📦', 'Catalogue', Icons.inventory_outlined, () => ModuleListPage(vetCatalogueModule)),
-          if (full && p.can('achats')) ('🛒', 'Commandes fournisseurs', Icons.shopping_cart_outlined, () => ModuleListPage(vetOrdersModule)),
+          if (full && p.can('stock')) ('🏷️', 'Catalogue', Icons.inventory_outlined, () => ModuleListPage(vetCatalogueModule)),
+          if (full && p.can('achats')) ('📦', 'Commandes fournisseurs', Icons.shopping_cart_outlined, () => ModuleListPage(vetOrdersModule)),
           if (full && p.can('achats') && serverGets('/vet/orders/suggestions')) ('🔄', 'Réapprovisionnement', Icons.shopping_cart_checkout, () => const OrderSuggestionsPage()),
           if (full && p.can('achats')) ('🚚', 'Fournisseurs', Icons.local_shipping_outlined, () => ModuleListPage(vetSuppliersModule)),
           if (full && p.can('compta') && serverGets('/vet/finance')) ('💰', 'Tableau financier', Icons.insights_outlined, () => const VetFinancePage()),
           if (full && p.can('compta')) ('📊', 'Comptabilité', Icons.account_balance_wallet_outlined, () => const VetAccountingPage()),
-          if ((!full || !p.can('stock')) && p.can('clinique')) ('💊', 'Produits', Icons.medication_outlined, () => ProduitsPage(repo: repo)),
+          if ((!full || !p.can('stock')) && p.can('clinique')) ('🧪', 'Produits', Icons.medication_outlined, () => ProduitsPage(repo: repo)),
         ];
         void open(Widget Function() page, {bool drawer = false}) {
           if (drawer) Navigator.pop(context);

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api_client.dart';
 import '../../core/session.dart';
+import '../../core/theme.dart';
 import '../../ui/common.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -188,13 +189,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ? const SizedBox.shrink()
                         : Card(color: Theme.of(c).colorScheme.errorContainer, child: Padding(padding: const EdgeInsets.all(12), child: Text(issue))),
                   ),
-                  Image.asset('assets/icon/icon.png', height: 80, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => const Text('🐓', textAlign: TextAlign.center, style: TextStyle(fontSize: 56))),
+                  ClipRRect(borderRadius: BorderRadius.circular(16), child: Image.asset('assets/icon/icon.png', height: 80, semanticLabel: 'Logo EFarm360', errorBuilder: (_, _, _) => const Text('🐓', textAlign: TextAlign.center, style: TextStyle(fontSize: 56)))),
                   const SizedBox(height: 8),
                   Text('EFarm360', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 4),
                   Text(vet ? 'Espace vétérinaire' : 'Gestion intelligente d\'élevage avicole', textAlign: TextAlign.center, style: TextStyle(color: vet ? const Color(0xFFA5F3FC) : const Color(0xFFBBF7D0), fontSize: 14)),
                   const SizedBox(height: 24),
-                  Card(
+                  Theme(
+                    data: buildTheme(Theme.of(context).brightness, vet: vet),
+                    child: Card(
                     margin: EdgeInsets.zero,
                     elevation: 8,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -266,7 +269,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ],
                       ]),
                     ),
-                  ),
+                  )),
                 ]),
               ),
             ),

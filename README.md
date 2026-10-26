@@ -12,7 +12,7 @@ Branche principale : `main`.
 ```bash
 flutter pub get
 flutter run
-flutter analyze && flutter test      # 37 tests
+flutter analyze && flutter test      # 70 tests
 ```
 
 ## Deux profils, un seul écran de connexion
@@ -22,6 +22,13 @@ flutter analyze && flutter test      # 37 tests
 
 Connexion : e-mail ou téléphone + mot de passe, code à usage unique (e-mail / SMS), double authentification, choix de société si plusieurs.
 Jetons dans le stockage sécurisé, rafraîchissement automatique avec rotation.
+
+## Design et langues (comme le site web)
+
+- **Thème** du site : fond `#f8f9fa`, cartes blanches arrondies, boutons vert 600, barre vert 900 ; **cyan** pour tout l'espace vétérinaire.
+- **Menu latéral** identique au web (dégradé vert, sections Principal / Gestion / Administration, emojis, ordre) : tiroir sur téléphone, permanent à partir de 900 px ; onglet « Plus » = même menu.
+- **Tableau de bord** de la ferme : quatre indicateurs à emojis, performance par site (siège), cartes de lots, mortalité, alertes, finances.
+- **Langues** : français, anglais, portugais, espagnol, arabe (droite à gauche) avec les dictionnaires du site (`assets/lang/{code}.json`, copiés de `efarm360/database/lang`) complétés par `assets/lang/mobile_{code}.json`. Choix sur l'écran de connexion et dans « Mon compte ». Un texte absent du dictionnaire reste en français.
 
 ## Ce qui est couvert
 

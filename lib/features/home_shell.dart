@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/server_support.dart';
 import '../core/session.dart';
+import '../core/theme.dart';
 import '../ui/common.dart';
 import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
@@ -35,7 +36,7 @@ class _FarmShell extends StatefulWidget {
 
 class _FarmShellState extends State<_FarmShell> {
   int _i = 0;
-  static const _titles = ['Tableau de bord', 'Lots', 'Rapports', 'Stock', 'Plus'];
+  static const _titles = ['📊 Tableau de bord', '🐣 Lots', '📝 Rapports', '📦 Stock', '☰ Plus'];
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +115,7 @@ class _VetShell extends ConsumerStatefulWidget {
 
 class _VetShellState extends ConsumerState<_VetShell> {
   int _i = 0;
-  static const _titles = ['Accueil', 'Clients', 'Patients', 'Rendez-vous', 'Compte'];
+  static const _titles = ['🩺 Accueil', '👥 Clients', '🐾 Patients', '📅 Rendez-vous', '👤 Compte'];
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +155,8 @@ class _VetShellState extends ConsumerState<_VetShell> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SyncPage(repo: repo)))),
           ]),
         ];
-        return Scaffold(
+        // Espace vétérinaire : thème cyan comme le cabinet du site web
+        return Theme(data: buildTheme(Theme.of(context).brightness, vet: true), child: Scaffold(
           appBar: AppBar(title: Text(_titles[_i]), actions: [
             ListenableBuilder(
                 listenable: repo,
@@ -171,7 +173,7 @@ class _VetShellState extends ConsumerState<_VetShell> {
             NavigationDestination(icon: Icon(Icons.event_outlined), selectedIcon: Icon(Icons.event), label: 'RDV'),
             NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Compte'),
           ]),
-        );
+        ));
       },
     );
   }

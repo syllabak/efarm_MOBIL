@@ -106,10 +106,10 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 
 | Élément | Web | Mobile | Action |
 |---|---|---|---|
-| Couleurs | vert profond `#14532D`, vert `#15803D`, cyan pour le cabinet | ✅ repris | Appliquer le cyan aussi aux écrans du cabinet (barre, boutons) |
+| Couleurs | vert profond `#14532D`, vert `#15803D`, cyan pour le cabinet | ✅ repris | ✅ Fait : thème cyan sur tout l’espace vétérinaire |
 | Navigation | menu latéral | barre du bas (5 onglets) + menu « Plus » dans l'ordre du web | Adapter |
 | Cartes / indicateurs | cartes blanches arrondies, filet coloré à gauche, icône et valeur | ✅ | |
-| Titres de rubriques | emoji (📊 🐣 💰 🩺) | 🟡 seulement l'accueil du cabinet | Généraliser |
+| Titres de rubriques | emoji (📊 🐣 💰 🩺) | 🟡 titres des onglets ✅, reste les sous-pages | Généraliser |
 | Graphiques | courbes et histogrammes (Chart.js) | ❌ | Ajouter une bibliothèque de graphiques |
 | Tableaux | tableaux à colonnes triables | listes en cartes | Choix mobile assumé |
 | Langues | 5 | 1 | Internationalisation à faire |

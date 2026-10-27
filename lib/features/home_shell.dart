@@ -176,7 +176,7 @@ class _VetShellState extends ConsumerState<_VetShell> {
           if (full && p.can('profil')) ('🏥', 'Mon cabinet', Icons.business_outlined, () => const CabinetProfilePage()),
           if (full && p.can('fermes')) ('🏭', 'Mes fermes', Icons.agriculture, () => const VetFarmsPage()),
           if (full && p.can('fermes')) ('💬', 'Messages des fermes', Icons.forum_outlined, () => RelationConversationsPage(listPath: '/vet/messages', threadBase: '/vet/messages', mySens: 'veto', title: 'Messages des fermes', name: (r) => '${r['nom']}')),
-          if (full && p.can('stock')) ('🧪', 'Pharmacie (stock, lots, péremptions)', Icons.medication_outlined, () => const PharmacyPage()),
+          if (full && p.can('stock')) ('🧪', 'Pharmacie', Icons.medication_outlined, () => const PharmacyPage()),
           if (full && p.can('stock') && serverCan('POST', '/vet/inventory')) ('📋', 'Inventaire', Icons.fact_check_outlined, () => const InventoryPage()),
           if (full && p.can('stock')) ('🏷️', 'Catalogue', Icons.inventory_outlined, () => ModuleListPage(vetCatalogueModule)),
           if (full && p.can('achats')) ('📦', 'Commandes fournisseurs', Icons.shopping_cart_outlined, () => ModuleListPage(vetOrdersModule)),

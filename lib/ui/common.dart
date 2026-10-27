@@ -243,3 +243,39 @@ class _AsyncViewState<T> extends State<AsyncView<T>> {
         },
       );
 }
+
+
+/// Bandeau vert à dégradé portant le titre d'une fiche (comme l'en-tête des cartes de lot du site web).
+class TitleBanner extends StatelessWidget {
+  const TitleBanner(this.title, {super.key, this.trailing});
+  final String title;
+  final Widget? trailing;
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), gradient: LinearGradient(colors: [Theme.of(context).appBarTheme.backgroundColor ?? const Color(0xFF15803D), Theme.of(context).colorScheme.primary])),
+        child: Row(children: [
+          Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold))),
+          if (trailing != null) trailing!,
+        ]),
+      );
+}
+
+/// Carte blanche à titre facultatif, pour regrouper les lignes d'une fiche.
+class InfoCard extends StatelessWidget {
+  const InfoCard({super.key, this.title, required this.children});
+  final String? title;
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) => Card(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            if (title != null) Padding(padding: const EdgeInsets.only(bottom: 6), child: Text(title!, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
+            ...children,
+          ]),
+        ),
+      );
+}

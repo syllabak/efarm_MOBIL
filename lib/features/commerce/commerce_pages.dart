@@ -177,48 +177,49 @@ class _VenteDetailPageState extends ConsumerState<VenteDetailPage> {
     final api = ref.watch(apiProvider);
     final role = ref.watch(sessionProvider).value?.role;
     return Scaffold(
-      appBar: AppBar(title: const Text('Vente')),
+      appBar: AppBar(title: const Text('🛒 Vente')),
       body: AsyncView<Map>(
         key: _k,
         load: () => api.get<Map>('/sales/${widget.id}'),
         builder: (c, v) {
           final sit = Map<String, dynamic>.from(v['situation'] as Map);
           final canPay = const {'admin', 'responsable'}.contains(role) && sit['statut'] != 'annulee' && (sit['reste'] as num) > 0;
-          return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
-            Text('${v['numero']}', style: Theme.of(c).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            KeyValue('Date', fmtDate(v['date_vente'])),
-            KeyValue('Client', v['client']),
-            KeyValue('Téléphone', v['client_tel']),
-            KeyValue('Site', v['site_nom']),
-            KeyValue('Lot', v['lot_code']),
-            KeyValue('Facture', v['numero_facture']),
-            KeyValue('Mode', _modes['${v['mode_paiement']}'] ?? v['mode_paiement']),
-            const Divider(height: 24),
-            Text('Lignes', style: Theme.of(c).textTheme.titleMedium),
-            for (final l in (v['lignes'] as List).cast<Map>())
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text('${l['designation']}'),
-                subtitle: Text('${fmtNum(l['quantite'], digits: 2)} ${l['unite'] ?? ''} × ${money(l['prix_unitaire'])}'),
-                trailing: Text(money(l['montant_ligne']), style: const TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            const Divider(height: 24),
-            KeyValue('Total', money(sit['total'])),
-            KeyValue('Encaissé', money(sit['encaisse'])),
-            KeyValue('Reste à payer', money(sit['reste'])),
-            KeyValue('Statut', _paiementLabels['${sit['statut']}']),
-            if ((v['encaissements'] as List).isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Text('Encaissements', style: Theme.of(c).textTheme.titleMedium),
-              for (final e in (v['encaissements'] as List).cast<Map>())
+          return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(12), children: [
+            TitleBanner('${v['numero']}'),
+            InfoCard(children: [
+              KeyValue('Date', fmtDate(v['date_vente'])),
+              KeyValue('Client', v['client']),
+              KeyValue('Téléphone', v['client_tel']),
+              KeyValue('Site', v['site_nom']),
+              KeyValue('Lot', v['lot_code']),
+              KeyValue('Facture', v['numero_facture']),
+              KeyValue('Mode', _modes['${v['mode_paiement']}'] ?? v['mode_paiement']),
+            ]),
+            InfoCard(title: 'Lignes', children: [
+              for (final l in (v['lignes'] as List).cast<Map>())
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.payments_outlined),
-                  title: Text(money(e['montant'])),
-                  subtitle: Text('${fmtDate(e['date_encaissement'])} · ${_modes['${e['mode']}'] ?? e['mode']}${e['reference'] != null ? ' · ${e['reference']}' : ''}'),
+                  title: Text('${l['designation']}'),
+                  subtitle: Text('${fmtNum(l['quantite'], digits: 2)} ${l['unite'] ?? ''} × ${money(l['prix_unitaire'])}'),
+                  trailing: Text(money(l['montant_ligne']), style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
-            ],
+            ]),
+            InfoCard(children: [
+              KeyValue('Total', money(sit['total'])),
+              KeyValue('Encaissé', money(sit['encaisse'])),
+              KeyValue('Reste à payer', money(sit['reste'])),
+              KeyValue('Statut', _paiementLabels['${sit['statut']}']),
+            ]),
+            if ((v['encaissements'] as List).isNotEmpty)
+              InfoCard(title: 'Encaissements', children: [
+                for (final e in (v['encaissements'] as List).cast<Map>())
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.payments_outlined),
+                    title: Text(money(e['montant'])),
+                    subtitle: Text('${fmtDate(e['date_encaissement'])} · ${_modes['${e['mode']}'] ?? e['mode']}${e['reference'] != null ? ' · ${e['reference']}' : ''}'),
+                  ),
+              ]),
             if (canPay) Padding(padding: const EdgeInsets.only(top: 16), child: FilledButton.icon(onPressed: () => _encaisser(v), icon: const Icon(Icons.add_card), label: const Text('Encaisser un paiement'))),
             if (const {'admin', 'responsable'}.contains(role) && sit['statut'] != 'annulee')
               Padding(padding: const EdgeInsets.only(top: 8), child: OutlinedButton.icon(onPressed: _cancel, icon: const Icon(Icons.block), label: const Text('Annuler la vente'), style: OutlinedButton.styleFrom(foregroundColor: Theme.of(c).colorScheme.error))),

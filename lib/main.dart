@@ -29,10 +29,10 @@ Future<void> main() async {
   runApp(const ProviderScope(child: EFarmApp()));
 }
 
-class EFarmApp extends StatelessWidget {
+class EFarmApp extends ConsumerWidget {
   const EFarmApp({super.key});
   @override
-  Widget build(BuildContext context) => ListenableBuilder(
+  Widget build(BuildContext context, WidgetRef ref) => ListenableBuilder(
         listenable: I18n.instance,
         // la clé reconstruit tout l'arbre quand la langue change (les textes sont traduits à la construction)
         builder: (context, _) => KeyedSubtree(
@@ -40,7 +40,8 @@ class EFarmApp extends StatelessWidget {
           child: MaterialApp(
             title: 'EFarm360',
             debugShowCheckedModeBanner: false,
-            theme: buildTheme(Brightness.light),
+            // thème cyan pour toute la session d'un vétérinaire, y compris les écrans ouverts par-dessus
+            theme: buildTheme(Brightness.light, vet: ref.watch(sessionProvider).value?.isVet ?? false),
             // Le site web n'a pas de mode sombre : l'application garde le même thème clair
             themeMode: ThemeMode.light,
             locale: I18n.instance.locale,

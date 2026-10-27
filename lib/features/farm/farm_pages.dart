@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -197,7 +198,7 @@ class _SitesPageState extends ConsumerState<SitesPage> {
     final api = ref.watch(apiProvider);
     final admin = ref.watch(sessionProvider).value?.role == 'admin';
     return Scaffold(
-      appBar: AppBar(title: const Text('Sites')),
+      appBar: AppBar(title: Text(webTitle('Sites'))),
       floatingActionButton: admin && serverCan('POST', '/farm/sites') ? FloatingActionButton.extended(onPressed: () => _form(), icon: const Icon(Icons.add), label: const Text('Site')) : null,
       body: AsyncView<List>(
         key: _k,

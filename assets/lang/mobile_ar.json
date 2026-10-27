@@ -358,5 +358,15 @@
 "Traite (lait)": "الحلب (الحليب)",
 "Validé": "مصادق عليه",
 "Soumis": "مُرسل",
-"Brouillon": "مسودة"
+"Brouillon": "مسودة",
+"Tableau de bord des ventes": "لوحة المبيعات",
+"CA facturé aujourd'hui": "المفوتر اليوم",
+"CA facturé ce mois": "المفوتر هذا الشهر",
+"CA facturé cette année": "المفوتر هذه السنة",
+"À encaisser (créances)": "مستحق التحصيل (ديون)",
+"📈 Évolution CA (12 mois)": "📈 تطور رقم الأعمال (12 شهراً)",
+"Licence : {*} jour(s) restant(s)": "الترخيص: {*} يوم متبقٍ",
+"{*} alerte(s) stock": "{*} تنبيه(ات) مخزون",
+"Chiffre d'affaires facturé": "رقم الأعمال المفوتر",
+"Encaissé ce mois": "المحصَّل هذا الشهر"
 }

@@ -358,5 +358,15 @@
 "Traite (lait)": "Milking (milk)",
 "Validé": "Validated",
 "Soumis": "Submitted",
-"Brouillon": "Draft"
+"Brouillon": "Draft",
+"Tableau de bord des ventes": "Sales dashboard",
+"CA facturé aujourd'hui": "Revenue invoiced today",
+"CA facturé ce mois": "Revenue invoiced this month",
+"CA facturé cette année": "Revenue invoiced this year",
+"À encaisser (créances)": "To collect (receivables)",
+"📈 Évolution CA (12 mois)": "📈 Revenue trend (12 months)",
+"Licence : {*} jour(s) restant(s)": "Licence: {*} day(s) left",
+"{*} alerte(s) stock": "{*} stock alert(s)",
+"Chiffre d'affaires facturé": "Revenue invoiced",
+"Encaissé ce mois": "Collected this month"
 }

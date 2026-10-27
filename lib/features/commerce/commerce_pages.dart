@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/export.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import '../farm/mortality_chart.dart' show BarsPainter;
 import 'sale_form.dart';
 
 const _modes = {'especes': 'Espèces', 'virement': 'Virement', 'cheque': 'Chèque', 'mobile_money': 'Mobile money'};
@@ -30,7 +32,7 @@ class _VentesPageState extends ConsumerState<VentesPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Ventes'), actions: [
+      appBar: AppBar(title: Text(webTitle('Ventes')), actions: [
         IconButton(
             tooltip: tr('Exporter (CSV)'),
             icon: const Icon(Icons.ios_share),
@@ -65,11 +67,35 @@ class _VentesPageState extends ConsumerState<VentesPage> {
               if (s.hasError) return ListTile(leading: const Icon(Icons.error_outline), title: Text(errorText(s.error!)));
               if (!s.hasData) return const LinearProgressIndicator();
               final d = s.data!;
-              return GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
-                Stat('CA du jour', money(d['ca_jour']), icon: Icons.today),
-                Stat('CA du mois', money(d['ca_mois']), icon: Icons.calendar_month),
-                Stat('CA de l\'année', money(d['ca_annee']), icon: Icons.trending_up),
-                Stat('Créances (${d['nb_ventes_non_soldees']})', money(d['creances']), icon: Icons.hourglass_bottom, color: (d['creances'] as num) > 0 ? Colors.orange : null),
+              final evo = [for (final e in (d['evolution'] as List? ?? const [])) (mois: '${(e as Map)['mois']}', ca: num.tryParse('${e['ca']}') ?? 0)];
+              final cre = num.tryParse('${d['creances']}') ?? 0;
+              return Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Align(alignment: AlignmentDirectional.centerStart, child: Text('Tableau de bord des ventes', style: Theme.of(c).textTheme.bodySmall)),
+                ),
+                GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
+                  Stat('CA facturé aujourd\'hui', money(d['ca_jour']), icon: Icons.today, color: const Color(0xFF15803D)),
+                  Stat('CA facturé ce mois', money(d['ca_mois']), icon: Icons.calendar_month, color: const Color(0xFF1D4ED8)),
+                  Stat('CA facturé cette année', money(d['ca_annee']), icon: Icons.trending_up, color: const Color(0xFF1F2937)),
+                  Stat('À encaisser (créances)', money(d['creances']), icon: Icons.hourglass_bottom, color: cre > 0 ? const Color(0xFFDC2626) : const Color(0xFF9CA3AF)),
+                ]),
+                if (evo.length > 1)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('📈 Évolution CA (12 mois)', style: Theme.of(c).textTheme.titleSmall),
+                        const SizedBox(height: 8),
+                        SizedBox(height: 110, width: double.infinity, child: CustomPaint(painter: BarsPainter([for (final e in evo) e.ca.toDouble()], const Color(0xFF16A34A), Theme.of(c).colorScheme.outlineVariant))),
+                        const SizedBox(height: 4),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text(evo.first.mois, style: Theme.of(c).textTheme.labelSmall),
+                          Text(evo.last.mois, style: Theme.of(c).textTheme.labelSmall),
+                        ]),
+                      ]),
+                    ),
+                  ),
               ]);
             },
           ),
@@ -265,7 +291,7 @@ class _ClientsVentePageState extends ConsumerState<ClientsVentePage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Clients')),
+      appBar: AppBar(title: Text(webTitle('Clients'))),
       body: Column(children: [
         Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher')), onChanged: (v) => setState(() => _q = v.trim()))),
         Expanded(
@@ -312,7 +338,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
     final api = ref.watch(apiProvider);
     final mois = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     return Scaffold(
-      appBar: AppBar(title: const Text('Finance')),
+      appBar: AppBar(title: const Text('💰 Finance & Comptabilité')),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: const Text('Dépense'),
@@ -341,14 +367,41 @@ class _FinancePageState extends ConsumerState<FinancePage> {
                 final net = d['benefice_net'] as num;
                 return Column(children: [
                   GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
-                    Stat('Ventes', money(d['total_ventes']), icon: Icons.south_west, color: Colors.green),
-                    Stat('Dépenses', money(d['total_depenses']), icon: Icons.north_east, color: Colors.red),
-                    Stat('Bénéfice net', money(net), icon: Icons.account_balance_wallet_outlined, color: net >= 0 ? Colors.green : Colors.red),
-                    Stat('Trésorerie du mois', money(d['tresorerie_mois']), icon: Icons.savings_outlined),
+                    Stat('Chiffre d\'affaires facturé', money(d['total_ventes']), emoji: '🧾', color: const Color(0xFF15803D)),
+                    Stat('Dépenses du mois', money(d['total_depenses']), emoji: '💸', color: const Color(0xFFDC2626)),
+                    Stat('Bénéfice du mois', money(net), emoji: '💰', color: net >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626)),
+                    Stat('ROI d\'exploitation du mois', '${d['roi_pct']} %', emoji: '📊', color: const Color(0xFF1D4ED8)),
+                    Stat('Encaissé ce mois', money(d['encaisse_mois']), emoji: '💵', color: const Color(0xFF0F766E)),
+                    Stat('Trésorerie du mois', money(d['tresorerie_mois']), emoji: '🏦', color: const Color(0xFF0F766E)),
                   ]),
                   ListTile(dense: true, title: Text('Créances : ${money(d['creances'])} (${d['nb_creances']} vente(s))'), subtitle: Text('ROI du mois : ${d['roi_pct']} %')),
-                  for (final cat in (d['par_categorie'] as List).cast<Map>())
-                    ListTile(dense: true, title: Text('${cat['categorie']}'), trailing: Text(money(cat['total']))),
+                  if ((d['par_categorie'] as List).isNotEmpty)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('🥧 Dépenses par catégorie (ce mois)', style: Theme.of(c).textTheme.titleSmall),
+                          const SizedBox(height: 8),
+                          for (final cat in (d['par_categorie'] as List).cast<Map>())
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Column(children: [
+                                Row(children: [Expanded(child: Text('${cat['categorie']}')), Text(money(cat['total']), style: const TextStyle(fontWeight: FontWeight.w600))]),
+                                const SizedBox(height: 3),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    minHeight: 6,
+                                    value: ((num.tryParse('${cat['total']}') ?? 0) / ((num.tryParse('${d['total_depenses']}') ?? 0) == 0 ? 1 : (num.tryParse('${d['total_depenses']}') ?? 1))).clamp(0.0, 1.0).toDouble(),
+                                    backgroundColor: const Color(0xFFF3F4F6),
+                                    color: const Color(0xFFF97316),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                        ]),
+                      ),
+                    ),
                   const Divider(),
                 ]);
               },

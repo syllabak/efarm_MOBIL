@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +38,7 @@ class _AlertsPageState extends ConsumerState<AlertsPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Alertes'), actions: [
+      appBar: AppBar(title: Text(webTitle('Alertes')), actions: [
         TextButton.icon(onPressed: (_unread ?? 0) > 0 ? _markRead : null, icon: const Icon(Icons.done_all), label: const Text('Tout lire')),
       ]),
       body: PagedList(

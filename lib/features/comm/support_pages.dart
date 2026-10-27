@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +30,7 @@ class _SupportPageState extends ConsumerState<SupportPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Aide et support')),
+      appBar: AppBar(title: Text(webTitle('Aide et support'))),
       body: AsyncView<List>(
         key: _k,
         load: () => api.get<List>('/support/tickets'),

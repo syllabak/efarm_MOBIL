@@ -42,7 +42,7 @@ class MortalityChartCard extends ConsumerWidget {
               if (total == 0) return const SizedBox(height: 60, child: Center(child: Text('Aucune mortalité enregistrée sur la période.')));
               final max = data.map((e) => e.morts).reduce((a, b) => a > b ? a : b);
               return Column(children: [
-                SizedBox(height: 120, width: double.infinity, child: CustomPaint(painter: _BarsPainter([for (final e in data) e.morts.toDouble()], Colors.red.shade400, Theme.of(c).colorScheme.outlineVariant))),
+                SizedBox(height: 120, width: double.infinity, child: CustomPaint(painter: BarsPainter([for (final e in data) e.morts.toDouble()], Colors.red.shade400, Theme.of(c).colorScheme.outlineVariant))),
                 const SizedBox(height: 4),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text(fmtDate(isoDate(data.first.jour)), style: Theme.of(c).textTheme.labelSmall),
@@ -58,8 +58,8 @@ class MortalityChartCard extends ConsumerWidget {
   }
 }
 
-class _BarsPainter extends CustomPainter {
-  _BarsPainter(this.values, this.color, this.axis);
+class BarsPainter extends CustomPainter {
+  BarsPainter(this.values, this.color, this.axis);
   final List<double> values;
   final Color color, axis;
 
@@ -76,5 +76,5 @@ class _BarsPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_BarsPainter old) => old.values != values || old.color != color;
+  bool shouldRepaint(BarsPainter old) => old.values != values || old.color != color;
 }

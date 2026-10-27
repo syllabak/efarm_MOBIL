@@ -358,5 +358,13 @@
 "Traite (lait)": "Ordeño (leche)",
 "Validé": "Validado",
 "Soumis": "Enviado",
-"Brouillon": "Borrador"
+"Brouillon": "Borrador",
+"Tableau de bord des ventes": "Panel de ventas",
+"CA facturé aujourd'hui": "Facturado hoy",
+"CA facturé ce mois": "Facturado este mes",
+"CA facturé cette année": "Facturado este año",
+"À encaisser (créances)": "Por cobrar (cuentas a cobrar)",
+"📈 Évolution CA (12 mois)": "📈 Evolución de la facturación (12 meses)",
+"Licence : {*} jour(s) restant(s)": "Licencia: {*} día(s) restante(s)",
+"{*} alerte(s) stock": "{*} alerta(s) de stock"
 }

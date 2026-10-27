@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/export.dart';
 import '../../core/session.dart';
 import '../../ui/common.dart';
+import '../farm/mortality_chart.dart' show BarsPainter;
 import 'sale_form.dart';
 
 const _modes = {'especes': 'Espèces', 'virement': 'Virement', 'cheque': 'Chèque', 'mobile_money': 'Mobile money'};
@@ -66,11 +67,35 @@ class _VentesPageState extends ConsumerState<VentesPage> {
               if (s.hasError) return ListTile(leading: const Icon(Icons.error_outline), title: Text(errorText(s.error!)));
               if (!s.hasData) return const LinearProgressIndicator();
               final d = s.data!;
-              return GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
-                Stat('CA du jour', money(d['ca_jour']), icon: Icons.today),
-                Stat('CA du mois', money(d['ca_mois']), icon: Icons.calendar_month),
-                Stat('CA de l\'année', money(d['ca_annee']), icon: Icons.trending_up),
-                Stat('Créances (${d['nb_ventes_non_soldees']})', money(d['creances']), icon: Icons.hourglass_bottom, color: (d['creances'] as num) > 0 ? Colors.orange : null),
+              final evo = [for (final e in (d['evolution'] as List? ?? const [])) (mois: '${(e as Map)['mois']}', ca: num.tryParse('${e['ca']}') ?? 0)];
+              final cre = num.tryParse('${d['creances']}') ?? 0;
+              return Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Align(alignment: AlignmentDirectional.centerStart, child: Text('Tableau de bord des ventes', style: Theme.of(c).textTheme.bodySmall)),
+                ),
+                GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
+                  Stat('CA facturé aujourd\'hui', money(d['ca_jour']), icon: Icons.today, color: const Color(0xFF15803D)),
+                  Stat('CA facturé ce mois', money(d['ca_mois']), icon: Icons.calendar_month, color: const Color(0xFF1D4ED8)),
+                  Stat('CA facturé cette année', money(d['ca_annee']), icon: Icons.trending_up, color: const Color(0xFF1F2937)),
+                  Stat('À encaisser (créances)', money(d['creances']), icon: Icons.hourglass_bottom, color: cre > 0 ? const Color(0xFFDC2626) : const Color(0xFF9CA3AF)),
+                ]),
+                if (evo.length > 1)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('📈 Évolution CA (12 mois)', style: Theme.of(c).textTheme.titleSmall),
+                        const SizedBox(height: 8),
+                        SizedBox(height: 110, width: double.infinity, child: CustomPaint(painter: BarsPainter([for (final e in evo) e.ca.toDouble()], const Color(0xFF16A34A), Theme.of(c).colorScheme.outlineVariant))),
+                        const SizedBox(height: 4),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text(evo.first.mois, style: Theme.of(c).textTheme.labelSmall),
+                          Text(evo.last.mois, style: Theme.of(c).textTheme.labelSmall),
+                        ]),
+                      ]),
+                    ),
+                  ),
               ]);
             },
           ),

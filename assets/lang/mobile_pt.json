@@ -358,5 +358,13 @@
 "Traite (lait)": "Ordenha (leite)",
 "Validé": "Validado",
 "Soumis": "Submetido",
-"Brouillon": "Rascunho"
+"Brouillon": "Rascunho",
+"Tableau de bord des ventes": "Painel de vendas",
+"CA facturé aujourd'hui": "Faturação de hoje",
+"CA facturé ce mois": "Faturação deste mês",
+"CA facturé cette année": "Faturação deste ano",
+"À encaisser (créances)": "A receber (créditos)",
+"📈 Évolution CA (12 mois)": "📈 Evolução da faturação (12 meses)",
+"Licence : {*} jour(s) restant(s)": "Licença: {*} dia(s) restante(s)",
+"{*} alerte(s) stock": "{*} alerta(s) de stock"
 }

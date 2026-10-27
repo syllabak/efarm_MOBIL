@@ -27,7 +27,7 @@ class RapportTile extends StatelessWidget {
         title: Text(fmtDate(r['date_rapport'])),
         subtitle: Text('Vivants ${fmtNum(r['nb_tetes_vivantes'])} · morts ${fmtNum(r['mortalite_jour'])} · aliment ${fmtNum(r['sacs_consommes'], digits: 1)} sacs'
             '${r['poids_moyen'] != null ? ' · ${fmtNum(r['poids_moyen'], digits: 3)} kg' : ''}'),
-        trailing: Text(statut, style: TextStyle(color: color)),
+        trailing: statut == 'null' || statut.isEmpty ? null : Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)), child: Text(const {'valide': 'Validé', 'soumis': 'Soumis', 'brouillon': 'Brouillon'}[statut] ?? statut, style: TextStyle(color: color, fontSize: 12))),
       ),
     );
   }

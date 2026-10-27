@@ -177,7 +177,7 @@ class LayingLotPage extends ConsumerWidget {
           final ind = Map<String, dynamic>.from(l['ind'] as Map? ?? {});
           final h = (l['historique'] as List).cast<Map>().reversed.toList();
           return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
-            Text('${l['code']}', style: Theme.of(c).textTheme.titleLarge),
+            TitleBanner('${l['code']}'),
             KeyValue('Site', l['site_nom']),
             KeyValue('Âge', '${l['age_sem']} semaines'),
             KeyValue('Courbe de référence', l['courbe_libelle']),

@@ -169,7 +169,7 @@ class _DocumentDetailPageState extends ConsumerState<DocumentDetailPage> {
           final reste = (d['reste'] as num);
           final canPay = facture && d['statut'] == 'emise' && reste > 0;
           return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
-            Text('${facture ? 'Facture' : 'Devis'} ${d['numero']}', style: Theme.of(c).textTheme.titleLarge),
+            TitleBanner('${facture ? 'Facture' : 'Devis'} ${d['numero']}'),
             const SizedBox(height: 8),
             KeyValue('Client', (d['client'] as Map?)?['nom']),
             KeyValue('Téléphone', (d['client'] as Map?)?['telephone']),
@@ -337,7 +337,7 @@ class _OrdonnanceDetailPageState extends ConsumerState<OrdonnanceDetailPage> {
         key: _k,
         load: () => api.get<Map>('/vet/ordonnances/$id'),
         builder: (c, o) => ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
-          Text('${o['numero']}', style: Theme.of(c).textTheme.titleLarge),
+          TitleBanner('${o['numero']}'),
           const SizedBox(height: 8),
           KeyValue('Client', (o['client'] as Map?)?['nom']),
           KeyValue('Animal / lot', o['animal']),

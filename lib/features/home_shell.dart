@@ -9,7 +9,6 @@ import '../core/theme.dart';
 import '../ui/common.dart';
 import '../ui/sidebar.dart';
 import '../ui/web_menu.dart';
-import '../core/i18n.dart';
 import 'commerce/commerce_pages.dart';
 import 'farm/farm_pages.dart';
 import 'farm/dashboard.dart';

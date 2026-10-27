@@ -8,8 +8,6 @@ import '../../core/server_support.dart';
 import '../../ui/common.dart';
 import '../modules/module_pages.dart' show DynamicFormPage;
 import '../modules/spec.dart' show FieldSpec, FieldType;
-import 'home_cards.dart';
-import 'mortality_chart.dart';
 import 'ops_pages.dart';
 import 'rapport_form.dart';
 

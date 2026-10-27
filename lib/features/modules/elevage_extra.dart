@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -119,7 +120,7 @@ class _LayingPageState extends ConsumerState<LayingPage> {
     final api = ref.watch(apiProvider);
     final canWrite = const {'admin', 'siege', 'responsable'}.contains(ref.watch(sessionProvider).value?.role);
     return Scaffold(
-      appBar: AppBar(title: const Text('Poules pondeuses')),
+      appBar: AppBar(title: Text(webTitle('Poules pondeuses'))),
       floatingActionButton: canWrite
           ? FloatingActionButton.extended(
               icon: const Icon(Icons.egg_outlined),

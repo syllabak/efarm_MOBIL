@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,7 @@ class TrainingPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Formation')),
+      appBar: AppBar(title: Text(webTitle('Formation'))),
       body: AsyncView<List>(
         load: () => api.get<List>('/training'),
         builder: (c, rows) => rows.isEmpty
@@ -58,7 +59,7 @@ class _FormationDetailPageState extends ConsumerState<FormationDetailPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Formation')),
+      appBar: AppBar(title: Text(webTitle('Formation'))),
       body: AsyncView<Map>(
         key: _k,
         load: () => api.get<Map>('/training/${widget.id}'),
@@ -156,7 +157,7 @@ class _ReferralPageState extends ConsumerState<ReferralPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Parrainage')),
+      appBar: AppBar(title: Text(webTitle('Parrainage'))),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.send),
         label: const Text('Inviter'),

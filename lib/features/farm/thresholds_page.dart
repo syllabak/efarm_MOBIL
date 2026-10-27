@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,7 @@ class _ThresholdsPageState extends ConsumerState<ThresholdsPage> {
     final api = ref.watch(apiProvider);
     final p = ref.watch(sessionProvider).value;
     return Scaffold(
-      appBar: AppBar(title: const Text('Seuils d\'alerte')),
+      appBar: AppBar(title: Text(webTitle('Seuils d\'alerte'))),
       body: AsyncView<List>(
         load: () => api.get<List>('/farm/sites'),
         builder: (c, sites) {

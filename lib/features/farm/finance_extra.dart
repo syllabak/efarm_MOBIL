@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +24,7 @@ class _RoiPageState extends ConsumerState<RoiPage> {
     final api = ref.watch(apiProvider);
     final p = ref.watch(sessionProvider).value;
     return Scaffold(
-      appBar: AppBar(title: const Text('ROI et performance')),
+      appBar: AppBar(title: Text(webTitle('ROI et performance'))),
       body: AsyncView<List>(
         load: () => api.get<List>('/farm/sites'),
         builder: (c, sites) {
@@ -96,7 +97,7 @@ class FinanceControlPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Contrôle des chiffres')),
+      appBar: AppBar(title: Text(webTitle('Contrôle des chiffres'))),
       body: AsyncView<Map>(
         load: () => api.get<Map>('/finance/control'),
         builder: (c, d) {

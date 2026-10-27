@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +14,7 @@ class CattleSummaryPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Bovins — tableau de bord')),
+      appBar: AppBar(title: Text(webTitle('Bovins — tableau de bord'))),
       body: AsyncView<Map>(
         load: () => api.get<Map>('/cattle/summary'),
         builder: (c, d) {

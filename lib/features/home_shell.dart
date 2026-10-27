@@ -135,7 +135,7 @@ class FarmMore extends ConsumerWidget {
       if (serverGets(e.route) && (e.roles == null || e.roles!.contains(p.role)) && (e.plan == null || p.has(e.plan!))) add(e.title, e.builder);
     }
     add('Sites', () => const SitesPage());
-    add('Mon compte', () => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage()));
+    add('Mon compte', () => Scaffold(appBar: AppBar(title: Text(webTitle('Mon compte'))), body: const ProfilePage()));
     rows.sort((x, y) => x.$1.compareTo(y.$1));
     const order = ['Principal', 'Gestion', 'Administration'];
     final items = [for (final sec in order) ...rows.where((r) => r.$2.section == sec).map((r) => r.$2)];
@@ -144,7 +144,7 @@ class FarmMore extends ConsumerWidget {
       subtitle: tr('Espace ferme'),
       items: items,
       userName: p.fullName.isEmpty ? p.email : p.fullName,
-      onProfile: () => open(() => Scaffold(appBar: AppBar(title: const Text('Mon compte')), body: const ProfilePage())),
+      onProfile: () => open(() => Scaffold(appBar: AppBar(title: Text(webTitle('Mon compte'))), body: const ProfilePage())),
     );
   }
 }

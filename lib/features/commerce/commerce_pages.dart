@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide Text;
+import '../../ui/web_menu.dart';
 import '../../core/i18n.dart';
 import '../../ui/tr_text.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,7 @@ class _VentesPageState extends ConsumerState<VentesPage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Ventes'), actions: [
+      appBar: AppBar(title: Text(webTitle('Ventes')), actions: [
         IconButton(
             tooltip: tr('Exporter (CSV)'),
             icon: const Icon(Icons.ios_share),
@@ -265,7 +266,7 @@ class _ClientsVentePageState extends ConsumerState<ClientsVentePage> {
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Clients')),
+      appBar: AppBar(title: Text(webTitle('Clients'))),
       body: Column(children: [
         Padding(padding: const EdgeInsets.all(8), child: TextField(decoration: InputDecoration(prefixIcon: Icon(Icons.search), labelText: tr('Rechercher')), onChanged: (v) => setState(() => _q = v.trim()))),
         Expanded(

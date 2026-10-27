@@ -1,5 +1,6 @@
 /// Clé = titre dans l'application → (section, emoji, libellé, rang) du menu latéral du site web.
 const webMenu = <String, (String, String, String, int)>{
+  'Lots': ('Principal', '🐣', 'Élevage & Lots', 30),
   'Messagerie': ('Principal', '💬', 'Messagerie', 10),
   'Poules pondeuses': ('Principal', '🐓', 'Poules pondeuses', 40),
   'Troupeau bovin': ('Principal', '🐄', 'Bovins', 50),

@@ -84,6 +84,7 @@ void main() {
     });
     expect(find.text('Net à payer'), findsOneWidget);
     expect(find.text('Valider'), findsOneWidget);
+    await t.ensureVisible(find.text('Marquer payé'));
     await t.tap(find.text('Marquer payé'));
     await t.pumpAndSettle();
     expect(find.textContaining('dépense « Salaires »'), findsOneWidget);

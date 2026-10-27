@@ -181,6 +181,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                           },
                         ),
                         const SizedBox(height: 16),
+                        _sectionTitle(context, '💀 Têtes & Mortalité'),
                         _field(_mort, 'Mortalité du jour', required: true, integer: true, suffix: 'têtes', onChanged: (_) => setState(_recompute)),
                         for (var i = 0; i < _causes_.length; i++)
                           Padding(
@@ -209,8 +210,10 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                                 label: const Text('Détailler les causes de mortalité'))),
                         const SizedBox(height: 8),
                         _field(_vivants, 'Têtes vivantes', required: true, integer: true, onChanged: (_) => _vivantsManuel = true),
+                        _sectionTitle(context, '🌾 Alimentation & Eau'),
                         _field(_sacs, 'Aliment consommé', required: true, suffix: 'sacs'),
                         _field(_eau, 'Eau consommée', suffix: 'L'),
+                        _sectionTitle(context, '🌡️ Températures & Poids'),
                         Row(children: [
                           Expanded(child: _field(_tmin, 'Temp. min', suffix: '°C')),
                           const SizedBox(width: 12),
@@ -218,8 +221,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                         ]),
                         _field(_poids, 'Poids moyen', suffix: 'kg'),
                         if (_pondeuse) ...[
-                          Text('Production d\'œufs', style: Theme.of(context).textTheme.titleSmall),
-                          const SizedBox(height: 8),
+                          _sectionTitle(context, '🥚 Production d\'œufs'),
                           _field(_oeufs, 'Œufs ramassés', integer: true),
                           Row(children: [
                             Expanded(child: _field(_casses, 'Cassés', integer: true)),
@@ -227,6 +229,7 @@ class _RapportFormState extends ConsumerState<RapportForm> {
                             Expanded(child: _field(_declasses, 'Déclassés', integer: true)),
                           ]),
                         ],
+                        _sectionTitle(context, '📝 Observations'),
                         TextFormField(controller: _incidents, maxLines: 2, decoration: InputDecoration(labelText: tr('Incidents'))),
                         const SizedBox(height: 12),
                         TextFormField(controller: _obs, maxLines: 3, decoration: InputDecoration(labelText: tr('Observations'))),
@@ -243,3 +246,8 @@ class _RapportFormState extends ConsumerState<RapportForm> {
     );
   }
 }
+
+Widget _sectionTitle(BuildContext context, String t) => Padding(
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
+      child: Text(t, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: const Color(0xFF166534))),
+    );

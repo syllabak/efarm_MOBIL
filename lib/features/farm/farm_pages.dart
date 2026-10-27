@@ -117,10 +117,14 @@ class _StockPageState extends ConsumerState<StockPage> {
               final bas = seuil > 0 && q <= seuil;
               return Card(
                 child: ListTile(
-                  leading: Icon(bas ? Icons.warning_amber : Icons.inventory_2_outlined, color: bas ? Colors.red : null),
-                  title: Text('${s['produit']}'),
-                  subtitle: Text('Site ${s['site_id']}${seuil > 0 ? ' · seuil ${fmtNum(seuil, digits: 1)}' : ''}'),
-                  trailing: Text('${fmtNum(q, digits: 1)} ${s['unite'] ?? ''}', style: TextStyle(fontWeight: FontWeight.bold, color: bas ? Colors.red : null)),
+                  leading: Text(q <= 0 ? '🔴' : (bas ? '🟡' : '🟢'), style: const TextStyle(fontSize: 18)),
+                  title: Text('${s['produit']}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text('${s['site_nom'] ?? 'Site ${s['site_id']}'}${seuil > 0 ? ' · seuil ${fmtNum(seuil, digits: 1)}' : ''}'),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(color: q <= 0 ? const Color(0xFFFEE2E2) : (bas ? const Color(0xFFFEF9C3) : const Color(0xFFDCFCE7)), borderRadius: BorderRadius.circular(12)),
+                    child: Text('${fmtNum(q, digits: 1)} ${s['unite'] ?? ''}', style: TextStyle(fontWeight: FontWeight.bold, color: q <= 0 ? const Color(0xFFB91C1C) : (bas ? const Color(0xFFA16207) : const Color(0xFF15803D)))),
+                  ),
                   onTap: serverCan('POST', '/stock/exits') ? () => _move(false, product: s['produit_id'] as int?, site: s['site_id'] as int?) : null,
                 ),
               );

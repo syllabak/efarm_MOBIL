@@ -118,7 +118,7 @@ class _VentesPageState extends ConsumerState<VentesPage> {
           child: ListTile(
             title: Text('${v['numero']} · ${money(v['montant_total'])}'),
             subtitle: Text('${fmtDate(v['date_vente'])} · ${(v['client'] as String?)?.isNotEmpty == true ? v['client'] : 'Sans client'}'),
-            trailing: Chip(label: Text(_paiementLabels['${v['paiement']}'] ?? '${v['paiement']}'), backgroundColor: _paiementColor('${v['paiement']}')?.withValues(alpha: 0.15)),
+            trailing: v['paiement'] == null ? null : Chip(label: Text(_paiementLabels['${v['paiement']}'] ?? '${v['paiement']}'), backgroundColor: _paiementColor('${v['paiement']}')?.withValues(alpha: 0.15)),
             onTap: () async {
               await Navigator.push(c, MaterialPageRoute(builder: (_) => VenteDetailPage(id: v['id'] as int)));
               if (mounted) setState(() => _k = UniqueKey());

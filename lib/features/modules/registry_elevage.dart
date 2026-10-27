@@ -6,6 +6,7 @@ import '../farm/rapport_form.dart';
 import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'spec.dart';
+import '../farm/lot_card.dart';
 
 String _s(Object? v) => v == null ? '' : '$v';
 String _join(Iterable<Object?> parts, [String sep = ' · ']) => parts.where((e) => e != null && '$e'.isNotEmpty).join(sep);
@@ -274,6 +275,10 @@ final lotsModuleBase = ModuleSpec(
   title: 'Lots',
   icon: Icons.egg_alt_outlined,
   listPath: '/farm/lots',
+  itemCard: (c, r, open) => LotCard(r,
+      onDetail: open,
+      onReport: serverCan('POST', '/farm/rapports') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => RapportForm(lotId: r['id'] as int?))) : null,
+      onForecast: serverGets('/forecast/{id}/feed') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/${r['id']}/feed', pick: 'prevision', query: const {'ia': 1}))) : null),
   filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
   itemTitle: (r) => _join([r['code'], r['race']]),
   itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',
@@ -302,12 +307,26 @@ final lotsModule = ModuleSpec(
   title: 'Lots',
   icon: Icons.egg_alt_outlined,
   listPath: '/farm/lots',
+  itemCard: (c, r, open) => LotCard(r,
+      onDetail: open,
+      onReport: serverCan('POST', '/farm/rapports') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => RapportForm(lotId: r['id'] as int?))) : null,
+      onForecast: serverGets('/forecast/{id}/feed') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/${r['id']}/feed', pick: 'prevision', query: const {'ia': 1}))) : null),
   filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
   itemTitle: (r) => _join([r['code'], r['race']]),
   itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',
   itemTrailing: (r) => _s(r['statut']),
   detailPath: '/lots/{id}/performance',
   detailTitle: (r) => _join([r['lot']?['code'], r['lot']?['race']]),
+  detailHeader: (c, r) {
+    final m = (r['mortalite'] as Map?) ?? const {}, perf = (r['performance'] as Map?) ?? const {};
+    final taux = num.tryParse('${m['taux_pct']}') ?? 0;
+    return GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: EdgeInsets.zero, children: [
+      Stat('Effectif actuel', fmtNum(m['nb_actuel']), emoji: '🐔', color: const Color(0xFF15803D)),
+      Stat('Âge (jours)', fmtNum(perf['age_jours']), emoji: '🐣', color: const Color(0xFF1D4ED8)),
+      Stat('Mortalité', '${fmtNum(taux, digits: 1)} %', emoji: '📉', color: taux > 5 ? const Color(0xFFDC2626) : (taux > 2 ? const Color(0xFFF97316) : const Color(0xFF16A34A))),
+      Stat('Dépenses', '${fmtNum(perf['total_depenses'])} F', emoji: '💸', color: const Color(0xFFA16207)),
+    ]);
+  },
   detail: const [
     ColumnSpec('lot.site_nom', 'Site'),
     ColumnSpec('lot.statut', 'Statut', fmt: Fmt.label, labels: {'actif': 'Actif', 'termine': 'Terminé'}),

@@ -58,7 +58,7 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 - 🟡 Compatibilité : Flutter 3.44 / Dart 3.12 ; web via SQLite WebAssembly.
 - ❌ **Aucun essai sur appareil ni contre le serveur réel** : tous les écrans sont validés par tests avec un faux serveur uniquement.
 - ✅ Logo EFarm360 du site web comme icône (Android, iOS, Windows, Web). ❌ Pas de signature de publication (keystore à créer), pas de notifications push.
-- ❌ Un seul langage : français (le web propose fr, en, pt, es, ar — fichiers `database/lang/*.json`).
+- ✅ Cinq langues comme le web (`assets/lang`), un texte sans traduction reste en français.
 - 🟡 Accessibilité : non auditée (tailles de texte, contraste, lecteur d'écran).
 
 ### 3.2 Écart fonctionnel — ferme
@@ -107,12 +107,12 @@ notifications push (clés VAPID), corbeille, journal d'audit, rapport hebdomadai
 | Élément | Web | Mobile | Action |
 |---|---|---|---|
 | Couleurs | vert profond `#14532D`, vert `#15803D`, cyan pour le cabinet | ✅ repris | ✅ Fait : thème cyan sur tout l’espace vétérinaire |
-| Navigation | menu latéral | barre du bas (5 onglets) + menu « Plus » dans l'ordre du web | Adapter |
+| Navigation | menu latéral | ✅ menu latéral identique (tiroir, permanent ≥ 900 px) + barre du bas | Fait |
 | Cartes / indicateurs | cartes blanches arrondies, filet coloré à gauche, icône et valeur | ✅ | |
 | Titres de rubriques | emoji (📊 🐣 💰 🩺) | 🟡 titres des onglets ✅, reste les sous-pages | Généraliser |
 | Graphiques | courbes et histogrammes (Chart.js) | ❌ | Ajouter une bibliothèque de graphiques |
 | Tableaux | tableaux à colonnes triables | listes en cartes | Choix mobile assumé |
-| Langues | 5 | 1 | Internationalisation à faire |
+| Langues | 5 | ✅ 5 (fr, en, pt, es, ar en droite à gauche) | Fait : dictionnaires du site + compléments mobiles |
 | Mode sombre | non | oui (automatique) | |
 | Export de données | PDF / Excel / CSV | CSV partageable (stock, ventes, employés, fournisseurs, troupeau, catalogue) | PDF/Excel : routes serveur à ajouter |
 | Formulaires | longues pages | formulaires générés par champ | À revoir page par page |

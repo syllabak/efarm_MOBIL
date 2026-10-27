@@ -139,7 +139,14 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                     return (items: [for (final e in d) Map<String, dynamic>.from(e as Map)], meta: <String, dynamic>{'page': 1, 'pages': 1});
                   }
                 : (page) => api.list(spec.listPath, query: query(page)),
-            itemBuilder: (c, row) => Card(
+            itemBuilder: (c, row) {
+              Future<void> open() async {
+                await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'], row: spec.detailFromList ? row : null)));
+                if (mounted) _reload();
+              }
+
+              if (spec.itemCard != null) return spec.itemCard!(c, row, open);
+              return Card(
               child: ListTile(
                 title: Text(spec.itemTitle(row)),
                 subtitle: spec.itemSubtitle == null ? null : Text(spec.itemSubtitle!(row)),
@@ -151,7 +158,8 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                         if (mounted) _reload();
                       },
               ),
-            ),
+            );
+            },
           ),
         ),
       ]),
@@ -235,21 +243,35 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
           final row = Map<String, dynamic>.from(raw);
           final profile = ref.watch(sessionProvider).value;
           final actions = [for (final a in spec.actions) if (_supported(a) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
-          return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            if (spec.detailTitle != null) Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge)),
-            for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col)),
-            for (final s in spec.sections) ...[
-              const Divider(height: 28),
-              Text(s.title, style: Theme.of(c).textTheme.titleMedium),
-              if (((row[s.key] as List?) ?? const []).isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('—')),
-              for (final e in ((row[s.key] as List?) ?? const []).cast<Map>())
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(s.itemTitle(Map<String, dynamic>.from(e))),
-                  subtitle: s.itemSubtitle == null ? null : Text(s.itemSubtitle!(Map<String, dynamic>.from(e))),
-                  trailing: s.itemTrailing == null ? null : Text(s.itemTrailing!(Map<String, dynamic>.from(e)), style: const TextStyle(fontWeight: FontWeight.bold)),
+          return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            if (spec.detailTitle != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), gradient: const LinearGradient(colors: [Color(0xFF15803D), Color(0xFF16A34A)])),
+                child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            if (spec.detailHeader != null) spec.detailHeader!(c, row),
+            if (spec.detail.isNotEmpty)
+              Card(margin: const EdgeInsets.symmetric(vertical: 6), child: Padding(padding: const EdgeInsets.all(12), child: Column(children: [for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col))]))),
+            for (final s in spec.sections)
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Text(s.title, style: Theme.of(c).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                    if (((row[s.key] as List?) ?? const []).isEmpty) const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Text('—')),
+                    for (final e in ((row[s.key] as List?) ?? const []).cast<Map>())
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(s.itemTitle(Map<String, dynamic>.from(e))),
+                        subtitle: s.itemSubtitle == null ? null : Text(s.itemSubtitle!(Map<String, dynamic>.from(e))),
+                        trailing: s.itemTrailing == null ? null : Text(s.itemTrailing!(Map<String, dynamic>.from(e)), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                  ]),
                 ),
-            ],
+              ),
             if (actions.isNotEmpty) ...[
               const Divider(height: 28),
               Wrap(spacing: 8, runSpacing: 8, children: [

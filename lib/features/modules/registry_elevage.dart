@@ -6,6 +6,7 @@ import '../farm/rapport_form.dart';
 import 'data_view.dart';
 import 'elevage_extra.dart';
 import 'spec.dart';
+import '../farm/lot_card.dart';
 
 String _s(Object? v) => v == null ? '' : '$v';
 String _join(Iterable<Object?> parts, [String sep = ' · ']) => parts.where((e) => e != null && '$e'.isNotEmpty).join(sep);
@@ -274,6 +275,10 @@ final lotsModuleBase = ModuleSpec(
   title: 'Lots',
   icon: Icons.egg_alt_outlined,
   listPath: '/farm/lots',
+  itemCard: (c, r, open) => LotCard(r,
+      onDetail: open,
+      onReport: serverCan('POST', '/farm/rapports') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => RapportForm(lotId: r['id'] as int?))) : null,
+      onForecast: serverGets('/forecast/{id}/feed') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/${r['id']}/feed', pick: 'prevision', query: const {'ia': 1}))) : null),
   filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
   itemTitle: (r) => _join([r['code'], r['race']]),
   itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',
@@ -302,6 +307,10 @@ final lotsModule = ModuleSpec(
   title: 'Lots',
   icon: Icons.egg_alt_outlined,
   listPath: '/farm/lots',
+  itemCard: (c, r, open) => LotCard(r,
+      onDetail: open,
+      onReport: serverCan('POST', '/farm/rapports') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => RapportForm(lotId: r['id'] as int?))) : null,
+      onForecast: serverGets('/forecast/{id}/feed') ? () => Navigator.push(c, MaterialPageRoute(builder: (_) => DataPage(title: 'Prévision d\'aliment', path: '/forecast/${r['id']}/feed', pick: 'prevision', query: const {'ia': 1}))) : null),
   filters: const [FilterSpec('statut', {'actif': 'Actifs', 'termine': 'Terminés', '': 'Tous'}, defaultValue: 'actif')],
   itemTitle: (r) => _join([r['code'], r['race']]),
   itemSubtitle: (r) => 'Entrée ${fmtDate(r['date_entree'])} · ${fmtNum(r['nb_actuel'])}/${fmtNum(r['nb_initial'])} têtes',

@@ -27,13 +27,6 @@ class _AlertsPageState extends ConsumerState<AlertsPage> {
     }
   }
 
-  IconData _icon(String? t) => switch (t ?? '') {
-        final s when s.contains('mort') => Icons.heart_broken_outlined,
-        final s when s.contains('stock') => Icons.inventory_2_outlined,
-        final s when s.contains('poids') => Icons.monitor_weight_outlined,
-        _ => Icons.notifications_active_outlined,
-      };
-
   @override
   Widget build(BuildContext context) {
     final api = ref.watch(apiProvider);
@@ -51,13 +44,23 @@ class _AlertsPageState extends ConsumerState<AlertsPage> {
         },
         itemBuilder: (c, a) {
           final lue = '${a['lue']}' == '1' || a['lue'] == true;
+          final titre = (a['titre'] ?? '').toString();
           final texte = (a['message'] ?? a['titre'] ?? a['type'] ?? 'Alerte').toString();
+          // Même pictogramme que la liste « Alertes récentes » du site web
+          final emoji = switch ('${a['niveau']}') {
+            'critique' => '🔴',
+            'warning' => '🟡',
+            _ => switch ('${a['type']}') { 'stock_faible' => '📦', 'mortalite_haute' => '🐔', 'rapport_manquant' => '📋', 'rappel_vaccination' => '💉', _ => '🔔' },
+          };
           return Card(
-            color: lue ? null : Theme.of(c).colorScheme.errorContainer.withValues(alpha: 0.4),
-            child: ListTile(
-              leading: Icon(_icon('${a['type']}')),
-              title: Text(texte, maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: lue ? FontWeight.normal : FontWeight.bold)),
-              subtitle: Text([if (a['lot_code'] != null) 'Lot ${a['lot_code']}', fmtDateTime(a['created_at'])].join(' · ')),
+            child: Opacity(
+              opacity: lue ? 0.6 : 1,
+              child: ListTile(
+                leading: Text(emoji, style: const TextStyle(fontSize: 22)),
+                title: Text(titre.isNotEmpty && titre != texte ? titre : texte, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: Text([if (titre.isNotEmpty && titre != texte) texte, if (a['lot_code'] != null) 'Lot ${a['lot_code']}', fmtDateTime(a['created_at'])].join('\n')),
+                isThreeLine: titre.isNotEmpty && titre != texte,
+              ),
             ),
           );
         },

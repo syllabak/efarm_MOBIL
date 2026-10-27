@@ -139,7 +139,14 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                     return (items: [for (final e in d) Map<String, dynamic>.from(e as Map)], meta: <String, dynamic>{'page': 1, 'pages': 1});
                   }
                 : (page) => api.list(spec.listPath, query: query(page)),
-            itemBuilder: (c, row) => Card(
+            itemBuilder: (c, row) {
+              Future<void> open() async {
+                await Navigator.push(c, MaterialPageRoute(builder: (_) => ModuleDetailPage(spec, row['id'], row: spec.detailFromList ? row : null)));
+                if (mounted) _reload();
+              }
+
+              if (spec.itemCard != null) return spec.itemCard!(c, row, open);
+              return Card(
               child: ListTile(
                 title: Text(spec.itemTitle(row)),
                 subtitle: spec.itemSubtitle == null ? null : Text(spec.itemSubtitle!(row)),
@@ -151,7 +158,8 @@ class _ModuleListPageState extends ConsumerState<ModuleListPage> {
                         if (mounted) _reload();
                       },
               ),
-            ),
+            );
+            },
           ),
         ),
       ]),

@@ -133,7 +133,10 @@ class ModuleSpec {
     this.plan,
     this.detailFromList = false,
     this.exportColumns,
+    this.itemCard,
   });
+  /// Carte sur mesure à la place de la ligne standard ; `open` ouvre la fiche.
+  final Widget Function(BuildContext context, Json row, VoidCallback open)? itemCard;
   final String id, title, listPath;
   final IconData icon;
   final RowText itemTitle;

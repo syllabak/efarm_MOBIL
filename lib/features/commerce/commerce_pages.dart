@@ -338,7 +338,7 @@ class _FinancePageState extends ConsumerState<FinancePage> {
     final api = ref.watch(apiProvider);
     final mois = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
     return Scaffold(
-      appBar: AppBar(title: const Text('Finance')),
+      appBar: AppBar(title: const Text('💰 Finance & Comptabilité')),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: const Text('Dépense'),
@@ -367,10 +367,11 @@ class _FinancePageState extends ConsumerState<FinancePage> {
                 final net = d['benefice_net'] as num;
                 return Column(children: [
                   GridView.count(crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), childAspectRatio: 1.9, padding: const EdgeInsets.all(4), children: [
-                    Stat('Ventes', money(d['total_ventes']), icon: Icons.south_west, color: Colors.green),
-                    Stat('Dépenses', money(d['total_depenses']), icon: Icons.north_east, color: Colors.red),
-                    Stat('Bénéfice net', money(net), icon: Icons.account_balance_wallet_outlined, color: net >= 0 ? Colors.green : Colors.red),
-                    Stat('Trésorerie du mois', money(d['tresorerie_mois']), icon: Icons.savings_outlined),
+                    Stat('Chiffre d\'affaires facturé', money(d['total_ventes']), emoji: '🧾', color: const Color(0xFF15803D)),
+                    Stat('Dépenses du mois', money(d['total_depenses']), emoji: '💸', color: const Color(0xFFDC2626)),
+                    Stat('Bénéfice du mois', money(net), emoji: '💰', color: net >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626)),
+                    Stat('ROI d\'exploitation du mois', '${d['roi_pct']} %', emoji: '📊', color: const Color(0xFF1D4ED8)),
+                    Stat('Trésorerie du mois', money(d['tresorerie_mois']), emoji: '🏦', color: const Color(0xFF0F766E)),
                   ]),
                   ListTile(dense: true, title: Text('Créances : ${money(d['creances'])} (${d['nb_creances']} vente(s))'), subtitle: Text('ROI du mois : ${d['roi_pct']} %')),
                   for (final cat in (d['par_categorie'] as List).cast<Map>())

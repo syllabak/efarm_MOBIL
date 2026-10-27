@@ -131,7 +131,7 @@ class I18n extends ChangeNotifier {
       if (t != null) return mm.group(1)! + t;
     }
     // Textes composés : chaque morceau est traduit à part
-    for (final sep in [' — ', ', ']) {
+    for (final sep in [' — ', ' · ', '\n', ', ']) {
       if (!key.contains(sep) || key.length > 160 || (sep == ', ' && RegExp(r'[.:;!?]').hasMatch(key))) continue;
       final parts = key.split(sep);
       if (sep == ', ' && parts.map((p) => p.length).reduce((a, b) => a > b ? a : b) > 32) continue;

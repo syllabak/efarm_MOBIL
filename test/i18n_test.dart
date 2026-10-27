@@ -27,6 +27,7 @@ void main() {
     expect(tr('Aucune vente.'), 'No sale.');
     expect(tr('Nom du lot (facultatif)'), 'Flock name (optional)');
     expect(tr('Ferme Ndiaye'), 'Ferme Ndiaye'); // inconnu : inchangé
+    expect(tr('Entrée 27/10/2026 · 4 200/4 400 têtes'), 'Entry 27/10/2026 · 4 200/4 400 heads'); // texte composé de plusieurs morceaux
     I18n.instance.loadDictionary('fr', {});
   });
 }

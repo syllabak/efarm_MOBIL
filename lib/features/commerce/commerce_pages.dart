@@ -371,11 +371,37 @@ class _FinancePageState extends ConsumerState<FinancePage> {
                     Stat('Dépenses du mois', money(d['total_depenses']), emoji: '💸', color: const Color(0xFFDC2626)),
                     Stat('Bénéfice du mois', money(net), emoji: '💰', color: net >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626)),
                     Stat('ROI d\'exploitation du mois', '${d['roi_pct']} %', emoji: '📊', color: const Color(0xFF1D4ED8)),
+                    Stat('Encaissé ce mois', money(d['encaisse_mois']), emoji: '💵', color: const Color(0xFF0F766E)),
                     Stat('Trésorerie du mois', money(d['tresorerie_mois']), emoji: '🏦', color: const Color(0xFF0F766E)),
                   ]),
                   ListTile(dense: true, title: Text('Créances : ${money(d['creances'])} (${d['nb_creances']} vente(s))'), subtitle: Text('ROI du mois : ${d['roi_pct']} %')),
-                  for (final cat in (d['par_categorie'] as List).cast<Map>())
-                    ListTile(dense: true, title: Text('${cat['categorie']}'), trailing: Text(money(cat['total']))),
+                  if ((d['par_categorie'] as List).isNotEmpty)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('🥧 Dépenses par catégorie (ce mois)', style: Theme.of(c).textTheme.titleSmall),
+                          const SizedBox(height: 8),
+                          for (final cat in (d['par_categorie'] as List).cast<Map>())
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Column(children: [
+                                Row(children: [Expanded(child: Text('${cat['categorie']}')), Text(money(cat['total']), style: const TextStyle(fontWeight: FontWeight.w600))]),
+                                const SizedBox(height: 3),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    minHeight: 6,
+                                    value: ((num.tryParse('${cat['total']}') ?? 0) / ((num.tryParse('${d['total_depenses']}') ?? 0) == 0 ? 1 : (num.tryParse('${d['total_depenses']}') ?? 1))).clamp(0.0, 1.0).toDouble(),
+                                    backgroundColor: const Color(0xFFF3F4F6),
+                                    color: const Color(0xFFF97316),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                        ]),
+                      ),
+                    ),
                   const Divider(),
                 ]);
               },

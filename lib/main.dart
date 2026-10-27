@@ -41,7 +41,8 @@ class EFarmApp extends StatelessWidget {
             title: 'EFarm360',
             debugShowCheckedModeBanner: false,
             theme: buildTheme(Brightness.light),
-            darkTheme: buildTheme(Brightness.dark),
+            // Le site web n'a pas de mode sombre : l'application garde le même thème clair
+            themeMode: ThemeMode.light,
             locale: I18n.instance.locale,
             supportedLocales: [for (final c in I18n.languages.keys) Locale(c)],
             localizationsDelegates: const [GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],

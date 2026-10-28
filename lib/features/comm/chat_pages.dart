@@ -73,8 +73,9 @@ class _ChatRoomsPageState extends ConsumerState<ChatRoomsPage> {
             ? ListView(children: const [SizedBox(height: 300, child: EmptyView('Aucune conversation.'))])
             : ListView(physics: const AlwaysScrollableScrollPhysics(), children: [
                 for (final r in rows.cast<Map>())
-                  ListTile(
-                    leading: CircleAvatar(child: Icon(r['type'] == 'direct' ? Icons.person : (r['type'] == 'general' ? Icons.groups : Icons.group))),
+                  Card(
+                    child: ListTile(
+                    leading: CircleAvatar(backgroundColor: Theme.of(c).colorScheme.primaryContainer, child: Text(r['type'] == 'direct' ? '👤' : (r['type'] == 'general' ? '💬' : '👥'), style: const TextStyle(fontSize: 18))),
                     title: Text('${r['titre']}', style: TextStyle(fontWeight: (r['non_lus'] as int) > 0 ? FontWeight.bold : FontWeight.normal)),
                     subtitle: Text('${r['dernier_message'] ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: (r['non_lus'] as int) > 0 ? Badge(label: Text('${r['non_lus']}')) : null,
@@ -82,7 +83,7 @@ class _ChatRoomsPageState extends ConsumerState<ChatRoomsPage> {
                       await Navigator.push(c, MaterialPageRoute(builder: (_) => ChatThreadPage(roomId: r['id'] as int, title: '${r['titre']}')));
                       if (mounted) setState(() => _k = UniqueKey());
                     },
-                  ),
+                  )),
               ]),
       ),
     );

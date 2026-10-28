@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/server_support.dart';
 import '../../core/session.dart';
+import '../../core/theme.dart';
 import '../../ui/common.dart';
 import '../comm/account_pages.dart';
 import '../vet/vet_repo.dart';
@@ -33,12 +34,28 @@ class ProfilePage extends ConsumerWidget {
     final api = ref.watch(apiProvider);
     final lic = p.licence;
     return ListView(children: [
-      ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.person)),
-        title: Text(p.fullName.isEmpty ? p.email : p.fullName),
-        subtitle: Text('${p.email}\n${p.isFarm ? p.role : (p.isOwnerVet ? 'Titulaire' : 'Collaborateur · ${p.raw['profil']}')}'),
-        isThreeLine: true,
-      ),
+      Builder(builder: (c) {
+        final name = p.fullName.isEmpty ? p.email : p.fullName;
+        final initials = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).take(2).map((w) => w[0].toUpperCase()).join();
+        final role = p.isFarm ? p.role : (p.isOwnerVet ? 'Titulaire' : 'Collaborateur · ${p.raw['profil']}');
+        return Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), gradient: LinearGradient(colors: [Theme.of(c).appBarTheme.backgroundColor ?? efarmDeep, Theme.of(c).colorScheme.primary])),
+          child: Row(children: [
+            CircleAvatar(radius: 26, backgroundColor: Colors.white24, child: Text(initials, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17)),
+                Text(p.email, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                const SizedBox(height: 6),
+                Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(12)), child: Text(role, style: const TextStyle(color: Colors.white, fontSize: 12))),
+              ]),
+            ),
+          ]),
+        );
+      }),
       const LanguageTile(),
       if (p.companyName != null) ListTile(leading: const Icon(Icons.business), title: Text(p.companyName!), subtitle: Text(p.allSites ? 'Tous les sites' : 'Site n° ${p.siteId}')),
       if (p.cabinetOwner != null) ListTile(leading: const Icon(Icons.local_hospital_outlined), title: Text('Cabinet de ${p.cabinetOwner}')),

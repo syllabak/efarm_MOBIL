@@ -12,7 +12,7 @@ Branche principale : `main`.
 ```bash
 flutter pub get
 flutter run
-flutter analyze && flutter test      # 70 tests
+flutter analyze && flutter test      # 69 tests
 ```
 
 ## Deux profils, un seul écran de connexion

@@ -118,7 +118,7 @@ class _CoursePageState extends ConsumerState<CoursePage> {
           return ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(16), children: [
             Text('${d['formation_titre']} › ${d['section_titre']}', style: Theme.of(c).textTheme.bodySmall),
             const SizedBox(height: 6),
-            Text('${d['titre']}', style: Theme.of(c).textTheme.titleLarge),
+            TitleBanner('${d['titre']}'),
             if (d['description'] != null) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('${d['description']}')),
             if (url != null) FilledButton.icon(onPressed: () => _watch(url), icon: const Icon(Icons.play_arrow), label: const Text('Regarder la vidéo')) else const Text('Aucune vidéo n\'est encore associée à ce cours.'),
             const SizedBox(height: 12),

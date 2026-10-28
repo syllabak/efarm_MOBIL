@@ -8,6 +8,7 @@ import '../../core/session.dart';
 import '../modules/module_pages.dart' show DynamicFormPage;
 import '../modules/spec.dart' show FieldSpec, FieldType;
 import '../../ui/common.dart';
+import 'vet_docs_pages.dart' show DocumentsPage, OrdonnancesPage;
 import 'vet_forms.dart';
 import 'vet_repo.dart';
 
@@ -60,7 +61,15 @@ class VetHome extends ConsumerWidget {
           child: RefreshIndicator(
             onRefresh: repo.sync,
             child: ListView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(8), children: [
-              Padding(padding: const EdgeInsets.fromLTRB(12, 8, 12, 0), child: Text('Bonjour ${p.fullName}', style: Theme.of(c).textTheme.titleLarge)),
+              TitleBanner('🏥 Bonjour ${p.fullName}'),
+              if (serverGets('/vet/documents'))
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Wrap(spacing: 8, runSpacing: 4, children: [
+                    if (p.can('documents')) ActionChip(label: const Text('🧾 Devis et factures'), onPressed: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const DocumentsPage()))),
+                    if (p.can('ordonnances')) ActionChip(label: const Text('💊 Ordonnances'), onPressed: () => Navigator.push(c, MaterialPageRoute(builder: (_) => const OrdonnancesPage()))),
+                  ]),
+                ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
                 child: Text(repo.lastSync == null ? 'Copie locale non chargée — connectez-vous au réseau.' : 'Données du ${fmtDateTime(repo.lastSync!.toIso8601String())}', style: Theme.of(c).textTheme.bodySmall),

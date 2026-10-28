@@ -244,13 +244,7 @@ class _ModuleDetailPageState extends ConsumerState<ModuleDetailPage> {
           final profile = ref.watch(sessionProvider).value;
           final actions = [for (final a in spec.actions) if (_supported(a) && (a.visible == null || a.visible!(row)) && (a.plan == null || profile == null || profile.has(a.plan!))) a];
           return SingleChildScrollView(physics: const AlwaysScrollableScrollPhysics(), padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            if (spec.detailTitle != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), gradient: const LinearGradient(colors: [Color(0xFF15803D), Color(0xFF16A34A)])),
-                child: Text(spec.detailTitle!(row), style: Theme.of(c).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
+            if (spec.detailTitle != null) TitleBanner(spec.detailTitle!(row)),
             if (spec.detailHeader != null) spec.detailHeader!(c, row),
             if (spec.detail.isNotEmpty)
               Card(margin: const EdgeInsets.symmetric(vertical: 6), child: Padding(padding: const EdgeInsets.all(12), child: Column(children: [for (final col in spec.detail) KeyValue(col.label, formatValue(lookup(row, col.key), col))]))),
